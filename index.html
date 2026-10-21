@@ -89,7 +89,7 @@ p{margin:0}
   -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
   box-shadow:var(--hl),var(--shadow);
 }
-.card::before,.side::before,.flowhead::before,.dock::before,.opt::before,.banner::before,.champ::before,.cc::before,.livebar>div::before{
+.sheet::before,.card::before,.side::before,.flowhead::before,.dock::before,.opt::before,.banner::before,.champ::before,.cc::before,.livebar>div::before{
   content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
   background:linear-gradient(145deg,var(--rim-hi),rgba(255,255,255,0) 34%,rgba(255,255,255,0) 66%,var(--rim));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
@@ -295,6 +295,27 @@ label.f.t1{color:var(--p1)} label.f.t2{color:var(--p2)}
 .editor{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:20px;background:var(--glass-soft);box-shadow:inset 0 0 0 2px var(--accent);margin:6px 0}
 .editor .row2{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .seg.seg2{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* glass sheet for choosing couples */
+body:has(.sheet-wrap){overflow:hidden}
+.sheet-wrap{position:fixed;inset:0;z-index:20;display:flex;align-items:flex-end;justify-content:center;padding-left:max(8px, env(safe-area-inset-left,0px));padding-right:max(8px, env(safe-area-inset-right,0px))}
+.sheet-bg{position:absolute;inset:0;border:0;padding:0;margin:0;background:rgba(10,16,30,.3);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);cursor:pointer}
+.sheet{position:relative;width:100%;max-width:640px;max-height:calc(100% - env(safe-area-inset-top,0px) - 48px);display:flex;flex-direction:column;gap:12px;
+  margin-bottom:calc(env(safe-area-inset-bottom,0px) + 8px);padding:10px 18px 18px;border-radius:34px;
+  background:var(--glass-strong);-webkit-backdrop-filter:blur(30px) saturate(190%);backdrop-filter:blur(30px) saturate(190%);box-shadow:var(--hl),0 24px 60px rgba(10,20,50,.32)}
+.grab{width:40px;height:5px;border-radius:3px;background:var(--hair);align-self:center;flex:0 0 auto}
+.sheet-h{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.sheet-h .label{margin:0}
+.sheet-h h2{font-size:24px;font-weight:800;letter-spacing:-.02em;margin-top:2px}
+.sheet-h h2 b{font-family:var(--round);color:var(--good);margin-left:4px}
+.sheet-h h2 b.neg{color:var(--exit)}
+.xbtn{width:36px;height:36px;border-radius:50%;border:0;background:var(--glass-soft);box-shadow:var(--hl),inset 0 0 0 1px var(--hair);font-size:22px;line-height:1;cursor:pointer;color:var(--muted);flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center}
+.sheet-list{overflow-y:auto;overscroll-behavior:contain;margin:0 -6px;padding:4px 6px 6px}
+.sheet .opt{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-soft)}
+.sheet-wrap.anim .sheet{animation:sheetUp .34s cubic-bezier(.2,.9,.25,1.04)}
+.sheet-wrap.anim .sheet-bg{animation:fadeIn .25s ease}
+@keyframes sheetUp{from{transform:translateY(48px) scale(.97);opacity:0}to{transform:none;opacity:1}}
+@keyframes fadeIn{from{opacity:0}}
+@media (prefers-reduced-motion:reduce){.sheet-wrap.anim .sheet,.sheet-wrap.anim .sheet-bg{animation:none}}
 @media (prefers-reduced-motion:no-preference){.chip,.btn,.opt,.seg button,.evbtn{transition:background-color .2s,color .2s,box-shadow .2s,transform .12s}}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .card,.side,.flowhead,.dock,.opt,.banner,.champ,.cc,.livebar>div,.okmsg,.seg{background-color:var(--glass-strong)}
@@ -783,11 +804,6 @@ function viewEpisode(){
       }).join("")+'</div></div>';
     });
     out+='</section>';
-    if(ui.evSel){
-      var sx=evByKey(ui.evSel);
-      out+='<section class="card" id="step2"><span class="label">2 · Bei welchem Paar?</span><p class="hint">„'+h(sx.label)+'“ ('+sgn(sx.pts)+' je Paar). Tippe ein oder mehrere Paare an.</p><div class="opts">'+
-        house.map(function(c){ return opt("cp-toggle",c.id,c.short,c.owner==null?"ohne Team":"Team "+state.players[c.owner],ui.cpSel.indexOf(c.id)>=0,tcls(c.owner)); }).join("")+'</div></section>';
-    }
     var lg=e.log.slice().reverse();
     out+='<section class="card"><h3>Eingetragen in dieser Folge</h3>'+(lg.length?'<div class="log">'+lg.map(function(x){
       var names=x.ids.map(function(id){ var c=byId(id); return c?c.short:"?"; }).join(", "), pts=evPts(x.k);
@@ -816,8 +832,16 @@ function viewEpisode(){
     }
     out+='</section>';
     if(ui.evSel){
-      var sx2=evByKey(ui.evSel), n=ui.cpSel.length;
-      out+='<div class="actions dock"><button class="btn big primary" data-act="ev-apply"'+(n?"":" disabled")+'>'+(n?h(sx2.label)+" für "+n+" Paar"+(n===1?"":"e")+" eintragen":"Jetzt ein Paar antippen")+'</button><button class="btn" data-act="ev-cancel">Abbrechen</button></div>';
+      var sx=evByKey(ui.evSel);
+      out+='<div class="sheet-wrap'+(ui.sheetAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="sheet-t">'+
+        '<button class="sheet-bg" data-act="ev-cancel" aria-label="Schließen" tabindex="-1"></button>'+
+        '<div class="sheet"><span class="grab" aria-hidden="true"></span>'+
+        '<div class="sheet-h"><div><span class="label">Bei welchem Paar?</span><h2 id="sheet-t">'+h(sx.label)+'<b class="'+(sx.pts<0?"neg":"")+'">'+sgn(sx.pts)+'</b></h2></div><button class="xbtn" data-act="ev-cancel" aria-label="Schließen">×</button></div>'+
+        '<p class="hint">Tippe ein oder mehrere Paare an. Jedes bekommt '+sgn(sx.pts)+'.</p>'+
+        '<div class="sheet-list"><div class="opts">'+house.map(function(c){ return opt("cp-toggle",c.id,c.short,c.owner==null?"ohne Team":"Team "+state.players[c.owner],ui.cpSel.indexOf(c.id)>=0,tcls(c.owner)); }).join("")+'</div></div>'+
+        '<div class="actions"><button class="btn big primary" id="ev-apply-btn" data-act="ev-apply"'+(ui.cpSel.length?"":" disabled")+'>'+applyLabel()+'</button></div>'+
+        '</div></div>';
+      ui.sheetAnim=false;
     } else out+=primary("e-live","Folge ist vorbei, weiter");
   }
   else if(e.status==="exits"){
@@ -994,6 +1018,7 @@ function render(){
   v.innerHTML=html;
   renderSync();
 }
+function applyLabel(){ var n=ui.cpSel.length, x=evByKey(ui.evSel); if(!x) return ""; return n ? h(x.label)+" für "+n+" Paar"+(n===1?"":"e")+" eintragen" : "Erst ein Paar antippen"; }
 function syncEdName(){ var el=document.getElementById("ed-name"); if(el) ui.edName=el.value; }
 function goTop(){ try{ window.scrollTo(0,0); }catch(e){} }
 
@@ -1062,11 +1087,16 @@ document.addEventListener("click",function(evt){
       if(!e||!ui.sel) return; var tp=e.status==="tip0"?0:1; e.tips[tp]=ui.sel;
       setEpStatus(f, tp===0?"tip1":"live"); return;
     case "evsel":
-      if(!e) return; ui.evSel = ui.evSel===v ? null : v; ui.cpSel=[]; ui.msg=""; render();
-      if(ui.evSel){ var s2=document.getElementById("step2"); if(s2 && s2.scrollIntoView){ try{ s2.scrollIntoView({behavior:"smooth",block:"start"}); }catch(x){ s2.scrollIntoView(); } } }
+      if(!e) return; ui.evSel=v; ui.cpSel=[]; ui.msg=""; ui.sheetAnim=true; render();
+      if(document.querySelector){ var f1=document.querySelector(".sheet .opt"); if(f1 && f1.focus){ try{ f1.focus({preventScroll:true}); }catch(x){} } }
       return;
     case "cp-toggle":
-      var ci=ui.cpSel.indexOf(v); if(ci>=0) ui.cpSel.splice(ci,1); else ui.cpSel.push(v); render(); return;
+      var ci=ui.cpSel.indexOf(v); if(ci>=0) ui.cpSel.splice(ci,1); else ui.cpSel.push(v);
+      if(typeof b.setAttribute==="function"){
+        b.setAttribute("aria-pressed",String(ci<0));
+        var ab=document.getElementById("ev-apply-btn"); if(ab){ ab.disabled=!ui.cpSel.length; ab.innerHTML=applyLabel(); }
+      } else render();
+      return;
     case "ev-cancel": ui.evSel=null; ui.cpSel=[]; render(); return;
     case "ev-apply":
       if(!e||!ui.evSel||!evByKey(ui.evSel)) return;
@@ -1074,7 +1104,7 @@ document.addEventListener("click",function(evt){
       if(!ids.length) return;
       e.log.push({id:rid(),k:ui.evSel,ids:ids}); rebuild(e);
       ui.msg=evLabel(ui.evSel)+" eingetragen: "+ids.map(function(id){ return byId(id).short; }).join(", ");
-      ui.evSel=null; ui.cpSel=[]; commit(); goTop(); return;
+      ui.evSel=null; ui.cpSel=[]; commit(); return;
     case "log-del":
       if(!e) return; var before=e.log.length; e.log=e.log.filter(function(x){ return x.id!==v; });
       if(e.log.length!==before){ rebuild(e); ui.msg="Eintrag entfernt."; commit(); } return;
@@ -1204,6 +1234,9 @@ document.addEventListener("click",function(evt){
   }
 });
 
+document.addEventListener("keydown",function(evt){
+  if(evt.key==="Escape" && ui.evSel){ ui.evSel=null; ui.cpSel=[]; render(); }
+});
 render();
 if(MODE==="sb") initSupabase(); else initCloud();
 })();
