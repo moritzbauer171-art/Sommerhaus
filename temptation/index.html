@@ -614,6 +614,18 @@ input[type=text]:focus,input[type=password]:focus{box-shadow:var(--hl),inset 0 0
 .demobar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 10px 10px 16px;margin:0 0 12px;border-radius:16px;background:rgba(247,199,102,.10);box-shadow:inset 0 0 0 1.5px rgba(247,199,102,.45);font-size:14px;color:var(--muted)}
 .demobar b{color:var(--gold);margin-right:4px}
 .demobar .btn{flex:0 0 auto}
+
+/* bankroll */
+.coinbar{flex-direction:column;align-items:stretch;gap:8px}
+.cb-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cb-step{display:inline-flex;gap:2px;padding:3px;border-radius:999px;background:rgba(0,0,0,.22);box-shadow:inset 0 0 0 1px var(--hair)}
+.cb-step button{border:0;background:none;color:var(--muted);font:700 13px/1 var(--round);min-width:34px;height:28px;border-radius:999px;cursor:pointer;padding:0 8px}
+.cb-step button::before{content:"±";opacity:.7;margin-right:1px}
+.cb-step button[aria-pressed="true"]{background:var(--goldgrad);color:#2B1305}
+.cb-step button:focus-visible{outline:2px solid var(--gold);outline-offset:1px}
+.cb-sub{font-size:13px;color:var(--muted)}
+.rk .pts small.cur{font-size:13px;font-weight:700;opacity:.75}
+.rkx{padding-bottom:9px}
 </style>
 <div class="night-bg" aria-hidden="true"></div>
 <canvas class="night" id="palms" aria-hidden="true"></canvas>
@@ -644,7 +656,8 @@ var COUPLES=[
 ];
 var TEMPTERS=[["Veysel",33,"m"],["Lukasz",31,"m"],["Bless",26,"m"],["Timo",24,"m"],["Emanuel",24,"m"],["Jerry",31,"m"],["Simon",25,"m"],["Samuel",26,"m"],["Chris",29,"m"],["Frederik",29,"m"],["Sergej",27,"m"],["David",27,"m"],
   ["Chayenne",22,"w"],["Jasmin",22,"w"],["Deniz",24,"w"],["Mara",22,"w"],["Saskia-Alina",29,"w"],["Jana",26,"w"],["Bella",25,"w"],["Selina",20,"w"],["Nina",21,"w"],["Angelina",28,"w"],["Saskia H.",27,"w"]];
-var DEF_BETS={ep:10,live:5,season:20,surv:2};
+var DEF_BETS={start:100,ep:25,season:30,surv:5};
+var BET_LIM={start:[10,1000,10],ep:[1,500,5],season:[0,500,5],surv:[0,50,1]};
 var LIVE_PRESETS=["Gibt es in den nächsten 10 Minuten einen Kuss?","Fließen beim nächsten Lagerfeuer Tränen?","Gibt es heute noch eine gemeinsame Nacht?","Verlässt jemand wütend das Lagerfeuer?"];
 var EP_STATES=["open","live","review","done"];
 var CROWN_SVG='<svg viewBox="-4 -2 72 52" aria-hidden="true"><path d="M6 40 L2 12 L18 24 L32 4 L46 24 L62 12 L58 40 Z" fill="currentColor"/><rect x="6" y="41" width="52" height="6" rx="2" fill="currentColor"/><circle cx="2" cy="12" r="3.5" fill="currentColor"/><circle cx="32" cy="4" r="3.5" fill="currentColor"/><circle cx="62" cy="12" r="3.5" fill="currentColor"/></svg>';
@@ -676,7 +689,7 @@ function defaultMain(){
     [c[2],c[3]].forEach(function(p){ persons.push({id:p[0],name:p[1],full:p[2],kind:"v",sub:"Vergeben · "+c[1],couple:c[0],inFrom:1,outIn:null,outType:null,custom:false}); });
   });
   TEMPTERS.forEach(function(t){ persons.push({id:"t-"+slug(t[0]),name:t[0],full:t[0],kind:"t",sub:(t[2]==="m"?"Verführer · ":"Verführerin · ")+t[1],couple:null,inFrom:1,outIn:null,outType:null,custom:false}); });
-  return {v:2,app:APP,phase:"join",start:null,order:[],persons:persons,couples:couples,episodes:{},rules:defaultRules(),removed:[],updated:0};
+  return {v:3,app:APP,phase:"join",start:null,order:[],persons:persons,couples:couples,episodes:{},rules:defaultRules(),payout:{},removed:[],updated:0};
 }
 function normalizeMain(raw){
   if(!raw || raw.app!==APP || !Array.isArray(raw.persons)) return null;
@@ -700,9 +713,10 @@ function normalizeMain(raw){
       live:Array.isArray(e.live)?e.live.filter(function(q){ return q&&q.id&&Array.isArray(q.opts); }).map(function(q){ var r=normQ(q); r.state=["open","closed","done"].indexOf(q.state)>=0?q.state:"closed"; return r; }):[]};
   });
   if(raw.rules){
-    if(raw.rules.bets){ var lim={ep:[1,50],live:[0,30],season:[0,100],surv:[0,20]}; Object.keys(DEF_BETS).forEach(function(k){ var x=raw.rules.bets[k]; if(typeof x==="number") d.rules.bets[k]=Math.max(lim[k][0],Math.min(lim[k][1],Math.round(x))); }); }
+    if(raw.rules.bets && (raw.v|0)>=3) Object.keys(DEF_BETS).forEach(function(k){ var x=raw.rules.bets[k]; if(typeof x==="number"&&isFinite(x)) d.rules.bets[k]=Math.max(BET_LIM[k][0],Math.min(BET_LIM[k][1],Math.round(x))); });
   }
   if(Array.isArray(raw.removed)) d.removed=raw.removed.filter(function(x){ return typeof x==="string"; });
+  if(raw.payout && typeof raw.payout==="object") Object.keys(raw.payout).forEach(function(k){ var x=raw.payout[k]; if(typeof x==="number"&&isFinite(x)) d.payout[k]=Math.round(x); });
   d.updated=raw.updated||0;
   return d;
 }
@@ -771,8 +785,7 @@ function islandAt(f){ return main.persons.filter(function(p){ return onIsland(p,
 
 /* scoring */
 function seasonPts(pid){ var L=seasonLedger(); return L.pay[pid]||0; }
-function playerEp(pid,f){ if(f<(main.start||1)) return 0; return betPts(pid,f)+survPts(pid,f); }
-function total(pid){ var C=cache(); C.tot=C.tot||{}; if(C.tot[pid]!=null) return C.tot[pid]; var t=seasonPts(pid); epNums().forEach(function(f){ t+=playerEp(pid,f); }); C.tot[pid]=t; return t; }
+function total(pid){ return mon(pid).wealth; }
 function ranking(){ return players().slice().sort(function(a,b){ return total(b)-total(a) || players().indexOf(a)-players().indexOf(b); }); }
 
 /* ---------- betting office ---------- */
@@ -811,10 +824,13 @@ function openAnswers(f){
   return n;
 }
 function potSettle(stakes,winners,bank){
-  var r={pay:{},T:bank||0,SW:0,roll:0,w:winners||[]};
+  var r={pay:{},T:bank||0,SW:0,roll:0,w:winners||[]}, share=[];
   Object.keys(stakes).forEach(function(pid){ var m=stakes[pid]||{}; Object.keys(m).forEach(function(o){ var n=(+m[o])|0; r.T+=n; if(r.w.indexOf(o)>=0) r.SW+=n; }); });
-  if(r.SW>0) Object.keys(stakes).forEach(function(pid){ var mine=0, m=stakes[pid]||{}; r.w.forEach(function(o){ mine+=(+m[o])|0; }); if(mine>0) r.pay[pid]=Math.round(r.T*mine/r.SW); });
-  else r.roll=r.T;
+  if(r.SW<=0){ r.roll=r.T; return r; }
+  Object.keys(stakes).forEach(function(pid){ var mine=0, m=stakes[pid]||{}; r.w.forEach(function(o){ mine+=(+m[o])|0; }); if(mine>0) share.push({pid:pid,mine:mine,exact:r.T*mine/r.SW}); });
+  var given=0; share.forEach(function(x){ x.base=Math.floor(x.exact); x.frac=x.exact-x.base; given+=x.base; });
+  share.slice().sort(function(a,b){ return b.frac-a.frac || b.mine-a.mine || (a.pid<b.pid?-1:1); }).slice(0,r.T-given).forEach(function(x){ x.base++; });
+  share.forEach(function(x){ r.pay[x.pid]=x.base; });
   return r;
 }
 function betLedger(){
@@ -881,8 +897,44 @@ function seasonLedger(){
   }
   C.sl=out; return out;
 }
-function liveLeft(pid,f){ var u=0, lv=(E[pid]&&E[pid].live)||{}; Object.keys(lv).forEach(function(k){ if(k.indexOf(f+":")===0 && lv[k] && lv[k].stake) u+=sumStakes(lv[k].stake); }); return main.rules.bets.live-u; }
-
+function entryStake(pid,key,data){
+  if(pid!==ME && net.stk && net.stk[pid+"|"+key]!=null) return net.stk[pid+"|"+key]|0;
+  if(!data||data.hidden) return 0;
+  return /^live:/.test(key)?sumStakes(data.stake):sumStakes(data.stakes);
+}
+function money(){
+  var C=cache(); if(C.money) return C.money;
+  var M={}, SL=seasonLedger(), start=main.rules.bets.start, blank=function(){ return {staked:0,inPlay:0,ep:{},season:0,paid:0}; };
+  joined().forEach(function(pid){ M[pid]=blank(); });
+  entries.forEach(function(r){
+    var m=M[r.player], k=r.key, st; if(!m) return;
+    if(k==="season"){ st=entryStake(r.player,k,r.data); m.season+=st; m.staked+=st; if(!SL.done) m.inPlay+=st; }
+    else if(/^(bet:\d+|live:\d+:\d+)$/.test(k)){ var f=+k.split(":")[1]; st=entryStake(r.player,k,r.data); m.staked+=st; m.ep[f]=(m.ep[f]||0)+st; if(!closed(f)) m.inPlay+=st; }
+  });
+  Object.keys(M).forEach(function(pid){
+    var m=M[pid], p=seasonPts(pid);
+    epNums().forEach(function(f){ if(f>=(main.start||1) && closed(f)) p+=betPts(pid,f)+survPts(pid,f); });
+    m.paid=p; m.cash=start+p-m.staked; m.wealth=m.cash+m.inPlay;
+  });
+  C.money=M; return M;
+}
+function mon(pid){ var s0=main.rules.bets.start; return money()[pid]||{staked:0,inPlay:0,ep:{},season:0,paid:0,cash:s0,wealth:s0}; }
+function cash(pid){ return mon(pid).cash; }
+function epStake(pid,f){ return mon(pid).ep[f]||0; }
+function epNet(pid,f){ return betPts(pid,f)+survPts(pid,f)-epStake(pid,f); }
+function slipBudget(f){ var saved=entryStake(ME,"bet:"+f,E[ME]&&E[ME].bets[f]); return Math.max(0,Math.min(main.rules.bets.ep-(epStake(ME,f)-saved),cash(ME)+saved)); }
+function liveLeft(pid,f){ return Math.max(0,Math.min(main.rules.bets.ep-epStake(ME,f),cash(ME))); }
+function seasonBudget(){ var saved=entryStake(ME,"season",E[ME]&&E[ME].season); return Math.max(0,Math.min(main.rules.bets.season,cash(ME)+saved)); }
+function payoutDone(){
+  var out={};
+  joined().forEach(function(pid){ var p=main.phase==="done"?seasonPts(pid):0;
+    epNums().forEach(function(f){ if(f>=(main.start||1) && ep(f).status==="done") p+=betPts(pid,f)+survPts(pid,f); });
+    if(p) out[pid]=p; });
+  return out;
+}
+function sameMap(a,b){ var ka=Object.keys(a||{}), kb=Object.keys(b||{}); return ka.length===kb.length && ka.every(function(k){ return (a[k]|0)===((b||{})[k]|0); }); }
+function tl(n){ return n+" T$"; }
+function stepSize(){ return ui.step||5; }
 /* ================= network ================= */
 /* ================= demo: local fake server with bots ================= */
 var DEMO_PRE="DEMO-", DEMO_BOTS=[["pbotpaula01","Paula"],["pbotkenan02","Kenan"],["pbotlotte03","Lotte"]];
@@ -899,7 +951,11 @@ function dAuth(db,pid,sec){ var pl=db.players[pid]; return !!pl && pl.s===dNorm(
 function dPut(db,pid,key,data){ db.seq=(db.seq||0)+1; db.entries[pid+"|"+key]={player:pid,key:key,data:data,at:new Date(1767225600000+db.seq*1000).toISOString()}; }
 function dEnt(db,pid,key){ var r=db.entries[pid+"|"+key]; return r?r.data:null; }
 function dRows(db){ return Object.keys(db.entries).map(function(k){ return db.entries[k]; }); }
-function dBud(d,k,def){ var v=d.rules&&d.rules.bets&&d.rules.bets[k]; return typeof v==="number"?v:def; }
+function dBud(d,k,def){ var v=(d.v|0)>=3&&d.rules&&d.rules.bets&&d.rules.bets[k]; return typeof v==="number"?v:def; }
+function dStakeOf(r){ return Math.max(0,dTotal(/^live:/.test(r.key)?r.data.stake:r.data.stakes)); }
+function dIsBet(k){ return k==="season"||/^(bet:\d+|live:\d+:\d+)$/.test(k); }
+function dCash(db,pid,exceptKey){ var d=db.data, u=0; dRows(db).forEach(function(r){ if(r.player===pid && dIsBet(r.key) && r.key!==exceptKey) u+=dStakeOf(r); }); return dBud(d,"start",100)+((d.payout&&d.payout[pid])|0)-u; }
+function dEpUsed(db,pid,f,exceptKey){ var u=0; dRows(db).forEach(function(r){ if(r.player===pid && r.key!==exceptKey && (r.key==="bet:"+f || r.key.indexOf("live:"+f+":")===0)) u+=dStakeOf(r); }); return u; }
 function dTotal(m){
   if(m==null) return 0; if(typeof m!=="object") return -1; var t=0, bad=false;
   var ok=function(n){ return typeof n==="number" && n>=0 && n<=999 && Math.floor(n)===n; };
@@ -926,7 +982,8 @@ function dBotSeason(db,pid){
   var d=db.data, qs=d.couples.map(function(c){ return [c.id,["together","apart"]]; });
   var cnt=[]; for(var i=0;i<=d.couples.length;i++) cnt.push(String(i));
   qs.push(["count",cnt]);
-  dPut(db,pid,"season",{stakes:dSpread(dBud(d,"season",20),qs)});
+  var av=Math.max(0,Math.min(dBud(d,"season",30),dCash(db,pid,"season")));
+  dPut(db,pid,"season",{stakes:av?dSpread(Math.max(1,Math.round(av*(0.5+0.5*rnd()))),qs):{}});
 }
 function dBotSlip(db,pid,f){
   var d=db.data, isl=d.persons.filter(function(p){ return dOn(p,f); }), id=function(p){ return p.id; };
@@ -935,9 +992,11 @@ function dBotSlip(db,pid,f){
   (d.episodes[f].custom||[]).forEach(function(c){ qs.push(["c-"+c.id,c.opts.map(function(o){ return o.id; })]); });
   var used={}; dRows(db).forEach(function(r){ if(r.player===pid && /^bet:/.test(r.key) && r.data.surv) used[r.data.surv]=1; });
   var pool=ts.filter(function(t){ return !used[t]; });
-  dPut(db,pid,"bet:"+f,{stakes:dSpread(dBud(d,"ep",10),qs),surv:pool.length&&rnd()<0.9?dPick(pool):null});
+  var av=Math.max(0,Math.min(dBud(d,"ep",25)-dEpUsed(db,pid,f,"bet:"+f),dCash(db,pid,"bet:"+f)));
+  var amt=av?Math.max(Math.min(5,av),Math.round(av*(0.4+0.5*rnd()))):0;
+  dPut(db,pid,"bet:"+f,{stakes:amt?dSpread(amt,qs):{},surv:pool.length&&rnd()<0.9?dPick(pool):null});
 }
-function dLiveLeft(db,pid,f){ var u=0; dRows(db).forEach(function(r){ if(r.player===pid && r.key.indexOf("live:"+f+":")===0) u+=Math.max(0,dTotal(r.data.stake)); }); return dBud(db.data,"live",5)-u; }
+function dLiveLeft(db,pid,f){ return Math.max(0,Math.min(dBud(db.data,"ep",25)-dEpUsed(db,pid,f),dCash(db,pid))); }
 function dBotLive(db,pid,f,l){
   var left=dLiveLeft(db,pid,f); if(left<=0) return;
   var stake={}; stake[dPick(l.opts).id]=1+Math.floor(rnd()*Math.min(3,left));
@@ -976,11 +1035,14 @@ function dSaveEntry(db,b){
   if(b.p_as && b.p_as!==b.p_player){ if(!db.players[b.p_player].admin || k.indexOf("pick:")!==0 || !db.players[b.p_as]) return false; tgt=b.p_as; }
   if((d.removed||[]).indexOf(tgt)>=0) return false;
   var sp=k.split(":"), f=sp[1], tot;
-  if(sp[0]==="bet"){ if(!d.episodes[f]||d.episodes[f].status!=="open") return false; tot=dTotal(data.stakes); if(tot<0||tot>dBud(d,"ep",10)) return false; }
-  else if(sp[0]==="live"){ if(!dLiveOpen(d,f,sp[2])) return false; tot=dTotal(data.stake); if(tot<0) return false;
-    var used=0; dRows(db).forEach(function(r){ if(r.player===tgt && r.key.indexOf("live:"+f+":")===0 && r.key!==k) used+=Math.max(0,dTotal(r.data.stake)); });
-    if(tot+used>dBud(d,"live",5)) return false; }
-  else if(k==="season"){ if(d.phase!=="join") return false; tot=dTotal(data.stakes); if(tot<0||tot>dBud(d,"season",20)) return false; }
+  if(sp[0]==="bet"){ if(!d.episodes[f]||d.episodes[f].status!=="open") return false; tot=dTotal(data.stakes); }
+  else if(sp[0]==="live"){ if(!dLiveOpen(d,f,sp[2])) return false; tot=dTotal(data.stake); }
+  else if(k==="season"){ if(d.phase!=="join") return false; tot=dTotal(data.stakes); if(tot>dBud(d,"season",30)) return false; }
+  if(dIsBet(k)){
+    if(tot<0) return false;
+    if(tot>0 && k!=="season" && tot+dEpUsed(db,tgt,f,k)>dBud(d,"ep",25)) return false;
+    if(tot>0 && tot>dCash(db,tgt,k)) return false;
+  }
   else return false;
   dPut(db,tgt,k,data); dSave(); return true;
 }
@@ -1001,7 +1063,8 @@ function dGet(db,b){
     if(sp[0]==="live"){ var s2=r.data.stake; if(s2&&typeof s2==="object") Object.keys(s2).forEach(function(o){ add("live",sp[1]+":"+sp[2],s2[o]); }); }
   });
   ents.sort(function(x,y){ return x.at<y.at?-1:(x.at>y.at?1:0); });
-  return {data:d,version:db.version,entries:ents,pots:pots,me:{player:b.p_player,admin:!!db.players[b.p_player].admin}};
+  var stk={}; dRows(db).forEach(function(r){ if(dIsBet(r.key)) stk[r.player+"|"+r.key]=dStakeOf(r); });
+  return {data:d,version:db.version,entries:ents,pots:pots,stk:stk,me:{player:b.p_player,admin:!!db.players[b.p_player].admin}};
 }
 function demoRpc(fn,b){
   return new Promise(function(resolve,reject){
@@ -1131,6 +1194,8 @@ function pull(){
     });
     if(JSON.stringify(ent)!==JSON.stringify(entries)){ entries=ent; changed=true; }
     var pots=res.pots||{}; if(JSON.stringify(pots)!==JSON.stringify(net.pots||{})){ net.pots=pots; changed=true; }
+    var stk=res.stk||{}; if(JSON.stringify(stk)!==JSON.stringify(net.stk||{})){ net.stk=stk; changed=true; }
+    if(main && ui.adminOk && !mainBusy() && !net.mainFailed){ CACHE=null; var po=payoutDone(); if((res.data&&(res.data.v|0)<3) || !sameMap(po,main.payout)){ main.payout=po; commitMain(); changed=false; } }
     saveCache();
     if(net.mode!=="online") setNet("online");
     flushPend();
@@ -1161,6 +1226,7 @@ function commitMain(){
 }
 function flushMain(){
   clearTimeout(net.mainTimer); net.mainTimer=null;
+  if(main && ui.adminOk){ CACHE=null; main.payout=payoutDone(); }
   if(net.mainWriting){ net.mainAgain=true; return; }
   net.mainWriting=true;
   rpc("tl_save_league",{p_code:CODE,p_player:ME,p_secret:SECRET,p_data:main}).then(function(v){ net.mainFailed=false; if(+v) version=+v; if(net.mode!=="online") setNet("online"); done(); if(!net.mainWriting&&!net.mainTimer) pull(); },
@@ -1191,15 +1257,14 @@ function plainStepper(act,val,label){ return '<div class="stepper"><button data-
 function chip(pid,extra,cls){ return '<span class="chip-pc '+pcls(pid)+(cls?" "+cls:"")+'"><span class="pdot"></span>'+pname(pid)+(extra?" "+h(extra):"")+'</span>'; }
 function stakeRows(scope,qid,opts,map,left){
   return '<div class="stakes">'+opts.map(function(o){ var n=(map&&map[qid]&&map[qid][o.id])|0;
-    return '<div class="srow'+(n?" on":"")+'"><span class="sl">'+h(o.label)+'</span><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="-1" aria-label="Eine Münze weniger auf '+h(o.label)+'"'+(n?"":" disabled")+'>−</button><b class="num">'+n+'</b><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="1" aria-label="Eine Münze mehr auf '+h(o.label)+'"'+(left>0?"":" disabled")+'>+</button></div>';
+    return '<div class="srow'+(n?" on":"")+'"><span class="sl">'+h(o.label)+'</span><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="-1" aria-label="Weniger auf '+h(o.label)+'"'+(n?"":" disabled")+'>−</button><b class="num">'+n+'</b><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="1" aria-label="Mehr auf '+h(o.label)+'"'+(left>0?"":" disabled")+'>+</button></div>';
   }).join("")+'</div>';
 }
-function coinBar(left,B){
-  var vis=B<=20?'<span class="coins" aria-hidden="true">'+Array.apply(null,Array(B)).map(function(_,i){ return '<i class="coin'+(i<left?"":" spent")+'"></i>'; }).join("")+'</span>'
-    :'<div class="coinmeter"><i style="width:'+(B?Math.round(100*(B-left)/B):0)+'%"></i></div>';
-  return '<div class="coinbar"><span class="cb-t"><b class="num">'+left+'</b> von '+B+' Münzen übrig</span>'+vis+'</div>';
+function coinBar(left,B,sub){
+  return '<div class="coinbar"><div class="cb-row"><span class="cb-t"><b class="num">'+Math.max(0,left)+'</b> T$ frei</span><span class="cb-step" role="group" aria-label="Schrittweite">'+[1,5,10].map(function(n){ return '<button data-act="step-set" data-v="'+n+'" aria-pressed="'+(stepSize()===n)+'">'+n+'</button>'; }).join("")+'</span></div>'+
+    '<div class="coinmeter"><i style="width:'+(B?Math.min(100,Math.round(100*(B-left)/B)):100)+'%"></i></div>'+(sub?'<span class="cb-sub">'+h(sub)+'</span>':'')+'</div>';
 }
-function coinTxt(n){ return '<span class="ci" aria-hidden="true"></span>'+n; }
+function coinTxt(n){ return '<span class="ci" aria-hidden="true"></span>'+n+' T$'; }
 function quote(T,SW){ var x=T/SW; return x.toFixed(x<10?1:0).replace(".",","); }
 function ticketNo(f){ var n=7; String(ME||"").split("").forEach(function(c){ n=(n*31+c.charCodeAt(0))%9973; }); return (f!=null?"F"+("0"+f).slice(-2)+"-":"LZ-")+("000"+n).slice(-4); }
 function stamp(txt){ var cls=ui.stampAnim?" thump":""; ui.stampAnim=false; return '<span class="stamp'+cls+'">'+h(txt)+'</span>'; }
@@ -1211,20 +1276,20 @@ function ticker(items){
 }
 function tickerItems(f){
   var out=[], e=f&&ep(f);
-  if(!e){ var n=nextToOpen(), jp=jackpotFor(n); if(jp) out.push("Jackpot "+jp+" Münzen wartet in "+epName(n)); return out; }
+  if(!e){ var n=nextToOpen(), jp=jackpotFor(n); if(jp) out.push("Jackpot "+jp+" T$ wartet in "+epName(n)); return out; }
   var pots=(net.pots&&net.pots.bet)||{}, sum=0;
   Object.keys(pots).forEach(function(k){ if(k.indexOf(f+":")===0) sum+=pots[k]|0; });
   var jp2=jackpotFor(f), g=(pots[f+":grenze"]|0)+jp2;
   if(e.status==="open"){
     out.push("Wettannahme offen bis zum Start von "+epName(f));
-    if(jp2) out.push("Jackpot "+jp2+" Münzen im Grenz-Pott");
-    out.push("Grenz-Pott "+g+" Münzen");
-    if(sum) out.push(sum+" Münzen im Spiel");
+    if(jp2) out.push("Jackpot "+jp2+" T$ im Grenz-Pott");
+    out.push("Grenz-Pott "+g+" T$");
+    if(sum) out.push(sum+" T$ im Spiel");
   } else if(e.status==="live"){
     out.push(epName(f)+" läuft");
     var lp=(net.pots&&net.pots.live)||{};
     e.live.filter(function(l){ return l.state==="open"; }).forEach(function(l){ out.push("Live-Wette: "+l.q+" Pott "+(lp[f+":"+l.id]|0)); });
-    out.push("Grenz-Pott "+g+" Münzen");
+    out.push("Grenz-Pott "+g+" T$");
   }
   return out;
 }
@@ -1276,10 +1341,11 @@ function viewCode(){
 }
 /* ================= home ================= */
 function rankingCard(){
-  var rk=ranking(), top=rk.length?total(rk[0]):0, lead=rk.length>1&&total(rk[0])>total(rk[1]);
-  return '<section class="card"><h3>Tabelle</h3><div class="rank">'+rk.map(function(pid,i){
-    var pos=rk.filter(function(x){ return total(x)>total(pid); }).length+1;
-    return '<div class="rk '+pcls(pid)+(lead&&i===0?" lead":"")+'"><span class="pos">'+pos+'</span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span>'+(pid===ME?'<small>du</small>':"")+(lead&&i===0?'<span class="crown">'+CROWN_SVG+'</span>':"")+'</span><span class="pts num">'+total(pid)+'</span></div>';
+  var rk=ranking(), lead=rk.length>1&&total(rk[0])>total(rk[1]);
+  return '<section class="card"><h3>Kontostand</h3><div class="rank">'+rk.map(function(pid,i){
+    var pos=rk.filter(function(x){ return total(x)>total(pid); }).length+1, ip=mon(pid).inPlay;
+    return '<div class="rk '+pcls(pid)+(lead&&i===0?" lead":"")+'"><span class="pos">'+pos+'</span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span>'+(pid===ME?'<small>du</small>':"")+(lead&&i===0?'<span class="crown">'+CROWN_SVG+'</span>':"")+'</span><span class="pts num">'+total(pid)+'<small class="cur"> T$</small></span></div>'+
+      (ip?'<div class="rkx">davon '+tl(ip)+' im Spiel</div>':'');
   }).join("")+'</div></section>';
 }
 function viewHome(){
@@ -1290,8 +1356,8 @@ function viewHome(){
   if(main.phase!=="join") out+=rankingCard();
   out+=phaseCard();
   out+='<section class="card linkrow">'+
-    (main.phase!=="join"?'<button class="link" data-act="go" data-v="table"><span>Punkte pro Folge</span><span>›</span></button>':"")+
-    '<button class="link" data-act="go" data-v="rules"><span>So gibt’s Punkte</span><span>›</span></button>'+
+    (main.phase!=="join"?'<button class="link" data-act="go" data-v="table"><span>Konto &amp; Bilanz pro Folge</span><span>›</span></button>':"")+
+    '<button class="link" data-act="go" data-v="rules"><span>So funktioniert’s</span><span>›</span></button>'+
     '<button class="link" data-act="go" data-v="share"><span>Link &amp; Mitspieler*innen</span><span>›</span></button>'+
     (isAdmin()?'<button class="link" data-act="go" data-v="admin"><span>Adminmodus</span><span>›</span></button>':"")+
     '<button class="link" data-act="go" data-v="demo"><span>'+(isDemo()?"Demo neu starten":"Demo ausprobieren")+'</span><span>›</span></button></section>';
@@ -1309,10 +1375,10 @@ function phaseCard(){
 function seasonTipsCard(){
   var my=(E[ME]&&E[ME].season&&E[ME].season.stakes)||{};
   if(!ui.stips) ui.stips=JSON.parse(JSON.stringify(my));
-  var B=main.rules.bets.season, left=B-sumStakes(ui.stips), pots=(net.pots&&net.pots.season)||{};
+  var B=seasonBudget(), left=B-sumStakes(ui.stips), pots=(net.pots&&net.pots.season)||{};
   var done=players().filter(function(pid){ var se=E[pid]&&E[pid].season; return !!se && (se.hidden || sumStakes(se.stakes)>0); });
   var dirty=JSON.stringify(ui.stips)!==JSON.stringify(my), has=sumStakes(my)>0;
-  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel. Jede Frage hat ihren eigenen Pott, ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p></section>'+coinBar(left,B);
+  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel. Jede Frage hat ihren eigenen Pott, ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p></section>'+coinBar(left,B,"Höchstens "+tl(main.rules.bets.season)+" für Langzeitwetten. Das Geld geht von deinen "+tl(main.rules.bets.start)+" ab.");
   out+='<div class="ticket"><div class="tk-head"><div><span class="tk-title">Langzeitschein</span><span class="tk-sub">Temptation Island VIP, Staffel 7</span></div>'+(has&&!dirty?stamp("Abgegeben"):"")+'</div>';
   seasonQuestions().forEach(function(q){
     out+='<div class="tk-q open"><div class="tk-qh static"><span class="qt"><b>'+h(q.title)+'</b><small>'+coinTxt(pots[q.id]|0)+' im Pott</small></span></div><div class="tk-body">'+stakeRows("season",q.id,q.opts,ui.stips,left)+'</div></div>';
@@ -1325,7 +1391,7 @@ function seasonTipsCard(){
     out+='<section class="card"><h3>Saison starten</h3><div class="num-in"><span>Ihr spielt ab</span>'+plainStepper("set-start",ui.dset.start,epName(ui.dset.start)+" · "+epDate(ui.dset.start))+'</div><p class="hint">'+(done.length<np?"Noch nicht alle haben gesetzt. Wer bis zum Start nicht setzt, ist bei den Langzeitwetten nicht dabei.":"Alle haben gesetzt.")+' Danach kann niemand mehr einsteigen, und die Langzeitwetten sind geschlossen.</p>'+
       (np<2?'<p class="hint">Mindestens 2 Mitspieler*innen nötig.</p>':(ui.confirm==="season-start"?'<div class="actions"><button class="btn big primary" data-act="season-start-yes">Ja, Saison starten</button><button class="btn" data-act="cancel">Abbrechen</button></div>':'<div class="actions"><button class="btn" data-act="season-start">Saison mit '+np+' Leuten starten …</button></div>'))+'</section>';
   } else out+='<p class="hint">Sobald alle dabei sind, startet der Admin die Saison.</p>';
-  out+=primary("season-save",dirty?(sumStakes(ui.stips)?"Langzeitschein abgeben":"Erst Münzen setzen"):(has?"Langzeitschein abgegeben ✓":"Erst Münzen setzen"),!dirty||!sumStakes(ui.stips));
+  out+=primary("season-save",dirty?(left<0?"Zu viel gesetzt":(sumStakes(ui.stips)?"Langzeitschein abgeben":"Erst T$ setzen")):(has?"Langzeitschein abgegeben ✓":"Erst T$ setzen"),!dirty||!sumStakes(ui.stips)||left<0);
   return out;
 }
 function episodeCard(){
@@ -1333,7 +1399,7 @@ function episodeCard(){
   if(f==null){
     var n=nextToOpen(), jp=jackpotFor(n);
     out+=ticker(tickerItems(null));
-    out+='<section class="card"><span class="label">Als Nächstes</span><h2 class="bigtitle">'+epName(n)+'</h2><p class="hint">'+epDate(n)+' auf RTL+'+(jp?' · <b class="gold">Jackpot '+jp+' Münzen</b>':'')+'</p>';
+    out+='<section class="card"><span class="label">Als Nächstes</span><h2 class="bigtitle">'+epName(n)+'</h2><p class="hint">'+epDate(n)+' auf RTL+'+(jp?' · <b class="gold">Jackpot '+tl(jp)+'</b>':'')+'</p>';
     if(isAdmin()) out+='<p class="hint">Öffne die Folge vor dem Schauen. Dann können alle ihren Wettschein ausfüllen.</p>'+primary("ep-open",epName(n)+" öffnen",false,true);
     else out+='<p class="hint">Sobald der Admin die Folge öffnet, kannst du deinen Wettschein ausfüllen.</p>';
     out+='</section>';
@@ -1369,9 +1435,9 @@ function episodeCard(){
   return out+'</section>';
 }
 function epSummary(f){
-  var rk=players().slice().sort(function(a,b){ return playerEp(b,f)-playerEp(a,f); });
-  return '<section class="card"><h3>'+epName(f)+': so lief es</h3><div class="rank">'+rk.map(function(pid){
-    return '<div class="rk '+pcls(pid)+'"><span class="pos"></span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span></span><span class="pts num">'+sgn(playerEp(pid,f))+'</span></div><div class="rkx">Wetten '+sgn(betPts(pid,f))+' · Überleben '+sgn(survPts(pid,f))+'</div>';
+  var rk=players().slice().sort(function(a,b){ return epNet(b,f)-epNet(a,f); });
+  return '<section class="card"><h3>'+epName(f)+': Bilanz</h3><div class="rank">'+rk.map(function(pid){
+    return '<div class="rk '+pcls(pid)+'"><span class="pos"></span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span></span><span class="pts num">'+sgn(epNet(pid,f))+'<small class="cur"> T$</small></span></div><div class="rkx">Einsatz '+epStake(pid,f)+' · Gewinn '+betPts(pid,f)+' · Bonus '+survPts(pid,f)+'</div>';
   }).join("")+'</div></section>';
 }
 function resolutionCard(f){
@@ -1398,18 +1464,18 @@ function resolutionCard(f){
   var receipt="";
   if(rc){
     var paid=betPts(ME,f)+survPts(ME,f);
-    receipt='<div class="ticket receipt"><div class="tk-head"><div><span class="tk-title">Quittung</span><span class="tk-sub">'+epName(f)+', dein Schein</span></div>'+(paid?'<span class="stamp won">Gewinn</span>':'')+'</div>'+rc+
-      '<div class="rc-total"><span>Eingesetzt '+inS+'</span><span>Ausgezahlt <b>'+paid+'</b></span></div><div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(f)+'</span></div></div>';
+    receipt='<div class="ticket receipt"><div class="tk-head"><div><span class="tk-title">Quittung</span><span class="tk-sub">'+epName(f)+', dein Schein</span></div>'+(paid>inS?'<span class="stamp won">Gewinn</span>':'')+'</div>'+rc+
+      '<div class="rc-total"><span>Eingesetzt '+tl(inS)+'</span><span>Ausgezahlt <b>'+tl(paid)+'</b></span></div><div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(f)+'</span></div></div>';
   }
   var surv=players().map(function(pid){ var r=survLedger()[pid]&&survLedger()[pid].res[f]; if(!r||!r.pick) return ""; var p=personById(r.pick);
     return '<div class="res-q"><span><b>'+pname(pid)+' · Überleben</b><small>'+h(p?p.name:"?")+'</small></span><span class="'+(r.ok?"ok":"bad")+'">'+(r.ok?"Serie "+r.streak+" · "+sgn(survPts(pid,f)):"Serie weg")+'</span></div>'; }).join("");
-  return receipt+'<section class="card"><h3>Auflösung '+epName(f)+'</h3><div>'+rows+surv+'</div>'+(L.roll&&!e.finale?'<p class="hint">'+L.roll+' Münzen ohne Gewinner wandern als Jackpot in den Grenz-Pott der nächsten Folge.</p>':'')+'</section>';
+  return receipt+'<section class="card"><h3>Auflösung '+epName(f)+'</h3><div>'+rows+surv+'</div>'+(L.roll&&!e.finale?'<p class="hint">'+tl(L.roll)+' ohne Gewinner wandern als Jackpot in den Grenz-Pott der nächsten Folge.</p>':'')+'</section>';
 }
 function championCard(){
   var rk=ranking(), w=rk[0], tie=rk.length>1&&total(rk[0])===total(rk[1]), SL=seasonLedger();
-  var out='<div class="champ '+(tie?"tie":"")+' pc '+pcls(w)+'"><span>Die Liga ist entschieden</span><b>'+(tie?"Unentschieden an der Spitze!":pname(w)+" gewinnt!")+'</b><span>mit '+total(w)+' Punkten</span></div>';
+  var out='<div class="champ '+(tie?"tie":"")+' pc '+pcls(w)+'"><span>Die Liga ist entschieden</span><b>'+(tie?"Unentschieden an der Spitze!":pname(w)+" gewinnt!")+'</b><span>mit '+tl(total(w))+'</span></div>';
   out+='<section class="card"><h3>Langzeitwetten</h3><div class="sum">'+main.couples.map(function(c){ return '<div><span>'+h(c.name)+'</span><span>'+(c.final==="together"?"gemeinsam":(c.final==="apart"?"getrennt":"–"))+'</span></div>'; }).join("")+'</div>'+
-    '<div class="sum">'+players().map(function(pid){ return '<div><span>'+pname(pid)+'</span><span class="ok">'+sgn(SL.pay[pid]||0)+'</span></div>'; }).join("")+'</div></section>';
+    '<div class="sum">'+players().map(function(pid){ return '<div><span>'+pname(pid)+'</span><span class="ok">'+sgn(SL.pay[pid]||0)+' T$</span></div>'; }).join("")+'</div></section>';
   var ld=lastDone(); if(ld) out+=resolutionCard(ld);
   return out;
 }
@@ -1419,22 +1485,24 @@ function viewBetslip(){
   if(!e||e.status!=="open"){ ui.screen="home"; return viewHome(); }
   var mine=(E[ME]&&E[ME].bets[f])||{};
   enter("slip-"+f,function(){ ui.slip=JSON.parse(JSON.stringify(mine.stakes||{})); ui.surv=mine.surv||null; ui.openQ="grenze"; });
-  var B=main.rules.bets.ep, left=B-sumStakes(ui.slip), pots=(net.pots&&net.pots.bet)||{};
+  var B=slipBudget(f), left=B-sumStakes(ui.slip), pots=(net.pots&&net.pots.bet)||{}, savedS=entryStake(ME,"bet:"+f,mine), after=cash(ME)+savedS-sumStakes(ui.slip);
   var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.surv||null)!==(mine.surv||null), had=!!(mine.stakes||mine.surv);
-  var out=flowHead("home",epName(f))+'<h2 class="q">Dein Wettschein</h2><p class="hint">Setz deine Münzen. Wer richtig liegt, teilt sich den Pott der Frage. Die Einsätze der anderen siehst du erst nach dem Start.</p>'+coinBar(left,B);
+  var out=flowHead("home",epName(f))+'<h2 class="q">Dein Wettschein</h2><p class="hint">Setz deine Temptationdollar. Wer richtig liegt, teilt sich den Pott der Frage. Die Einsätze der anderen siehst du erst nach dem Start.</p>'+
+    (cash(ME)+savedS<=0?'<p class="okmsg">Du bist pleite. Die Überlebenswette kostet nichts und bringt dir Bonus-T$.</p>':'')+
+    coinBar(left,B,"Pro Folge höchstens "+tl(main.rules.bets.ep)+". Danach bleiben dir "+tl(Math.max(0,after))+".");
   out+='<div class="ticket"><div class="tk-head"><div><span class="tk-title">Wettschein</span><span class="tk-sub">'+epName(f)+', '+epDate(f)+'</span></div>'+(had&&!dirty?stamp("Abgegeben"):"")+'</div>';
   epQuestions(f).forEach(function(q){
     var open=ui.openQ===q.id, myQ=sumStakes({x:ui.slip[q.id]||{}}), bank=q.id==="grenze"?jackpotFor(f):0, pot=(pots[f+":"+q.id]|0)+bank;
-    out+='<div class="tk-q'+(open?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="'+h(q.id)+'" aria-expanded="'+open+'"><span class="qt"><b>'+h(q.title)+'</b><small>'+coinTxt(pot)+' im Pott'+(bank?', davon '+bank+' Jackpot':'')+(q.custom?', Frage vom Admin':'')+'</small></span><span class="qmine'+(myQ?" on":"")+'">'+(myQ?myQ+" gesetzt":"setzen")+'</span></button>'+
+    out+='<div class="tk-q'+(open?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="'+h(q.id)+'" aria-expanded="'+open+'"><span class="qt"><b>'+h(q.title)+'</b><small>'+coinTxt(pot)+' im Pott'+(bank?', davon '+tl(bank)+' Jackpot':'')+(q.custom?', Frage vom Admin':'')+'</small></span><span class="qmine'+(myQ?" on":"")+'">'+(myQ?myQ+" gesetzt":"setzen")+'</span></button>'+
       (open?(q.hint?'<p class="hint">'+h(q.hint)+'</p>':'')+'<div class="tk-body">'+stakeRows("slip",q.id,q.opts,ui.slip,left)+'</div>':'')+'</div>';
   });
   var sv=survLedger()[ME]||{streak:0,used:[]}, used=sv.used.filter(function(id){ return id!==mine.surv; });
   var pool=islandAt(f).filter(function(p){ return p.kind==="t" && used.indexOf(p.id)<0; }), next=main.rules.bets.surv*(sv.streak+1);
   var so=ui.openQ==="surv", sp=ui.surv&&personById(ui.surv);
-  out+='<div class="tk-q tk-surv'+(so?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="surv" aria-expanded="'+so+'"><span class="qt"><b>Überlebenswette</b><small>Richtig: '+sgn(next)+' (Serie '+(sv.streak+1)+')</small></span><span class="qmine'+(sp?" on":"")+'">'+(sp?h(sp.name):"wählen")+'</span></button>'+
+  out+='<div class="tk-q tk-surv'+(so?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="surv" aria-expanded="'+so+'"><span class="qt"><b>Überlebenswette</b><small>Kostenlos. Richtig: '+sgn(next)+' T$ Bonus (Serie '+(sv.streak+1)+')</small></span><span class="qmine'+(sp?" on":"")+'">'+(sp?h(sp.name):"wählen")+'</span></button>'+
     (so?'<p class="hint">Wer übersteht diese Folge? Jede Person kannst du nur einmal pro Staffel wählen.</p><div class="opts two">'+pool.map(function(p){ return opt("surv-sel",p.id,p.name,p.sub.replace(/^Verführer(in)? · /,""),ui.surv===p.id,""); }).join("")+'</div>':'')+'</div>';
   out+='<div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(f)+'</span></div></div>';
-  out+=msgs()+primary("slip-save",dirty?(had?"Änderungen abgeben":"Wettschein abgeben"):(had?"Wettschein abgegeben ✓":"Erst Münzen setzen"),!dirty);
+  out+=msgs()+primary("slip-save",left<0?"Zu viel gesetzt":(dirty?(had?"Änderungen abgeben":"Wettschein abgeben"):(had?"Wettschein abgegeben ✓":"Erst T$ setzen")),!dirty||left<0);
   return out;
 }
 function liveSheet(){
@@ -1447,8 +1515,8 @@ function liveSheet(){
   var put=sumStakes(ui.liveStake), left=liveLeft(ME,f)-put, pot=((net.pots&&net.pots.live)||{})[f+":"+l.id]|0;
   var html='<div class="sheet-wrap'+(ui.liveAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="live-t"><button class="sheet-bg" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht" tabindex="-1"></button><div class="sheet"><span class="grab" aria-hidden="true"></span>'+
     '<div class="sheet-h"><div><span class="livehead"><span class="livebadge"><i></i>Live</span>'+coinTxt(pot)+' im Pott</span><h2 id="live-t">'+h(l.q)+'</h2></div><button class="xbtn" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht">×</button></div>'+
-    '<p class="hint">Noch '+left+' Live-Münzen für diese Folge. Schnell sein: Der Admin schließt die Wette gleich.</p>'+stakeRows("live",l.id,l.opts,liveMap(l.id),left)+
-    '<div class="actions"><button class="btn big primary" data-act="live-bet" data-v="'+h(l.id)+'"'+(put?"":" disabled")+'>'+(put?put+" Münze"+(put===1?"":"n")+" setzen":"Erst Münzen setzen")+'</button></div></div></div>';
+    '<p class="hint">Du kannst noch '+tl(left)+' setzen. Schnell sein: Der Admin schließt die Wette gleich.</p>'+stakeRows("live",l.id,l.opts,liveMap(l.id),left)+
+    '<div class="actions"><button class="btn big primary" data-act="live-bet" data-v="'+h(l.id)+'"'+(put?"":" disabled")+'>'+(put?tl(put)+" setzen":"Erst T$ setzen")+'</button></div></div></div>';
   ui.liveAnim=false; return html;
 }
 function liveMap(id){ var m={}; m[id]=ui.liveStake||{}; return m; }
@@ -1485,9 +1553,9 @@ function mySlipCard(f){
   if(!mine||mine.hidden) return '<section class="card"><h3>Dein Wettschein</h3><p class="hint">Für diese Folge hast du keinen Wettschein abgegeben.</p></section>';
   epQuestions(f).forEach(function(q){ var m=(mine.stakes||{})[q.id]; if(!m) return;
     var picks=q.opts.filter(function(o){ return m[o.id]; }).map(function(o){ return h(o.label)+" "+m[o.id]; }).join(", ");
-    if(picks) rows+='<div class="res-q"><span><b>'+h(q.title)+'</b><small>'+picks+'</small></span><span class="num">'+sumStakes({x:m})+'</span></div>'; });
+    if(picks) rows+='<div class="res-q"><span><b>'+h(q.title)+'</b><small>'+picks+'</small></span><span class="num">'+tl(sumStakes({x:m}))+'</span></div>'; });
   if(mine.surv){ var sp=personById(mine.surv); rows+='<div class="res-q"><span><b>Überlebenswette</b><small>'+h(sp?sp.name:"?")+'</small></span><span></span></div>'; }
-  return '<section class="card"><h3>Dein Wettschein</h3>'+(rows||'<p class="hint">Keine Münzen gesetzt.</p>')+'</section>';
+  return '<section class="card"><h3>Dein Wettschein</h3>'+(rows||'<p class="hint">Keine T$ gesetzt.</p>')+'</section>';
 }
 function resChips(act,q,opts,sel){
   return '<div class="chips">'+opts.map(function(o){ return '<button class="chip'+(sel.indexOf(o.id)>=0?" on":"")+'" data-act="'+act+'" data-c="'+h(q)+'" data-v="'+h(o.id)+'" aria-pressed="'+(sel.indexOf(o.id)>=0)+'">'+h(o.label)+'</button>'; }).join("")+'</div>';
@@ -1522,8 +1590,8 @@ function viewBoard(){
   out+='<section class="card"><div class="num-in"><span>War das das Finale?</span><div class="seg seg2" role="group" aria-label="Finale"><button data-act="fin-set" data-v="0" aria-pressed="'+(!e.finale)+'">Nein</button><button data-act="fin-set" data-v="1" aria-pressed="'+e.finale+'">Ja</button></div></div>'+
     (e.finale?'<p class="hint">Wie sind die Paare gegangen? Danach werden die Langzeitwetten ausgezahlt.</p>'+main.couples.map(function(c){ return '<div class="exrow"><div class="nm"><b>'+h(c.name)+'</b></div><div class="seg seg2" role="group" aria-label="'+h(c.name)+'"><button data-act="cp-final" data-c="'+h(c.id)+'" data-v="together" aria-pressed="'+(c.final==="together")+'">Gemeinsam</button><button data-act="cp-final" data-c="'+h(c.id)+'" data-v="apart" aria-pressed="'+(c.final==="apart")+'">Getrennt</button></div></div>'; }).join(""):'')+'</section>';
   out+=resolutionCard(f);
-  out+='<section class="card"><h3>Punkte dieser Folge</h3><div class="rank">'+players().map(function(pid){
-    return '<div class="rk '+pcls(pid)+'"><span class="pos"></span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span></span><span class="pts num">'+sgn(playerEp(pid,f))+'</span></div><div class="rkx">Wetten '+sgn(betPts(pid,f))+' · Überleben '+sgn(survPts(pid,f))+'</div>';
+  out+='<section class="card"><h3>Bilanz dieser Folge</h3><div class="rank">'+players().map(function(pid){
+    return '<div class="rk '+pcls(pid)+'"><span class="pos"></span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span></span><span class="pts num">'+sgn(epNet(pid,f))+'<small class="cur"> T$</small></span></div><div class="rkx">Einsatz '+epStake(pid,f)+' · Gewinn '+betPts(pid,f)+' · Bonus '+survPts(pid,f)+'</div>';
   }).join("")+'</div></section>';
   var left=openAnswers(f);
   out+='<div class="actions dock"><button class="btn big primary" data-act="b-done"'+(left?" disabled":"")+'>'+(left?"Noch "+left+" offen":(e.finale?"Finale abschließen":"Folge abschließen"))+'</button></div>';
@@ -1533,30 +1601,26 @@ function viewBoard(){
 /* ================= other screens ================= */
 function viewTable(){
   enter("table");
-  var ns=epNums().filter(function(n){ return n>=(main.start||1); }), pl=players(), SV=survLedger();
-  var out=flowHead("home","Tabelle")+'<h2 class="q">Punkte pro Folge</h2>';
-  out+='<section class="card">';
-  if(!ns.length) out+='<p class="hint">Noch keine Folge gespielt.</p>';
-  else {
-    out+='<div class="scroll"><table class="tbl"><thead><tr><th>Folge</th>'+pl.map(function(pid){ return '<th class="r pcol '+pcls(pid)+'">'+pname(pid)+'</th>'; }).join("")+'</tr></thead><tbody>'+
-      ns.map(function(n){ return '<tr><td>'+n+(ep(n).status==="done"?"":' <span class="d">läuft</span>')+'</td>'+pl.map(function(pid){ return '<td class="r">'+sgn(playerEp(pid,n))+'</td>'; }).join("")+'</tr>'; }).join("")+
-      (pl.some(function(pid){ return seasonPts(pid); })?'<tr><td>Langzeit</td>'+pl.map(function(pid){ return '<td class="r">'+sgn(seasonPts(pid))+'</td>'; }).join("")+'</tr>':"")+
-      '<tr class="total"><td>Gesamt</td>'+pl.map(function(pid){ return '<td class="r">'+total(pid)+'</td>'; }).join("")+'</tr></tbody></table></div>';
-  }
-  out+='</section>';
-  out+='<section class="card"><h3>Überlebenswette</h3><div class="sum">'+pl.map(function(pid){ var sv=SV[pid]||{streak:0}; return '<div><span>'+pname(pid)+'</span><span>'+(sv.streak?"Serie "+sv.streak+", nächster Treffer "+sgn(main.rules.bets.surv*(sv.streak+1)):"keine Serie")+'</span></div>'; }).join("")+'</div></section>';
+  var ns=epNums().filter(function(n){ return n>=(main.start||1); }), pl=players(), SV=survLedger(), SL=seasonLedger(), st=main.rules.bets.start;
+  var out=flowHead("home","Konto")+'<h2 class="q">Konto &amp; Bilanz</h2><p class="hint">Alle starten mit '+tl(st)+'. Pro Folge siehst du, was nach Einsatz, Gewinn und Bonus übrig blieb.</p>';
+  out+='<section class="card"><div class="scroll"><table class="tbl"><thead><tr><th></th>'+pl.map(function(pid){ return '<th class="r pcol '+pcls(pid)+'">'+pname(pid)+'</th>'; }).join("")+'</tr></thead><tbody>'+
+    '<tr><td>Start</td>'+pl.map(function(){ return '<td class="r">'+st+'</td>'; }).join("")+'</tr>'+
+    ns.map(function(n){ var c=closed(n); return '<tr><td>'+epName(n)+(c?"":' <span class="d">läuft</span>')+'</td>'+pl.map(function(pid){ return '<td class="r">'+(c?sgn(epNet(pid,n)):"–")+'</td>'; }).join("")+'</tr>'; }).join("")+
+    '<tr><td>Langzeit'+(SL.done?"":' <span class="d">offen</span>')+'</td>'+pl.map(function(pid){ return '<td class="r">'+(SL.done?sgn(seasonPts(pid)-mon(pid).season):"–")+'</td>'; }).join("")+'</tr>'+
+    '<tr class="total"><td>Konto</td>'+pl.map(function(pid){ return '<td class="r">'+total(pid)+'</td>'; }).join("")+'</tr></tbody></table></div><p class="hint">Offene Einsätze zählen schon zum Konto, bis die Folge aufgelöst ist.</p></section>';
+  out+='<section class="card"><h3>Überlebenswette</h3><div class="sum">'+pl.map(function(pid){ var sv=SV[pid]||{streak:0}; return '<div><span>'+pname(pid)+'</span><span>'+(sv.streak?"Serie "+sv.streak+", nächster Treffer "+sgn(main.rules.bets.surv*(sv.streak+1))+" T$":"keine Serie")+'</span></div>'; }).join("")+'</div></section>';
   if(lastDone()) out+=resolutionCard(lastDone());
   return out;
 }
 function viewRules(){
   enter("rules");
   var BT=main.rules.bets;
-  var out=flowHead("home","Regeln")+'<h2 class="q">So gibt’s Punkte</h2><p class="hint">Punkte gibt es nur im Wettbüro: für gewonnene Pötte und für die Überlebenswette. Wer am Ende die meisten hat, gewinnt.</p>';
-  out+='<section class="card"><h3>Wettschein</h3><p class="hint">Vor jeder Folge verteilst du '+BT.ep+' Münzen auf diese Fragen:</p><div class="sum"><div><span>Wer überschreitet die Grenze?</span><span>Kuss oder Nacht</span></div><div><span>Wer weint?</span><span></span></div><div><span>Wer muss die Insel verlassen?</span><span></span></div><div><span>Wie viele Küsse gibt es?</span><span></span></div><div><span>Gibt es ein Notfall-Lagerfeuer?</span><span></span></div></div><p class="hint">Dazu kommen Fragen, die der Admin selbst stellt.</p></section>';
-  out+='<section class="card"><h3>Der Pott</h3><p class="hint">Alle Einsätze einer Frage landen in einem Pott. Wer richtig liegt, teilt ihn sich im Verhältnis der Einsätze. Ausgezahlte Münzen zählen als Punkte. Je weniger richtig liegen, desto mehr bekommt jede*r.</p><p class="hint">Liegt niemand richtig, wandert der Pott als Jackpot in den Grenz-Pott der nächsten Folge.</p></section>';
-  out+='<section class="card"><h3>Überlebenswette</h3><p class="hint">Jede Folge wählst du eine*n Verführer*in, die oder der bleibt. Mit jedem Treffer in Folge steigt der Gewinn (Serie 1: '+sgn(BT.surv)+', Serie 2: '+sgn(2*BT.surv)+' …). Jede Person nur einmal pro Staffel.</p></section>';
-  out+='<section class="card"><h3>Live-Wetten</h3><p class="hint">Startet der Admin während der Folge. Sie erscheinen sofort auf allen Handys, du hast '+BT.live+' Live-Münzen pro Folge.</p></section>';
-  out+='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Vor dem Saisonstart setzt du '+BT.season+' Münzen darauf, welche Paare gemeinsam gehen und wie viele. Ausgezahlt wird nach dem Finale.</p></section>';
+  var out=flowHead("home","Regeln")+'<h2 class="q">So funktioniert’s</h2><p class="hint">Alle starten mit '+tl(BT.start)+'. Einsätze gehen vom Konto ab, gewonnene Pötte kommen drauf. Wer nach dem Finale am meisten hat, gewinnt.</p>';
+  out+='<section class="card"><h3>Wettschein</h3><p class="hint">Vor jeder Folge setzt du auf diese Fragen, pro Folge höchstens '+tl(BT.ep)+' (Live-Wetten zählen mit):</p><div class="sum"><div><span>Wer überschreitet die Grenze?</span><span>Kuss oder Nacht</span></div><div><span>Wer weint?</span><span></span></div><div><span>Wer muss die Insel verlassen?</span><span></span></div><div><span>Wie viele Küsse gibt es?</span><span></span></div><div><span>Gibt es ein Notfall-Lagerfeuer?</span><span></span></div></div><p class="hint">Dazu kommen Fragen, die der Admin selbst stellt.</p></section>';
+  out+='<section class="card"><h3>Der Pott</h3><p class="hint">Alle Einsätze einer Frage landen in einem Pott. Wer richtig liegt, teilt ihn sich im Verhältnis der Einsätze. Beispiel: Lena setzt 10 T$ auf Gloria, Tom 5 T$ auf Gloria, Mia 15 T$ auf Niemand. Gloria küsst, im Pott liegen 30 T$: Lena bekommt 20 T$, Tom 10 T$.</p><p class="hint">Ausgezahlt wird in ganzen T$. Reste gehen an die, die am nächsten am nächsten Dollar dran sind, so wird immer genau der ganze Pott ausgezahlt. Liegt niemand richtig, wandert der Pott als Jackpot in den Grenz-Pott der nächsten Folge.</p></section>';
+  out+='<section class="card"><h3>Überlebenswette</h3><p class="hint">Kostet nichts. Jede Folge wählst du eine*n Verführer*in, die oder der bleibt. Mit jedem Treffer in Folge steigt der Bonus ('+sgn(BT.surv)+' T$, dann '+sgn(2*BT.surv)+' T$ …). Jede Person nur einmal pro Staffel. Wer pleite ist, kann damit wieder Geld holen.</p></section>';
+  out+='<section class="card"><h3>Live-Wetten</h3><p class="hint">Startet der Admin während der Folge. Sie erscheinen sofort auf allen Handys und zählen zum Höchsteinsatz der Folge.</p></section>';
+  out+='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Vor dem Saisonstart setzt du bis zu '+tl(BT.season)+' darauf, welche Paare gemeinsam gehen und wie viele. Ausgezahlt wird nach dem Finale.</p></section>';
   return out;
 }
 function viewShare(){
@@ -1591,9 +1655,9 @@ function viewAdmin(){
     }).join("")+'</div>'+(kind==="t"?(ui.pedit==="__new"?'<h3>Neue*r Verführer*in</h3>'+personEditor(null):'<div class="actions"><button class="btn" data-act="pe-new">Verführer*in hinzufügen</button></div>'):"")+'</section>';
   });
   out+='<section class="card"><h3>Wettbüro</h3><div>'+
-    [["ep","Münzen pro Folge"],["live","Live-Münzen pro Folge"],["season","Münzen für Langzeitwetten"],["surv","Überlebenswette pro Serienschritt"]].map(function(r){
-      return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+plainStepper("bet-step",main.rules.bets[r[0]],String(main.rules.bets[r[0]])).replace(/data-act="bet-step"/g,'data-act="bet-step" data-v="'+r[0]+'"')+'</div>'; }).join("")+
-    '<p class="hint">Änderungen an den Münzen gelten ab der nächsten Folge, bei bereits abgegebenen Wettscheinen bleibt der alte Einsatz.</p></div></section>';
+    [["start","Startguthaben"],["ep","Höchsteinsatz pro Folge"],["season","Höchsteinsatz Langzeitwetten"],["surv","Bonus Überlebenswette je Serie"]].map(function(r){
+      return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+plainStepper("bet-step",main.rules.bets[r[0]],tl(main.rules.bets[r[0]])).replace(/data-act="bet-step"/g,'data-act="bet-step" data-v="'+r[0]+'"')+'</div>'; }).join("")+
+    '<p class="hint">Das Startguthaben gilt für alle, auch rückwirkend. Höchsteinsätze gelten ab dem nächsten Wettschein.</p></div></section>';
   out+='<section class="card"><h3>Anmeldecodes</h3><p class="hint">Hat jemand seinen Code verloren? Erstelle einen neuen und gib ihn persönlich weiter. Der alte Code gilt dann nicht mehr.</p><div>'+joined().map(function(pid){
     var shown=ui.resetShown&&ui.resetShown.pid===pid;
     return '<div class="admrow"><span class="nm">'+pname(pid)+(pid===ME?" (du)":"")+'</span>'+(shown?'<b class="num codeinline">'+h(ui.resetShown.code)+'</b>':'<span></span>')+
@@ -1627,7 +1691,7 @@ function showLeadFx(ld,prev){
   var host=document.getElementById("fx"); if(!host) return;
   clearTimeout(fxTimer);
   var reduce=false; try{ reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
-  var kicker=prev==null?"Erste Führung":"Neue Spitze", line=(ld===ME?"Du führst":"führt")+" mit "+total(ld)+" Punkten";
+  var kicker=prev==null?"Erste Führung":"Neue Spitze", line=(ld===ME?"Du führst":"führt")+" mit "+tl(total(ld));
   host.innerHTML='<div class="fx-wrap'+(reduce?" calm":"")+'" role="status"><canvas class="fx-confetti" aria-hidden="true"></canvas><button class="fx-card pc '+pcls(ld)+'" data-act="fx-close" aria-label="'+kicker+': '+pname(ld)+'. Schließen"><span class="fx-crown">'+CROWN_SVG+'</span><span class="fx-kicker">'+kicker+'</span><b>'+pname(ld)+'</b><span class="fx-line">'+h(line)+'</span></button></div>';
   if(!reduce) confetti(host.querySelector("canvas"),ld);
   try{ if(navigator.vibrate) navigator.vibrate([30,60,30]); }catch(e){}
@@ -1812,17 +1876,18 @@ document.addEventListener("click",function(evt){
     /* betting office */
     case "go-slip": go("slip"); return;
     case "q-open": ui.openQ=ui.openQ===v?null:v; render(); return;
+    case "step-set": ui.step=[1,5,10].indexOf(+v)>=0?+v:5; render(); return;
     case "stk":
-      var sc=b.getAttribute("data-s"), q=b.getAttribute("data-q"), dd=+b.getAttribute("data-d");
+      var sc=b.getAttribute("data-s"), q=b.getAttribute("data-q"), dd=+b.getAttribute("data-d"), stp=stepSize();
       if(sc==="live"){
         if(!ui.liveStake) ui.liveStake={};
-        if(dd>0 && (liveLeft(ME,f)-sumStakes(ui.liveStake))<=0) return;
-        var lv=(ui.liveStake[v]|0)+dd; if(lv<=0) delete ui.liveStake[v]; else ui.liveStake[v]=lv; render(); return;
+        var lleft=liveLeft(ME,f)-sumStakes(ui.liveStake), lcur=ui.liveStake[v]|0, lnv=dd>0?lcur+Math.min(stp,Math.max(0,lleft)):Math.max(0,lcur-stp);
+        if(lnv<=0) delete ui.liveStake[v]; else ui.liveStake[v]=lnv; render(); return;
       }
-      var map=sc==="slip"?ui.slip:ui.stips, B=sc==="slip"?main.rules.bets.ep:main.rules.bets.season;
+      var map=sc==="slip"?ui.slip:ui.stips, B=sc==="slip"?slipBudget(f):seasonBudget();
       if(!map) return;
-      if(dd>0 && sumStakes(map)>=B) return;
-      map[q]=map[q]||{}; var nv=(map[q][v]|0)+dd; if(nv<=0) delete map[q][v]; else map[q][v]=nv; if(!Object.keys(map[q]).length) delete map[q];
+      var lft=B-sumStakes(map); map[q]=map[q]||{}; var cur=map[q][v]|0, nv=dd>0?cur+Math.min(stp,Math.max(0,lft)):Math.max(0,cur-stp);
+      if(nv<=0) delete map[q][v]; else map[q][v]=nv; if(!Object.keys(map[q]).length) delete map[q];
       render(); return;
     case "surv-sel": ui.surv=ui.surv===v?null:v; render(); return;
     case "slip-save":
@@ -1868,8 +1933,8 @@ document.addEventListener("click",function(evt){
       if(((net.pots&&net.pots.bet)||{})[f+":c-"+v]){ ui.err="Auf diese Wette wurde schon gesetzt, sie kann nicht mehr entfernt werden."; render(); return; }
       e.custom=e.custom.filter(function(c){ return c.id!==v; }); commitMain(); return;
     case "bet-step":
-      if(!isAdmin()) return; var lim={ep:[1,50],live:[0,30],season:[0,100],surv:[0,20]}[v]; if(!lim) return;
-      main.rules.bets[v]=Math.max(lim[0],Math.min(lim[1],main.rules.bets[v]+(+b.getAttribute("data-d")))); commitMain(); return;
+      if(!isAdmin()) return; var lim=BET_LIM[v]; if(!lim) return;
+      main.rules.bets[v]=Math.max(lim[0],Math.min(lim[1],main.rules.bets[v]+lim[2]*(+b.getAttribute("data-d")))); commitMain(); return;
 
     /* admin */
     case "pe-open":
