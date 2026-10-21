@@ -1,4 +1,4 @@
-# Sommerhaus-Liga
+# Sommerhaus-Liga & Temptation-Liga
 
 Fantasy-Liga für zwei Personen zur 11. Staffel von „Das Sommerhaus der Stars“ (RTL, 2026).
 
@@ -20,3 +20,13 @@ Fantasy-Liga für zwei Personen zur 11. Staffel von „Das Sommerhaus der Stars�
 ## GitHub Pages einschalten
 
 Settings → Pages → „Deploy from a branch“ → Branch `main`, Ordner `/ (root)` → Save.
+
+## Temptation-Liga (VIP, Staffel 7)
+
+**Spielen:** https://moritzbauer171-art.github.io/Sommerhaus/temptation/
+
+- Für 2 bis 6 Leute, jede*r auf dem eigenen Handy. Wer die Liga erstellt, ist Admin (mit PIN).
+- Personen-Draft: jede*r wählt eine vergebene Person und mehrere Verführer*innen.
+- Saisontipps (welche Paare gehen gemeinsam), pro Folge drei Tipps und eine freiwillige Zockerkarte.
+- Der Admin öffnet jede Folge, schließt die Tipps, trägt die Ereignisse ein und wertet aus.
+- Gespeichert in Supabase: die Liga als ein Dokument, Tipps, Picks und Karten pro Person (Tabelle `league_entries`). Nach Tippschluss nimmt der Server keine Tipps mehr an.
