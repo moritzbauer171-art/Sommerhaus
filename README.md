@@ -33,5 +33,6 @@ Settings → Pages → „Deploy from a branch“ → Branch `main`, Ordner `/ (
   - Überlebenswette: jede Folge eine*n Verführer*in wählen, die oder der bleibt. Der Gewinn steigt mit der Serie, jede Person nur einmal pro Staffel.
   - Live-Wetten (5 Münzen pro Folge): startet der Admin während der Folge, sie erscheinen sofort als Pop-up auf allen Handys.
   - Langzeitwetten (20 Münzen): welche Paare gemeinsam gehen und wie viele, ausgezahlt nach dem Finale.
+- Demomodus: mit drei Bots (Paula, Kenan, Lotte), wahlweise von vorn oder mitten in der Staffel. Läuft komplett auf dem Handy ohne Server, die echte Liga bleibt unberührt.
 - Der Admin öffnet jede Folge, schließt die Wetten, trägt die Ereignisse ein und wertet aus. Die Münzmengen lassen sich im Adminmodus ändern.
 - Gespeichert in Supabase: die Liga als ein Dokument, Picks und Wetten pro Person (`league_entries`), Codes nur als Hash (`league_players`). Zugriff ausschließlich über die `tl_*`-Funktionen. Der Server prüft die Münzbudgets und liefert fremde Einsätze erst nach Wettschluss aus (Langzeitwetten erst nach dem Finale); vorher gibt es nur die Pott-Summen.
