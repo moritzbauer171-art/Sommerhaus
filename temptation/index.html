@@ -507,6 +507,108 @@ input[type=text]:focus,input[type=password]:focus{box-shadow:var(--hl),inset 0 0
 .bigcode{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:clamp(30px,9vw,40px);font-weight:700;letter-spacing:.14em;text-align:center;padding:14px 0;border-radius:18px;background:rgba(0,0,0,.18);box-shadow:inset 0 0 0 1px var(--hair);background-clip:padding-box;color:var(--gold)}
 .codein{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase}
 .codeinline{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--gold);letter-spacing:.06em}
+
+/* ---------- Wettbüro look: printed slips, gold coins, LED ticker ---------- */
+/* coins */
+.coinbar{flex-direction:row;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 12px}
+.cb-t{font-size:15px;white-space:nowrap}
+.coinbar .cb-t b{color:var(--gold);font-size:20px;font-family:var(--round)}
+.coins{display:flex;flex-wrap:wrap;gap:3px;justify-content:flex-end}
+.coin,.ci{display:inline-block;border-radius:50%;background:radial-gradient(circle at 34% 30%,#FFF3CC 0 14%,#F8C95C 38%,#D2922A 78%,#A86A12 100%);box-shadow:inset 0 0 0 1.5px rgba(110,64,6,.55),inset 0 0 0 3px rgba(255,236,170,.35),0 1px 2px rgba(0,0,0,.35)}
+.coin{width:13px;height:13px;transition:transform .18s ease,opacity .18s ease}
+.coin.spent{background:none;box-shadow:inset 0 0 0 1.5px rgba(247,199,102,.32);transform:scale(.82)}
+.ci{width:11px;height:11px;margin-right:4px;vertical-align:-1px}
+
+/* the printed slip */
+.ticket{--paper:#F7F2F6;--ink:#2B1037;--muted:#6C5277;--print:#B5155F;--rule:rgba(43,16,55,.24);--hair:rgba(43,16,55,.14);--glass-soft:rgba(43,16,55,.05);--hl:none;
+  position:relative;margin:18px 0 22px;padding:18px 18px 16px;background:var(--paper);color:var(--ink);
+  box-shadow:0 22px 44px rgba(6,0,14,.55),0 2px 6px rgba(6,0,14,.35)}
+.ticket::before,.ticket::after{content:"";position:absolute;left:0;right:0;height:8px;background-repeat:repeat-x;background-size:14px 8px;pointer-events:none}
+.ticket::before{top:-8px;background-image:radial-gradient(circle at 7px 0,transparent 5px,var(--paper) 5.6px)}
+.ticket::after{bottom:-8px;background-image:radial-gradient(circle at 7px 8px,transparent 5px,var(--paper) 5.6px)}
+.tk-head{position:relative;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;padding-bottom:12px;border-bottom:2px dashed var(--rule)}
+.tk-head>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.tk-title{font-family:var(--serif);font-style:italic;font-weight:600;font-size:28px;line-height:1;color:var(--ink)}
+.tk-sub{font-size:13.5px;color:var(--muted)}
+.tk-q{border-bottom:1.5px dashed var(--rule)}
+.tk-q:last-of-type{border-bottom:0}
+.tk-qh{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:14px 0;cursor:pointer;min-height:60px}
+.tk-qh.static{cursor:default}
+.tk-qh .qt b{font-size:16.5px;font-weight:700;color:var(--ink)}
+.tk-qh .qt small{color:var(--muted);font-size:13px}
+.ticket .qmine{display:inline-flex;align-items:center;gap:6px;color:var(--muted);font-size:13px;font-weight:700}
+.ticket .qmine::after{content:"";width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg) translateY(-2px);transition:transform .2s ease}
+.tk-q.open .qmine::after{transform:rotate(-135deg) translateY(-1px)}
+.ticket .qmine.on{color:var(--print)}
+.ticket .hint{color:var(--muted);font-size:14px;margin:-4px 0 10px}
+.tk-body{padding:0 0 14px}
+.ticket .stakes{gap:0}
+.ticket .srow{grid-template-columns:minmax(0,1fr) 38px 40px 38px;gap:6px;padding:7px 0;border-radius:0;background:none;box-shadow:none;border-bottom:1px dotted var(--rule)}
+.ticket .srow:last-child{border-bottom:0}
+.ticket .srow .sl{font-size:15.5px;font-weight:500;color:var(--ink)}
+.ticket .srow.on{background:none;box-shadow:none}
+.ticket .srow.on .sl{font-weight:700}
+.ticket .srow b{justify-self:center;width:36px;height:32px;line-height:28px;border:2px solid var(--print);border-radius:5px;color:var(--print);font-size:17px}
+.ticket .srow.on b{background:var(--print);color:#fff}
+.ticket .sbtn{width:38px;height:38px;background:none;box-shadow:inset 0 0 0 1.5px var(--ink);color:var(--ink);font-size:19px}
+.ticket .sbtn:disabled{opacity:.25}
+.ticket .sbtn:focus-visible{outline:2px solid var(--print);outline-offset:2px}
+.tk-surv .opts{gap:8px;padding:0 0 14px}
+.ticket .opt{background:none;-webkit-backdrop-filter:none;backdrop-filter:none;box-shadow:inset 0 0 0 1.5px var(--rule);border-radius:10px;min-height:54px;padding:10px 14px;color:var(--ink)}
+.ticket .opt .ot b{font-size:16px;color:var(--ink)}
+.ticket .opt .ot small{color:var(--muted)}
+.ticket .opt .tick{background:none;box-shadow:inset 0 0 0 2px var(--rule);color:transparent}
+.ticket .opt[aria-pressed="true"],.ticket .opt.pc[aria-pressed="true"]{background:rgba(181,21,95,.07);box-shadow:inset 0 0 0 2px var(--print)}
+.ticket .opt[aria-pressed="true"] .tick,.ticket .opt.pc[aria-pressed="true"] .tick{background:var(--print);box-shadow:none;color:#fff}
+.tk-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding-top:14px;border-top:2px dashed var(--rule)}
+.barcode{height:28px;flex:1;max-width:160px;opacity:.85;background:repeating-linear-gradient(90deg,var(--ink) 0 2px,transparent 2px 4px,var(--ink) 4px 5px,transparent 5px 8px,var(--ink) 8px 11px,transparent 11px 12px,var(--ink) 12px 13px,transparent 13px 16px)}
+.tk-no{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:12.5px;letter-spacing:.08em;color:var(--muted)}
+
+/* rubber stamp */
+.stamp{flex:0 0 auto;transform:rotate(-10deg);font-family:var(--round);font-weight:800;font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--print);padding:7px 10px 6px;border-radius:6px;
+  box-shadow:inset 0 0 0 2.5px var(--print),inset 0 0 0 4.5px var(--paper),inset 0 0 0 5.5px var(--print);opacity:.88}
+.stamp.thump{animation:thump .5s cubic-bezier(.2,.9,.3,1.25)}
+.stamp.won{color:#1F7A47;box-shadow:inset 0 0 0 2.5px #1F7A47,inset 0 0 0 4.5px var(--paper),inset 0 0 0 5.5px #1F7A47}
+@keyframes thump{0%{transform:rotate(-10deg) scale(1.9);opacity:0}55%{transform:rotate(-10deg) scale(.92);opacity:.95}100%{transform:rotate(-10deg) scale(1);opacity:.88}}
+
+/* receipt after the episode */
+.receipt{padding-top:14px}
+.receipt .tk-title{font-size:24px}
+.rc{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px dotted var(--rule)}
+.rc>span:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rc b{font-size:15px;font-weight:650}
+.rc small{color:var(--muted);font-size:13px}
+.rc .won{font-weight:800;color:#1F7A47;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rc .lost{color:var(--muted);font-size:14px;text-decoration:line-through;text-decoration-color:rgba(43,16,55,.35)}
+.rc-total{display:flex;justify-content:space-between;gap:12px;padding:12px 0 2px;margin-top:2px;border-top:3px double var(--rule);font-size:15px;color:var(--muted)}
+.rc-total b{color:var(--ink);font-size:18px;font-family:var(--round)}
+.receipt .tk-foot{margin-top:12px}
+
+/* LED ticker */
+.ticker{position:relative;overflow:hidden;border-radius:14px;margin:0 0 12px;background:#14061C;box-shadow:inset 0 0 0 1px rgba(247,199,102,.22),inset 0 2px 10px rgba(0,0,0,.6)}
+.ticker::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(rgba(20,6,28,.55) .8px,transparent 1.1px);background-size:3px 3px}
+.ticker-in{display:flex;width:max-content;animation:tick linear infinite}
+.tk-run{display:flex;align-items:center;flex:0 0 auto;padding:10px 0}
+.tk-item{padding:0 14px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-weight:700;font-size:14.5px;letter-spacing:.05em;color:#FFCF6E;text-shadow:0 0 6px rgba(255,190,80,.75),0 0 14px rgba(255,150,40,.35);white-space:nowrap}
+.tk-star{color:#FF7AB6;font-size:12px;text-shadow:0 0 6px rgba(255,122,182,.8)}
+@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* live badge */
+.livebadge{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;padding:3px 9px 3px 8px;border-radius:6px;background:#E3455C;color:#fff;font-family:var(--round);font-weight:800;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.livebadge i{width:7px;height:7px;border-radius:50%;background:#fff;animation:livepulse 1.2s ease-in-out infinite}
+.livehead{display:flex;align-items:center;gap:10px;font-size:13.5px;color:var(--muted);margin-bottom:6px}
+@keyframes livepulse{0%,100%{opacity:1}50%{opacity:.25}}
+
+@media (prefers-reduced-motion: reduce){
+  .ticker-in,.livebadge i,.stamp.thump{animation:none}
+  .ticker{overflow-x:auto}
+}
+.coinbar .coinmeter{flex:1 1 100%}
+.tk-surv .opts.two{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.tk-surv .opt{min-height:44px;padding:8px 10px;gap:8px;border-radius:8px}
+.tk-surv .opt .ot b{font-size:15px}
+.tk-surv .opt .ot small{font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tk-surv .opt .tick{width:18px;height:18px;flex:0 0 18px;font-size:11px}
 </style>
 <div class="night-bg" aria-hidden="true"></div>
 <canvas class="night" id="palms" aria-hidden="true"></canvas>
@@ -979,7 +1081,40 @@ function stakeRows(scope,qid,opts,map,left){
     return '<div class="srow'+(n?" on":"")+'"><span class="sl">'+h(o.label)+'</span><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="-1" aria-label="Eine Münze weniger auf '+h(o.label)+'"'+(n?"":" disabled")+'>−</button><b class="num">'+n+'</b><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="1" aria-label="Eine Münze mehr auf '+h(o.label)+'"'+(left>0?"":" disabled")+'>+</button></div>';
   }).join("")+'</div>';
 }
-function coinBar(left,B,label){ var used=B-left; return '<div class="coinbar"><span>'+(label||"Noch")+' <b class="num">'+left+'</b> von '+B+' Münzen übrig</span><div class="coinmeter"><i style="width:'+(B?Math.round(100*used/B):0)+'%"></i></div></div>'; }
+function coinBar(left,B){
+  var vis=B<=20?'<span class="coins" aria-hidden="true">'+Array.apply(null,Array(B)).map(function(_,i){ return '<i class="coin'+(i<left?"":" spent")+'"></i>'; }).join("")+'</span>'
+    :'<div class="coinmeter"><i style="width:'+(B?Math.round(100*(B-left)/B):0)+'%"></i></div>';
+  return '<div class="coinbar"><span class="cb-t"><b class="num">'+left+'</b> von '+B+' Münzen übrig</span>'+vis+'</div>';
+}
+function coinTxt(n){ return '<span class="ci" aria-hidden="true"></span>'+n; }
+function quote(T,SW){ var x=T/SW; return x.toFixed(x<10?1:0).replace(".",","); }
+function ticketNo(f){ var n=7; String(ME||"").split("").forEach(function(c){ n=(n*31+c.charCodeAt(0))%9973; }); return (f!=null?"F"+("0"+f).slice(-2)+"-":"LZ-")+("000"+n).slice(-4); }
+function stamp(txt){ var cls=ui.stampAnim?" thump":""; ui.stampAnim=false; return '<span class="stamp'+cls+'">'+h(txt)+'</span>'; }
+function ticker(items){
+  if(!items.length) return "";
+  var txt=items.map(function(t){ return '<span class="tk-item">'+h(t)+'</span>'; }).join('<span class="tk-star" aria-hidden="true">✦</span>')+'<span class="tk-star" aria-hidden="true">✦</span>';
+  var dur=Math.max(16,Math.round(items.join("").length*0.32)), delay=-((Date.now()/1000)%dur);
+  return '<div class="ticker" role="marquee" aria-label="'+h(items.join(". "))+'"><div class="ticker-in" aria-hidden="true" style="animation-duration:'+dur+'s;animation-delay:'+delay.toFixed(2)+'s"><span class="tk-run">'+txt+'</span><span class="tk-run">'+txt+'</span></div></div>';
+}
+function tickerItems(f){
+  var out=[], e=f&&ep(f);
+  if(!e){ var n=nextToOpen(), jp=jackpotFor(n); if(jp) out.push("Jackpot "+jp+" Münzen wartet in "+epName(n)); return out; }
+  var pots=(net.pots&&net.pots.bet)||{}, sum=0;
+  Object.keys(pots).forEach(function(k){ if(k.indexOf(f+":")===0) sum+=pots[k]|0; });
+  var jp2=jackpotFor(f), g=(pots[f+":grenze"]|0)+jp2;
+  if(e.status==="open"){
+    out.push("Wettannahme offen bis zum Start von "+epName(f));
+    if(jp2) out.push("Jackpot "+jp2+" Münzen im Grenz-Pott");
+    out.push("Grenz-Pott "+g+" Münzen");
+    if(sum) out.push(sum+" Münzen im Spiel");
+  } else if(e.status==="live"){
+    out.push(epName(f)+" läuft");
+    var lp=(net.pots&&net.pots.live)||{};
+    e.live.filter(function(l){ return l.state==="open"; }).forEach(function(l){ out.push("Live-Wette: "+l.q+" Pott "+(lp[f+":"+l.id]|0)); });
+    out.push("Grenz-Pott "+g+" Münzen");
+  }
+  return out;
+}
 function goTop(){ try{ window.scrollTo(0,0); }catch(e){} }
 function inputFocused(){ var a=document.activeElement; return !!a && (a.tagName==="INPUT"||a.tagName==="TEXTAREA") && !!a.closest && !!a.closest("#view"); }
 function requestRender(){ if(inputFocused()){ ui.deferred=true; return; } render(); }
@@ -1106,23 +1241,26 @@ function seasonTipsCard(){
   if(!ui.stips) ui.stips=JSON.parse(JSON.stringify(my));
   var B=main.rules.bets.season, left=B-sumStakes(ui.stips), pots=(net.pots&&net.pots.season)||{};
   var done=players().filter(function(pid){ var se=E[pid]&&E[pid].season; return !!se && (se.hidden || sumStakes(se.stakes)>0); });
-  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel: Verteile '+B+' Münzen. Jede Frage hat ihren eigenen Pott, ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p>'+coinBar(left,B)+'</section>';
+  var dirty=JSON.stringify(ui.stips)!==JSON.stringify(my), has=sumStakes(my)>0;
+  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel. Jede Frage hat ihren eigenen Pott, ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p></section>'+coinBar(left,B);
+  out+='<div class="ticket"><div class="tk-head"><div><span class="tk-title">Langzeitschein</span><span class="tk-sub">Temptation Island VIP, Staffel 7</span></div>'+(has&&!dirty?stamp("Abgegeben"):"")+'</div>';
   seasonQuestions().forEach(function(q){
-    out+='<section class="card"><div class="qhead static"><span class="qt"><b>'+h(q.title)+'</b><small>Im Pott: '+(pots[q.id]|0)+' Münzen</small></span></div>'+stakeRows("season",q.id,q.opts,ui.stips,left)+'</section>';
+    out+='<div class="tk-q open"><div class="tk-qh static"><span class="qt"><b>'+h(q.title)+'</b><small>'+coinTxt(pots[q.id]|0)+' im Pott</small></span></div><div class="tk-body">'+stakeRows("season",q.id,q.opts,ui.stips,left)+'</div></div>';
   });
+  out+='<div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(null)+'</span></div></div>';
   out+='<section class="card"><span class="label">Schon gesetzt</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",done.indexOf(pid)>=0?"":"no"); }).join("")+'</div></section>';
   if(isAdmin()){
     out+='<section class="card"><h3>Saison starten</h3><p class="hint">'+(done.length<players().length?"Noch nicht alle haben gesetzt. Wer bis zum Start nicht setzt, ist bei den Langzeitwetten nicht dabei.":"Alle haben gesetzt.")+' Danach lassen sich die Langzeitwetten nicht mehr ändern.</p>'+
       (ui.confirm==="season-start"?'<div class="actions"><button class="btn big primary" data-act="season-start-yes">Ja, Saison starten</button><button class="btn" data-act="cancel">Abbrechen</button></div>':'<div class="actions"><button class="btn" data-act="season-start">Saison starten …</button></div>')+'</section>';
   }
-  var dirty=JSON.stringify(ui.stips)!==JSON.stringify(my), has=sumStakes(my)>0;
-  out+=primary("season-save",dirty?(sumStakes(ui.stips)?"Langzeitwetten speichern":"Erst Münzen setzen"):(has?"Langzeitwetten gespeichert ✓":"Erst Münzen setzen"),!dirty||!sumStakes(ui.stips));
+  out+=primary("season-save",dirty?(sumStakes(ui.stips)?"Langzeitschein abgeben":"Erst Münzen setzen"):(has?"Langzeitschein abgegeben ✓":"Erst Münzen setzen"),!dirty||!sumStakes(ui.stips));
   return out;
 }
 function episodeCard(){
   var f=curEp(), out="";
   if(f==null){
     var n=nextToOpen(), jp=jackpotFor(n);
+    out+=ticker(tickerItems(null));
     out+='<section class="card"><span class="label">Als Nächstes</span><h2 class="bigtitle">'+epName(n)+'</h2><p class="hint">'+epDate(n)+' auf RTL+'+(jp?' · <b class="gold">Jackpot '+jp+' Münzen</b>':'')+'</p>';
     if(isAdmin()) out+='<p class="hint">Öffne die Folge vor dem Schauen. Dann können alle ihren Wettschein ausfüllen.</p>'+primary("ep-open",epName(n)+" öffnen",false,true);
     else out+='<p class="hint">Sobald der Admin die Folge öffnet, kannst du deinen Wettschein ausfüllen.</p>';
@@ -1131,6 +1269,7 @@ function episodeCard(){
     return out;
   }
   var e=ep(f), jp2=jackpotFor(f);
+  out+=ticker(tickerItems(f));
   out+='<section class="card"><span class="label">'+epDate(f)+(jp2?' · Jackpot '+jp2:'')+'</span><h2 class="bigtitle">'+epName(f)+(e.finale?" · Finale":"")+'</h2>';
   if(e.status==="open"){
     var mb=E[ME]&&E[ME].bets[f];
@@ -1165,18 +1304,33 @@ function epSummary(f){
 }
 function resolutionCard(f){
   var L=betLedger().ep[f]; if(!L||!closed(f)) return "";
-  var e=ep(f), rows="";
+  var e=ep(f), rows="", rc="", inS=0;
+  var labels=function(opts,ids){ return opts.filter(function(o){ return ids.indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", ")||"–"; };
   var row=function(title,opts,r){
     if(!r) return "";
-    var wl=opts.filter(function(o){ return r.w.indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", ")||"–";
-    var n=Object.keys(r.pay).length;
-    return '<div class="res-q"><span><b>'+h(title)+'</b><small>Richtig: '+h(wl)+'</small></span><span class="num">'+(r.T?(r.SW?'Pott '+r.T+' · '+n+'× gewonnen':(e.finale?'Pott '+r.T+' · ohne Gewinner':'Pott '+r.T+' → Jackpot')):'kein Einsatz')+'</span></div>';
+    var res=r.T?(r.SW?'Pott '+r.T+' · Quote '+quote(r.T,r.SW):(e.finale?'Pott '+r.T+' · ohne Gewinner':'Pott '+r.T+' → Jackpot')):'kein Einsatz';
+    return '<div class="res-q"><span><b>'+h(title)+'</b><small>Richtig: '+h(labels(opts,r.w))+'</small></span><span class="num">'+res+'</span></div>';
   };
-  epQuestions(f).forEach(function(q){ rows+=row(q.title,q.opts,L.q[q.id]); });
-  e.live.forEach(function(l){ rows+=row("Live: "+l.q,l.opts,L.live[l.id]); });
+  var line=function(title,opts,my,r){
+    var picks=opts.filter(function(o){ return my[o.id]; }), st=sumStakes({x:my});
+    if(!st||!r) return; inS+=st;
+    var pay=r.pay[ME]||0;
+    rc+='<div class="rc"><span><b>'+h(title)+'</b><small>'+picks.map(function(o){ return h(o.label)+' '+my[o.id]; }).join(", ")+'</small></span><span class="'+(pay?"won":"lost")+'">'+(pay?'×'+quote(r.T,r.SW)+' = +'+pay:'verloren')+'</span></div>';
+  };
+  var mineB=(E[ME]&&E[ME].bets[f]&&E[ME].bets[f].stakes)||{};
+  epQuestions(f).forEach(function(q){ rows+=row(q.title,q.opts,L.q[q.id]); line(q.title,q.opts,mineB[q.id]||{},L.q[q.id]); });
+  e.live.forEach(function(l){ rows+=row("Live: "+l.q,l.opts,L.live[l.id]); var ml=E[ME]&&E[ME].live[f+":"+l.id]; line("Live: "+l.q,l.opts,(ml&&ml.stake)||{},L.live[l.id]); });
+  var sr=survLedger()[ME]&&survLedger()[ME].res[f];
+  if(sr&&sr.pick){ var sp=personById(sr.pick); rc+='<div class="rc"><span><b>Überlebenswette</b><small>'+h(sp?sp.name:"?")+'</small></span><span class="'+(sr.ok?"won":"lost")+'">'+(sr.ok?'Serie '+sr.streak+' = '+sgn(survPts(ME,f)):'Serie weg')+'</span></div>'; }
+  var receipt="";
+  if(rc){
+    var paid=betPts(ME,f)+survPts(ME,f);
+    receipt='<div class="ticket receipt"><div class="tk-head"><div><span class="tk-title">Quittung</span><span class="tk-sub">'+epName(f)+', dein Schein</span></div>'+(paid?'<span class="stamp won">Gewinn</span>':'')+'</div>'+rc+
+      '<div class="rc-total"><span>Eingesetzt '+inS+'</span><span>Ausgezahlt <b>'+paid+'</b></span></div><div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(f)+'</span></div></div>';
+  }
   var surv=players().map(function(pid){ var r=survLedger()[pid]&&survLedger()[pid].res[f]; if(!r||!r.pick) return ""; var p=personById(r.pick);
     return '<div class="res-q"><span><b>'+pname(pid)+' · Überleben</b><small>'+h(p?p.name:"?")+'</small></span><span class="'+(r.ok?"ok":"bad")+'">'+(r.ok?"Serie "+r.streak+" · "+sgn(survPts(pid,f)):"Serie weg")+'</span></div>'; }).join("");
-  return '<section class="card"><h3>Auflösung '+epName(f)+'</h3><div>'+rows+surv+'</div>'+(L.roll&&!e.finale?'<p class="hint">'+L.roll+' Münzen ohne Gewinner wandern als Jackpot in den Grenz-Pott der nächsten Folge.</p>':'')+'</section>';
+  return receipt+'<section class="card"><h3>Auflösung '+epName(f)+'</h3><div>'+rows+surv+'</div>'+(L.roll&&!e.finale?'<p class="hint">'+L.roll+' Münzen ohne Gewinner wandern als Jackpot in den Grenz-Pott der nächsten Folge.</p>':'')+'</section>';
 }
 function championCard(){
   var rk=ranking(), w=rk[0], tie=rk.length>1&&total(rk[0])===total(rk[1]), SL=seasonLedger();
@@ -1193,18 +1347,21 @@ function viewBetslip(){
   var mine=(E[ME]&&E[ME].bets[f])||{};
   enter("slip-"+f,function(){ ui.slip=JSON.parse(JSON.stringify(mine.stakes||{})); ui.surv=mine.surv||null; ui.openQ="grenze"; });
   var B=main.rules.bets.ep, left=B-sumStakes(ui.slip), pots=(net.pots&&net.pots.bet)||{};
-  var out=flowHead("home",epName(f))+'<h2 class="q">Dein Wettschein</h2><p class="hint">Verteile '+B+' Münzen. Alle Einsätze einer Frage landen in einem Pott, und wer richtig liegt, teilt ihn sich. Je weniger richtig liegen, desto mehr bekommt jede*r. Was die anderen setzen, siehst du erst nach dem Start.</p>'+coinBar(left,B);
+  var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.surv||null)!==(mine.surv||null), had=!!(mine.stakes||mine.surv);
+  var out=flowHead("home",epName(f))+'<h2 class="q">Dein Wettschein</h2><p class="hint">Setz deine Münzen. Wer richtig liegt, teilt sich den Pott der Frage. Die Einsätze der anderen siehst du erst nach dem Start.</p>'+coinBar(left,B);
+  out+='<div class="ticket"><div class="tk-head"><div><span class="tk-title">Wettschein</span><span class="tk-sub">'+epName(f)+', '+epDate(f)+'</span></div>'+(had&&!dirty?stamp("Abgegeben"):"")+'</div>';
   epQuestions(f).forEach(function(q){
     var open=ui.openQ===q.id, myQ=sumStakes({x:ui.slip[q.id]||{}}), bank=q.id==="grenze"?jackpotFor(f):0, pot=(pots[f+":"+q.id]|0)+bank;
-    out+='<section class="card qcard'+(open?" open":"")+'"><button class="qhead" data-act="q-open" data-v="'+h(q.id)+'" aria-expanded="'+open+'"><span class="qt"><b>'+h(q.title)+'</b><small>Im Pott: '+pot+' Münzen'+(bank?' · inkl. Jackpot '+bank:'')+(q.custom?' · Frage vom Admin':'')+'</small></span><span class="qmine'+(myQ?" on":"")+'">'+(myQ?myQ+" gesetzt":"setzen ›")+'</span></button>'+
-      (open?(q.hint?'<p class="hint qpad">'+h(q.hint)+'</p>':'')+'<div class="qpad">'+stakeRows("slip",q.id,q.opts,ui.slip,left)+'</div>':'')+'</section>';
+    out+='<div class="tk-q'+(open?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="'+h(q.id)+'" aria-expanded="'+open+'"><span class="qt"><b>'+h(q.title)+'</b><small>'+coinTxt(pot)+' im Pott'+(bank?', davon '+bank+' Jackpot':'')+(q.custom?', Frage vom Admin':'')+'</small></span><span class="qmine'+(myQ?" on":"")+'">'+(myQ?myQ+" gesetzt":"setzen")+'</span></button>'+
+      (open?(q.hint?'<p class="hint">'+h(q.hint)+'</p>':'')+'<div class="tk-body">'+stakeRows("slip",q.id,q.opts,ui.slip,left)+'</div>':'')+'</div>';
   });
   var sv=survLedger()[ME]||{streak:0,used:[]}, used=sv.used.filter(function(id){ return id!==mine.surv; });
   var pool=islandAt(f).filter(function(p){ return p.kind==="t" && used.indexOf(p.id)<0; }), next=main.rules.bets.surv*(sv.streak+1);
-  out+='<section class="card"><h3>Überlebenswette</h3><p class="hint">Wähle eine*n Verführer*in, die oder der diese Folge übersteht. Richtig: '+sgn(next)+' (Serie '+(sv.streak+1)+'). Falsch oder kein Tipp: Die Serie startet von vorn. Jede Person nur einmal pro Staffel.</p><div class="opts">'+
-    pool.map(function(p){ return personOpt("surv-sel",p,ui.surv===p.id); }).join("")+'</div></section>';
-  var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.surv||null)!==(mine.surv||null), had=!!(mine.stakes||mine.surv);
-  out+=msgs()+primary("slip-save",dirty?(had?"Änderungen speichern":"Wettschein abgeben"):(had?"Wettschein gespeichert ✓":"Erst Münzen setzen"),!dirty);
+  var so=ui.openQ==="surv", sp=ui.surv&&personById(ui.surv);
+  out+='<div class="tk-q tk-surv'+(so?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="surv" aria-expanded="'+so+'"><span class="qt"><b>Überlebenswette</b><small>Richtig: '+sgn(next)+' (Serie '+(sv.streak+1)+')</small></span><span class="qmine'+(sp?" on":"")+'">'+(sp?h(sp.name):"wählen")+'</span></button>'+
+    (so?'<p class="hint">Wer übersteht diese Folge? Jede Person kannst du nur einmal pro Staffel wählen.</p><div class="opts two">'+pool.map(function(p){ var own=ownerOf(p.id); return opt("surv-sel",p.id,p.name,own?"Team "+((prof(own)||{}).name||""):"",ui.surv===p.id,own?"pc "+pcls(own):""); }).join("")+'</div>':'')+'</div>';
+  out+='<div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(f)+'</span></div></div>';
+  out+=msgs()+primary("slip-save",dirty?(had?"Änderungen abgeben":"Wettschein abgeben"):(had?"Wettschein abgegeben ✓":"Erst Münzen setzen"),!dirty);
   return out;
 }
 function liveSheet(){
@@ -1216,7 +1373,7 @@ function liveSheet(){
   if(ui.liveFor!==f+":"+l.id){ ui.liveFor=f+":"+l.id; ui.liveStake={}; ui.liveAnim=true; try{ if(navigator.vibrate) navigator.vibrate([40,40,40]); }catch(x){} }
   var put=sumStakes(ui.liveStake), left=liveLeft(ME,f)-put, pot=((net.pots&&net.pots.live)||{})[f+":"+l.id]|0;
   var html='<div class="sheet-wrap'+(ui.liveAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="live-t"><button class="sheet-bg" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht" tabindex="-1"></button><div class="sheet"><span class="grab" aria-hidden="true"></span>'+
-    '<div class="sheet-h"><div><span class="label">Live-Wette · Pott '+pot+'</span><h2 id="live-t">'+h(l.q)+'</h2></div><button class="xbtn" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht">×</button></div>'+
+    '<div class="sheet-h"><div><span class="livehead"><span class="livebadge"><i></i>Live</span>'+coinTxt(pot)+' im Pott</span><h2 id="live-t">'+h(l.q)+'</h2></div><button class="xbtn" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht">×</button></div>'+
     '<p class="hint">Noch '+left+' Live-Münzen für diese Folge. Schnell sein: Der Admin schließt die Wette gleich.</p>'+stakeRows("live",l.id,l.opts,liveMap(l.id),left)+
     '<div class="actions"><button class="btn big primary" data-act="live-bet" data-v="'+h(l.id)+'"'+(put?"":" disabled")+'>'+(put?put+" Münze"+(put===1?"":"n")+" setzen":"Erst Münzen setzen")+'</button></div></div></div>';
   ui.liveAnim=false; return html;
@@ -1231,7 +1388,7 @@ function liveList(f,admin){
     var mine=E[ME]&&E[ME].live[f+":"+l.id], put=mine&&mine.stake?sumStakes(mine.stake):0, pot=pots[f+":"+l.id]|0;
     var st=l.state==="open"?"Wetten offen":(l.state==="closed"?"Wetten geschlossen":"Richtig: "+l.opts.filter(function(o){ return (l.win||[]).indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", "));
     var my=put?" · Du: "+l.opts.filter(function(o){ return mine.stake[o.id]; }).map(function(o){ return o.label+" "+mine.stake[o.id]; }).join(", "):"";
-    out+='<div class="livebet"><div class="lt"><b>'+h(l.q)+'</b><small>'+h(st)+' · Pott '+pot+h(my)+'</small></div>';
+    out+='<div class="livebet"><div class="lt">'+(l.state==="open"?'<span class="livebadge"><i></i>Live</span>':'')+'<b>'+h(l.q)+'</b><small>'+h(st)+' · Pott '+pot+h(my)+'</small></div>';
     if(admin){
       if(l.state==="open") out+='<div class="chips"><button class="btn sm" data-act="live-close" data-v="'+h(l.id)+'">Wetten schließen</button>'+(!put&&liveLeft(ME,f)>0?'<button class="btn sm" data-act="live-reopen" data-v="'+h(l.id)+'">Selbst mitsetzen</button>':'')+'</div>';
       else if(l.state==="closed") out+='<div class="chips">'+l.opts.map(function(o){ return '<button class="chip" data-act="live-win" data-c="'+h(l.id)+'" data-v="'+h(o.id)+'">'+h(o.label)+' ist richtig</button>'; }).join("")+'</div>';
@@ -1678,10 +1835,10 @@ document.addEventListener("click",function(evt){
     case "surv-sel": ui.surv=ui.surv===v?null:v; render(); return;
     case "slip-save":
       if(!e||e.status!=="open") return;
-      ui.msg="Wettschein gespeichert.";
+      ui.msg="Wettschein abgegeben."; ui.stampAnim=true;
       saveEntry(ME,"bet:"+f,{stakes:JSON.parse(JSON.stringify(ui.slip||{})),surv:ui.surv||null},"Zu spät: Die Wetten für diese Folge sind schon geschlossen."); return;
     case "season-save":
-      if(!ui.stips||!sumStakes(ui.stips)) return;
+      if(!ui.stips||!sumStakes(ui.stips)) return; ui.stampAnim=true;
       saveEntry(ME,"season",{stakes:JSON.parse(JSON.stringify(ui.stips))},"Die Langzeitwetten sind schon geschlossen."); return;
     case "live-skip": ui.liveSeen=ui.liveSeen||[]; ui.liveSeen.push(f+":"+v); ui.liveFor=null; render(); return;
     case "live-reopen": ui.liveSeen=(ui.liveSeen||[]).filter(function(x){ return x!==f+":"+v; }); ui.liveFor=null; render(); return;
