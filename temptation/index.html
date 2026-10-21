@@ -738,6 +738,34 @@ input[type=text]:focus,input[type=password]:focus{box-shadow:var(--hl),inset 0 0
 @keyframes fxFade{from{opacity:0}to{opacity:1}}
 @keyframes fxFadeOut{from{opacity:1}to{opacity:0}}
 @media (prefers-reduced-motion: reduce){ .fx-slip,.fx-slip .ticket,.fx-stamp,.fx-luck{animation:none} }
+
+/* admin: text mode */
+.txbtn{flex:0 0 auto;align-self:flex-start;height:34px;min-width:40px;padding:0 10px;border:0;border-radius:999px;background:var(--glass);box-shadow:var(--hl),inset 0 0 0 1.5px var(--rim);color:var(--ink);font:800 14px/1 var(--serif);cursor:pointer;margin-right:6px}
+.txbtn[aria-pressed="true"]{background:var(--goldgrad);color:#2B1305}
+.topbar{align-items:flex-start}
+.txbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:9;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px 10px 16px;margin:0 0 12px;border-radius:16px;background:var(--goldgrad);color:#2B1305;font-weight:700;font-size:14px;box-shadow:var(--shadow)}
+.txbar .btn{background:#2B1305;color:#FFE9B8;box-shadow:none}
+body.txmode .txe{outline:1.5px dashed rgba(247,199,102,.75);outline-offset:2px;border-radius:4px;cursor:text}
+body.txmode .ticket .txe{outline-color:rgba(181,21,95,.6)}
+/* builder */
+.mkrow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--hair)}
+.mkrow.off .mk-info{opacity:.5}
+.mk-info{display:flex;flex-direction:column;gap:2px;min-width:0}
+.mk-info b{font-size:15px}
+.mk-info small{font-size:12.5px;color:var(--muted)}
+.mk-btns{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-end;flex:0 0 auto;max-width:56%}
+.mk-ed textarea,.sheet textarea{width:100%;box-sizing:border-box;font:inherit;font-size:16px;color:var(--ink);background:rgba(0,0,0,.18);border:0;border-radius:14px;padding:12px 14px;box-shadow:inset 0 0 0 1px var(--hair);resize:vertical}
+.mk-ed textarea:focus,.sheet textarea:focus{outline:none;box-shadow:inset 0 0 0 2px var(--gold)}
+.tgls{display:flex;flex-direction:column;gap:6px}
+.tgl{display:flex;align-items:center;gap:10px;border:0;background:none;color:var(--ink);font:inherit;font-size:15px;text-align:left;padding:6px 0;cursor:pointer}
+.tgl:disabled{opacity:.45;cursor:default}
+.tg-box{flex:0 0 auto;width:22px;height:22px;border-radius:6px;box-shadow:inset 0 0 0 2px var(--muted)}
+.tgl[aria-pressed="true"] .tg-box{background:var(--goldgrad);box-shadow:none;position:relative}
+.tgl[aria-pressed="true"] .tg-box::after{content:"";position:absolute;left:7px;top:3px;width:6px;height:11px;border-right:2.5px solid #2B1305;border-bottom:2.5px solid #2B1305;transform:rotate(45deg)}
+.market.preview{margin:0;pointer-events:none}
+.market.preview .tile{cursor:default}
+.tb-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:0 0 auto}
+.tb-r .txbtn{margin:0}
 </style>
 <div class="night-bg" aria-hidden="true"></div>
 <canvas class="night" id="palms" aria-hidden="true"></canvas>
@@ -769,7 +797,6 @@ var COUPLES=[
 var TEMPTERS=[["Veysel",33,"m"],["Lukasz",31,"m"],["Bless",26,"m"],["Timo",24,"m"],["Emanuel",24,"m"],["Jerry",31,"m"],["Simon",25,"m"],["Samuel",26,"m"],["Chris",29,"m"],["Frederik",29,"m"],["Sergej",27,"m"],["David",27,"m"],
   ["Chayenne",22,"w"],["Jasmin",22,"w"],["Deniz",24,"w"],["Mara",22,"w"],["Saskia-Alina",29,"w"],["Jana",26,"w"],["Bella",25,"w"],["Selina",20,"w"],["Nina",21,"w"],["Angelina",28,"w"],["Saskia H.",27,"w"]];
 var DEF_BETS={start:100,ep:25,season:30,treu:5};
-var JACKPOT_Q="stufe";
 var BET_LIM={start:[10,1000,10],ep:[1,500,5],season:[0,500,5],treu:[0,50,1]};
 var LIVE_PRESETS=["Gibt es in den nächsten 10 Minuten einen Kuss?","Fließen beim nächsten Lagerfeuer Tränen?","Gibt es heute noch eine gemeinsame Nacht?","Verlässt jemand wütend das Lagerfeuer?"];
 var EP_STATES=["open","live","review","done"];
@@ -794,7 +821,50 @@ function codeFromHash(){ var m=/(?:^|[#&])liga=([A-Za-z0-9_-]{16,64})/.exec(loca
 function parseCode(t){ t=String(t||"").trim(); var m=/liga=([A-Za-z0-9_-]{16,64})/.exec(t); if(m) return m[1]; return /^[A-Za-z0-9_-]{16,64}$/.test(t)?t:null; }
 
 /* ================= model ================= */
-function defaultRules(){ return {bets:copyObj(DEF_BETS)}; }
+function defaultRules(){ return {bets:copyObj(DEF_BETS),treuOn:true}; }
+var MK_TYPES=["couples","people","yesno","custom"];
+function defaultMarkets(){ return [
+  {id:"stufe",scope:"ep",on:true,q:"Wie weit geht es heute?",hint:"Die höchste Stufe, die ein*e Vergebene*r mit einem*r Verführer*in erreicht",type:"custom",opts:[{id:"flirt",label:"Nur Flirten"},{id:"kuscheln",label:"Kuscheln"},{id:"kuss",label:"Kuss"},{id:"nacht",label:"Gemeinsame Nacht"}],none:false,multi:false,jackpot:true,perCouple:false},
+  {id:"traenen",scope:"ep",on:true,q:"Bei welchem Paar fließen Tränen?",hint:"Mehrere Antworten können richtig sein",type:"couples",opts:[],none:true,multi:true,jackpot:false,perCouple:false},
+  {id:"paar",scope:"season",on:true,q:"gemeinsam oder getrennt?",hint:"",type:"custom",opts:[{id:"together",label:"Gemeinsam"},{id:"apart",label:"Getrennt"}],none:false,multi:false,jackpot:false,perCouple:true},
+  {id:"abbruch",scope:"season",on:true,q:"Bricht ein Paar vorzeitig ab?",hint:"",type:"yesno",opts:[],none:false,multi:false,jackpot:false,perCouple:false},
+  {id:"erste",scope:"season",on:true,q:"Bei welchem Paar wird zuerst die Grenze überschritten?",hint:"Kuss oder mehr mit einem*r Verführer*in",type:"couples",opts:[],none:true,multi:false,jackpot:false,perCouple:false}
+]; }
+function cleanId(x){ return String(x||"").replace(/[^A-Za-z0-9_-]/g,"").slice(0,24); }
+function normMarket(m){
+  if(!m||!cleanId(m.id)) return null;
+  var t=MK_TYPES.indexOf(m.type)>=0?m.type:"custom", seen={};
+  var opts=t==="custom"?(Array.isArray(m.opts)?m.opts:[]).filter(function(o){ var id=o&&cleanId(o.id); if(!id||!o.label||seen[id]) return false; seen[id]=1; return true; }).slice(0,8).map(function(o){ return {id:cleanId(o.id),label:String(o.label).slice(0,40)}; }):[];
+  if(t==="custom"&&opts.length<2) return null;
+  var sc=m.scope==="season"?"season":"ep";
+  return {id:cleanId(m.id),scope:sc,on:m.on!==false,q:String(m.q||"").slice(0,100),hint:String(m.hint||"").slice(0,140),type:t,opts:opts,none:!!m.none&&(t==="couples"||t==="people"),multi:!!m.multi,jackpot:!!m.jackpot&&sc==="ep",perCouple:!!m.perCouple&&t!=="couples"};
+}
+function normSnap(qs){
+  if(!Array.isArray(qs)) return null;
+  return qs.filter(function(q){ return q&&q.id&&Array.isArray(q.opts); }).slice(0,30).map(function(q){
+    return {id:String(q.id).slice(0,60),mid:String(q.mid||q.id).slice(0,30),title:String(q.title||"").slice(0,140),hint:String(q.hint||"").slice(0,160),
+      opts:q.opts.filter(function(o){ return o&&o.id; }).slice(0,14).map(function(o){ return {id:String(o.id).slice(0,30),label:String(o.label||"").slice(0,40)}; }),multi:!!q.multi,jackpot:!!q.jackpot};
+  });
+}
+function buildQs(d,scope,f){
+  var cs=(d.couples||[]).filter(function(c){ return scope==="season"||c.outIn==null||c.outIn>=f; });
+  var pp=function(c){ return [c.a,c.b].map(function(id){ return (d.persons||[]).filter(function(p){ return p.id===id; })[0]; }).filter(function(p){ return p; }); };
+  var out=[], jack=false;
+  (d.markets||[]).forEach(function(m){
+    if(!m.on||m.scope!==scope) return;
+    var base=function(c){
+      var o=m.type==="couples"?cs.map(function(x){ return {id:x.id,label:x.name}; })
+        :m.type==="people"?(c?pp(c):[].concat.apply([],cs.map(pp))).map(function(p){ return {id:p.id,label:p.name}; })
+        :m.type==="yesno"?[{id:"ja",label:"Ja"},{id:"nein",label:"Nein"}]
+        :m.opts.map(function(x){ return {id:x.id,label:x.label}; });
+      if(m.none) o=o.concat([{id:"none",label:m.type==="couples"?"Bei keinem":"Niemand"}]);
+      return o;
+    };
+    if(m.perCouple) cs.forEach(function(c){ out.push({id:m.id+":"+c.id,mid:m.id,title:c.name+": "+m.q,hint:m.hint,opts:base(c),multi:m.multi,jackpot:false}); });
+    else { var j=m.jackpot&&!jack; if(j) jack=true; out.push({id:m.id,mid:m.id,title:m.q,hint:m.hint,opts:base(null),multi:m.multi,jackpot:j}); }
+  });
+  return out.filter(function(q){ return q.opts.length>=2; });
+}
 function defaultMain(){
   var persons=[], couples=[];
   COUPLES.forEach(function(c){
@@ -802,7 +872,7 @@ function defaultMain(){
     [c[2],c[3]].forEach(function(p){ persons.push({id:p[0],name:p[1],full:p[2],kind:"v",sub:"Vergeben · "+c[1],couple:c[0],inFrom:1,outIn:null,outType:null,custom:false}); });
   });
   TEMPTERS.forEach(function(t){ persons.push({id:"t-"+slug(t[0]),name:t[0],full:t[0],kind:"t",sub:(t[2]==="m"?"Verführer · ":"Verführerin · ")+t[1],couple:null,inFrom:1,outIn:null,outType:null,custom:false}); });
-  return {v:4,app:APP,phase:"join",start:null,order:[],persons:persons,couples:couples,episodes:{},rules:defaultRules(),payout:{},sres:{},removed:[],updated:0};
+  return {v:5,app:APP,phase:"join",start:null,order:[],persons:persons,couples:couples,episodes:{},rules:defaultRules(),markets:defaultMarkets(),sqs:null,texts:{},payout:{},sres:{},removed:[],updated:0};
 }
 function normalizeMain(raw){
   if(!raw || raw.app!==APP || !Array.isArray(raw.persons)) return null;
@@ -821,7 +891,8 @@ function normalizeMain(raw){
     var normQ=function(q){ return {id:String(q.id),q:String(q.q||"").slice(0,80),opts:(Array.isArray(q.opts)?q.opts:[]).filter(function(o){ return o&&o.id; }).slice(0,6).map(function(o){ return {id:String(o.id),label:String(o.label||"").slice(0,40)}; }),win:Array.isArray(q.win)?q.win.map(String):null}; };
     var st=e.status==="exits"||e.status==="final"?"review":e.status, rs=e.res||{}, arr=function(x){ return Array.isArray(x)&&x.length?x.map(String).slice(0,20):null; };
     d.episodes[n]={status:EP_STATES.indexOf(st)>=0?st:"open",finale:!!e.finale,
-      res:{stufe:typeof rs.stufe==="string"?rs.stufe:null,traenen:arr(rs.traenen),untreu:Array.isArray(rs.untreu)?rs.untreu.map(String).slice(0,20):[],treuDone:!!rs.treuDone},
+      qs:normSnap(e.qs),res:(function(){ var o={}; Object.keys(rs).forEach(function(k){ if(k==="untreu"||k==="treuDone") return; var x=rs[k]; if(typeof x==="string") o[k]=[x]; else if(Array.isArray(x)&&x.length) o[k]=x.map(String).slice(0,20); }); return o; })(),
+      tr:{untreu:(Array.isArray(e.tr&&e.tr.untreu)?e.tr.untreu:(Array.isArray(rs.untreu)?rs.untreu:[])).map(String).slice(0,20),done:!!((e.tr&&e.tr.done)||rs.treuDone)},
       custom:Array.isArray(e.custom)?e.custom.filter(function(q){ return q&&q.id&&Array.isArray(q.opts); }).map(normQ):[],
       live:Array.isArray(e.live)?e.live.filter(function(q){ return q&&q.id&&Array.isArray(q.opts); }).map(function(q){ var r=normQ(q); r.state=["open","closed","done"].indexOf(q.state)>=0?q.state:"closed"; return r; }):[]};
   });
@@ -829,7 +900,12 @@ function normalizeMain(raw){
     if(raw.rules.bets && (raw.v|0)>=4) Object.keys(DEF_BETS).forEach(function(k){ var x=raw.rules.bets[k]; if(typeof x==="number"&&isFinite(x)) d.rules.bets[k]=Math.max(BET_LIM[k][0],Math.min(BET_LIM[k][1],Math.round(x))); });
   }
   if(Array.isArray(raw.removed)) d.removed=raw.removed.filter(function(x){ return typeof x==="string"; });
-  if(raw.sres && typeof raw.sres==="object"){ if(typeof raw.sres.abbruch==="string") d.sres.abbruch=raw.sres.abbruch; if(typeof raw.sres.erste==="string") d.sres.erste=raw.sres.erste; }
+  if(raw.sres && typeof raw.sres==="object") Object.keys(raw.sres).forEach(function(k){ var x=raw.sres[k]; if(typeof x==="string") d.sres[k]=[x]; else if(Array.isArray(x)&&x.length) d.sres[k]=x.map(String).slice(0,20); });
+  d.couples.forEach(function(c){ if(c.final && !d.sres["paar:"+c.id]) d.sres["paar:"+c.id]=[c.final]; });
+  if(Array.isArray(raw.markets)) d.markets=raw.markets.map(normMarket).filter(function(m){ return m; }).slice(0,30);
+  d.sqs=normSnap(raw.sqs);
+  if(raw.texts && typeof raw.texts==="object") Object.keys(raw.texts).slice(0,600).forEach(function(k){ var x=raw.texts[k]; if(typeof x==="string" && k.length<=400) d.texts[k]=x.slice(0,400); });
+  if(raw.rules && typeof raw.rules.treuOn==="boolean") d.rules.treuOn=raw.rules.treuOn;
   if(raw.payout && typeof raw.payout==="object") Object.keys(raw.payout).forEach(function(k){ var x=raw.payout[k]; if(typeof x==="number"&&isFinite(x)) d.payout[k]=Math.round(x); });
   d.updated=raw.updated||0;
   return d;
@@ -910,29 +986,18 @@ function vergebeneAt(f){ var ids={}; couplesAt(f).forEach(function(c){ ids[c.a]=
 function epQuestions(f){
   var e=ep(f); if(!e) return [];
   var C=cache(); C.q=C.q||{}; if(C.q[f]) return C.q[f];
-  var cp=couplesAt(f).map(function(c){ return {id:c.id,label:c.name}; });
-  var qs=[
-    {id:"stufe",title:"Wie weit geht es heute?",hint:"Die höchste Stufe, die ein*e Vergebene*r mit einem*r Verführer*in erreicht",opts:[{id:"flirt",label:"Nur Flirten"},{id:"kuscheln",label:"Kuscheln"},{id:"kuss",label:"Kuss"},{id:"nacht",label:"Gemeinsame Nacht"}],jackpot:true},
-    {id:"traenen",title:"Bei welchem Paar fließen Tränen?",hint:"Mehrere Antworten können richtig sein",multi:true,opts:cp.concat([{id:"none",label:"Bei keinem"}])}
-  ];
+  var qs=(e.qs||buildQs(main,"ep",f)).map(function(q){ return {id:q.id,mid:q.mid,title:q.title,hint:q.hint,opts:q.opts,multi:q.multi,jackpot:q.jackpot}; });
   e.custom.forEach(function(c){ qs.push({id:"c-"+c.id,title:c.q,opts:c.opts,custom:c}); });
   C.q[f]=qs; return qs;
 }
 function qWinners(f,q){
   if(!closed(f)) return null;
-  var e=ep(f), r=e.res||{};
-  if(q.id==="stufe") return r.stufe?[r.stufe]:null;
-  if(q.id==="traenen") return r.traenen&&r.traenen.length?r.traenen:null;
   if(q.custom) return Array.isArray(q.custom.win)&&q.custom.win.length?q.custom.win:null;
-  return null;
+  var a=ep(f).res[q.id]; return a&&a.length?a:null;
 }
 function hasPot(kind,key){ var p=net.pots&&net.pots[kind]; return !!p && (p[key]|0)>0; }
 function treuPicks(f){ var out=[]; players().forEach(function(pid){ var b=E[pid]&&E[pid].bets[f]; if(b&&!b.hidden&&b.treu&&out.indexOf(b.treu)<0) out.push(b.treu); }); return out; }
-function seasonWinner(q){
-  if(q.id==="abbruch") return main.sres.abbruch?[main.sres.abbruch]:null;
-  if(q.id==="erste") return main.sres.erste?[main.sres.erste]:null;
-  var c=main.couples.filter(function(x){ return x.id===q.id; })[0]; return c&&c.final?[c.final]:null;
-}
+function seasonWinner(q){ var a=main.sres[q.id]; return a&&a.length?a:null; }
 function resolveSteps(f){
   var e=ep(f), steps=[]; if(!e) return steps;
   epQuestions(f).forEach(function(q){ if(hasPot("bet",f+":"+q.id)) steps.push({k:"q",q:q}); });
@@ -946,7 +1011,7 @@ function resolveSteps(f){
 function stepOpen(f,st){
   var e=ep(f);
   if(st.k==="q") return qWinners(f,st.q)===null;
-  if(st.k==="treu") return !e.res.treuDone;
+  if(st.k==="treu") return !e.tr.done;
   if(st.k==="live") return st.l.state!=="done";
   if(st.k==="season") return seasonWinner(st.q)===null;
   return false;
@@ -970,10 +1035,11 @@ function betLedger(){
     var e=ep(f), r={pay:{},q:{},live:{},bankIn:carry,roll:0};
     out.ep[f]=r;
     if(!closed(f)) return;
+    var jq=false;
     epQuestions(f).forEach(function(q){
       var st={}; players().forEach(function(pid){ var b=E[pid]&&E[pid].bets[f]; if(b&&b.stakes&&b.stakes[q.id]) st[pid]=b.stakes[q.id]; });
       var qw=qWinners(f,q), sres=potSettle(st,qw||[],q.jackpot?carry:0);
-      sres.open=qw===null; sres.S=sres.T-(q.jackpot?carry:0); r.q[q.id]=sres; r.roll+=sres.roll;
+      sres.open=qw===null; sres.S=sres.T-(q.jackpot?carry:0); r.q[q.id]=sres; if(q.jackpot) jq=true; r.roll+=sres.roll;
       Object.keys(sres.pay).forEach(function(pid){ r.pay[pid]=(r.pay[pid]||0)+sres.pay[pid]; });
     });
     e.live.forEach(function(l){
@@ -982,6 +1048,7 @@ function betLedger(){
       sres.open=l.state!=="done"; sres.S=sres.T; r.live[l.id]=sres; r.roll+=sres.roll;
       Object.keys(sres.pay).forEach(function(pid){ r.pay[pid]=(r.pay[pid]||0)+sres.pay[pid]; });
     });
+    if(!jq) r.roll+=carry;
     carry=r.roll;
   });
   out.nextBank=carry;
@@ -999,8 +1066,8 @@ function treuLedger(){
       var b=E[pid]&&E[pid].bets[f], pick=(b&&!b.hidden&&b.treu)||null, e=ep(f);
       if(!closed(f)){ if(pick) r.cur=pick; return; }
       if(pick) r.last=pick;
-      if(!pick||!e.res.treuDone){ if(pick) r.res[f]={pick:pick,open:!e.res.treuDone}; return; }
-      var ok=e.res.untreu.indexOf(pick)<0; r.tries++; if(ok){ r.hits++; r.pts[f]=base; }
+      if(!pick||!e.tr.done){ if(pick) r.res[f]={pick:pick,open:!e.tr.done}; return; }
+      var ok=e.tr.untreu.indexOf(pick)<0; r.tries++; if(ok){ r.hits++; r.pts[f]=base; }
       r.res[f]={pick:pick,ok:ok};
     });
     out[pid]=r;
@@ -1008,12 +1075,7 @@ function treuLedger(){
   C.tv=out; return out;
 }
 function treuPts(pid,f){ var s=treuLedger()[pid]; return (s&&s.pts[f])||0; }
-function seasonQuestions(){
-  var cp=main.couples.map(function(c){ return {id:c.id,label:c.name}; });
-  return main.couples.map(function(c){ return {id:c.id,title:c.name+": gemeinsam oder getrennt?",opts:[{id:"together",label:"Gemeinsam"},{id:"apart",label:"Getrennt"}]}; })
-    .concat([{id:"abbruch",title:"Bricht ein Paar vorzeitig ab?",opts:[{id:"ja",label:"Ja"},{id:"nein",label:"Nein"}]},
-      {id:"erste",title:"Bei welchem Paar wird zuerst die Grenze überschritten?",hint:"Kuss oder mehr mit einem*r Verführer*in",opts:cp.concat([{id:"none",label:"Bei keinem"}])}]);
-}
+function seasonQuestions(){ return main.sqs||buildQs(main,"season"); }
 function seasonLedger(){
   var C=cache(); if(C.sl) return C.sl;
   var fin=epNums().filter(function(f){ return ep(f).finale; })[0];
@@ -1097,11 +1159,14 @@ function dTotal(m){
 function dOn(per,f){ return (per.inFrom||1)<=f && (per.outIn==null||per.outIn>=f); }
 function dLiveOpen(d,f,id){ var e=d.episodes&&d.episodes[f]; return !!e && (e.live||[]).some(function(l){ return String(l.id)===String(id) && l.state==="open"; }); }
 function dRandRes(d,f,picks){
-  var cs=(d.couples||[]).filter(function(c){ return c.outIn==null||c.outIn>=f; }), r=rnd();
-  var stufe=r<0.45?"flirt":(r<0.75?"kuscheln":(r<0.93?"kuss":"nacht"));
-  var tr=dShuffle(cs).slice(0,Math.floor(rnd()*3)).map(function(c){ return c.id; });
-  var untreu=stufe==="flirt"?[]:(picks||[]).filter(function(){ return rnd()<0.3; });
-  return {stufe:stufe,traenen:tr.length?tr:["none"],untreu:untreu,treuDone:true};
+  var e=d.episodes[f]||{}, qs=e.qs||buildQs(d,"ep",f), res={};
+  qs.forEach(function(q){
+    var ids=q.opts.map(function(o){ return o.id; });
+    if(q.mid==="stufe"){ var r=rnd(); res[q.id]=[r<0.45?"flirt":(r<0.75?"kuscheln":(r<0.93?"kuss":"nacht"))]; return; }
+    if(q.multi){ var pk=dShuffle(ids.filter(function(x){ return x!=="none"; })).slice(0,Math.floor(rnd()*3)); res[q.id]=pk.length?pk:(ids.indexOf("none")>=0?["none"]:[dPick(ids)]); }
+    else res[q.id]=[dPick(ids)];
+  });
+  return {res:res,tr:{untreu:(picks||[]).filter(function(){ return rnd()<0.25; }),done:true}};
 }
 function dSpread(B,qs){
   var stakes={}, chosen=dShuffle(qs).slice(0,Math.min(qs.length,2+Math.floor(rnd()*3))), pickO={};
@@ -1110,14 +1175,13 @@ function dSpread(B,qs){
   return stakes;
 }
 function dBotSeason(db,pid){
-  var d=db.data, qs=d.couples.map(function(c){ return [c.id,["together","apart"]]; });
-  qs.push(["abbruch",["ja","nein","nein"]]); qs.push(["erste",d.couples.map(function(c){ return c.id; }).concat(["none"])]);
+  var d=db.data, qs=(d.sqs||buildQs(d,"season")).map(function(q){ return [q.id,q.opts.map(function(o){ return o.id; })]; });
   var av=Math.max(0,Math.min(dBud(d,"season",30),dCash(db,pid,"season")));
   dPut(db,pid,"season",{stakes:av?dSpread(Math.max(1,Math.round(av*(0.5+0.5*rnd()))),qs):{}});
 }
 function dBotSlip(db,pid,f){
   var d=db.data, cs=d.couples.filter(function(c){ return c.outIn==null||c.outIn>=f; });
-  var qs=[["stufe",["flirt","flirt","kuscheln","kuscheln","kuss","nacht"]],["traenen",cs.map(function(c){ return c.id; }).concat(["none"])]];
+  var qs=((d.episodes[f]&&d.episodes[f].qs)||buildQs(d,"ep",f)).map(function(q){ return [q.id,q.mid==="stufe"?["flirt","flirt","kuscheln","kuscheln","kuss","nacht"]:q.opts.map(function(o){ return o.id; })]; });
   (d.episodes[f].custom||[]).forEach(function(c){ qs.push(["c-"+c.id,c.opts.map(function(o){ return o.id; })]); });
   var last=null; dRows(db).forEach(function(r){ var m=/^bet:(\d+)$/.exec(r.key); if(r.player===pid && m && +m[1]<f && r.data.treu) last=r.data.treu; });
   var vids=[]; cs.forEach(function(c){ vids.push(c.a,c.b); }); var pool=vids.filter(function(x){ return x!==last; });
@@ -1235,16 +1299,16 @@ function demoRpc(fn,b){
 function dBuildMid(db,me){
   var d=db.data; d.order=dShuffle([me].concat(DEMO_BOTS.map(function(b){ return b[0]; }))); d.start=1;
   d.order.forEach(function(pid){ dBotSeason(db,pid); });
-  d.phase="season";
+  d.phase="season"; d.sqs=buildQs(d,"season");
   [1,2].forEach(function(f){
-    var e=d.episodes[f]={status:"open",finale:false,res:{},custom:[],live:[]};
+    var e=d.episodes[f]={status:"open",finale:false,qs:buildQs(d,"ep",f),res:{},tr:{untreu:[],done:false},custom:[],live:[]};
     if(f===2) e.custom.push({id:"demo1",q:"Wer bekommt das Gruppendate?",opts:[{id:"o0",label:"Gloria"},{id:"o1",label:"Tara"},{id:"o2",label:"Carina"}],win:null});
     d.order.forEach(function(pid){ dBotSlip(db,pid,f); });
     e.status="live"; e.live.push({id:"1",q:LIVE_PRESETS[f-1],opts:[{id:"o0",label:"Ja"},{id:"o1",label:"Nein"}],win:null,state:"open"});
     d.order.forEach(function(pid){ dBotLive(db,pid,f,e.live[0]); });
     var picks=[]; dRows(db).forEach(function(r){ if(r.key==="bet:"+f && r.data.treu && picks.indexOf(r.data.treu)<0) picks.push(r.data.treu); });
-    e.res=dRandRes(d,f,picks);
-    e.live[0].state="done"; e.live[0].win=[(f===1?(e.res.stufe==="kuss"||e.res.stufe==="nacht"):e.res.traenen[0]!=="none")?"o0":"o1"];
+    var rr=dRandRes(d,f,picks); e.res=rr.res; e.tr=rr.tr;
+    e.live[0].state="done"; e.live[0].win=[dPick(["o0","o1"])];
     e.custom.forEach(function(c){ c.win=[dPick(c.opts).id]; });
     e.status="done";
   });
@@ -1412,7 +1476,7 @@ function showStampFx(title,sub,lines,total){
     '<span class="fx-lines">'+(lines.length?lines.map(function(x){ return '<span class="fx-line"><span>'+h(x[0])+'</span><b>'+h(x[1])+'</b></span>'; }).join(""):'<span class="fx-line"><span>Keine Einsätze</span><b></b></span>')+'</span>'+
     '<span class="rc-total"><span>Einsatz</span><b>'+tl(total)+'</b></span><span class="tk-foot"><span class="barcode" aria-hidden="true"></span></span>'+
     '<span class="fx-stamp" aria-hidden="true">Abgegeben</span></span><span class="fx-luck">Viel Glück!</span></button></div>';
-  host.style.pointerEvents="auto";
+  host.style.pointerEvents="auto"; applyTexts(host);
   setTimeout(function(){ try{ if(navigator.vibrate) navigator.vibrate([10,30,60]); }catch(e){} },reduce?0:420);
   fxTimer=setTimeout(function(){ var w=host.querySelector(".fx-slip"); if(w) w.className+=" out"; fxTimer=setTimeout(function(){ host.innerHTML=""; host.style.pointerEvents=""; },380); },reduce?1800:2600);
 }
@@ -1464,11 +1528,11 @@ function tickerItems(f){
   if(!e){ var n=nextToOpen(), jp=jackpotFor(n); if(jp) out.push("Jackpot "+jp+" T$ wartet in "+epName(n)); return out; }
   var pots=(net.pots&&net.pots.bet)||{}, sum=0;
   Object.keys(pots).forEach(function(k){ if(k.indexOf(f+":")===0) sum+=pots[k]|0; });
-  var jp2=jackpotFor(f), g=(pots[f+":"+JACKPOT_Q]|0)+jp2;
+  var jqq=epQuestions(f).filter(function(q){ return q.jackpot; })[0], jp2=jackpotFor(f), g=(jqq?(pots[f+":"+jqq.id]|0):0)+jp2;
   if(e.status==="open"){
     out.push("Wettannahme offen bis zum Start von "+epName(f));
-    if(jp2) out.push("Jackpot "+jp2+" T$ bei „Wie weit geht es heute?“");
-    out.push("„Wie weit geht es heute?“ "+g+" T$ im Pott");
+    if(jp2&&jqq) out.push("Jackpot "+jp2+" T$ bei „"+jqq.title+"“");
+    if(jqq) out.push("„"+jqq.title+"“ "+g+" T$ im Pott");
     if(sum) out.push(sum+" T$ im Spiel");
   } else if(e.status==="live"){
     out.push(epName(f)+" läuft");
@@ -1656,12 +1720,12 @@ function resolutionCard(f){
   }
   var surv=players().map(function(pid){ var r=treuLedger()[pid]&&treuLedger()[pid].res[f]; if(!r||!r.pick||r.open) return ""; var p=personById(r.pick);
     return '<div class="res-q"><span><b>'+pname(pid)+' · Treue-Tipp</b><small>'+h(p?p.name:"?")+'</small></span><span class="'+(r.ok?"ok":"bad")+'">'+(r.ok?"treu · "+sgn(treuPts(pid,f)):"nicht treu")+'</span></div>'; }).join("");
-  return receipt+'<section class="card"><h3>Auflösung '+epName(f)+'</h3><div>'+rows+surv+'</div>'+(L.roll&&!e.finale?'<p class="hint">'+tl(L.roll)+' ohne Gewinner wandern als Jackpot zu „Wie weit geht es heute?“ in der nächsten Folge.</p>':'')+'</section>';
+  return receipt+'<section class="card"><h3>Auflösung '+epName(f)+'</h3><div>'+rows+surv+'</div>'+(L.roll&&!e.finale?'<p class="hint">'+tl(L.roll)+' ohne Gewinner wandern als Jackpot in die nächste Folge.</p>':'')+'</section>';
 }
 function championCard(){
   var rk=ranking(), w=rk[0], tie=rk.length>1&&total(rk[0])===total(rk[1]), SL=seasonLedger();
   var out='<div class="champ '+(tie?"tie":"")+' pc '+pcls(w)+'"><span>Die Liga ist entschieden</span><b>'+(tie?"Unentschieden an der Spitze!":pname(w)+" gewinnt!")+'</b><span>mit '+tl(total(w))+'</span></div>';
-  out+='<section class="card"><h3>Langzeitwetten</h3><div class="sum">'+main.couples.map(function(c){ return '<div><span>'+h(c.name)+'</span><span>'+(c.final==="together"?"gemeinsam":(c.final==="apart"?"getrennt":"–"))+'</span></div>'; }).join("")+'</div>'+
+  out+='<section class="card"><h3>Langzeitwetten</h3><div class="sum">'+seasonQuestions().map(function(q){ var w=seasonWinner(q)||[]; return '<div><span>'+h(q.title)+'</span><span>'+h(q.opts.filter(function(o){ return w.indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", ")||"–")+'</span></div>'; }).join("")+'</div>'+
     '<div class="sum">'+players().map(function(pid){ return '<div><span>'+pname(pid)+'</span><span class="ok">'+sgn(SL.pay[pid]||0)+' T$</span></div>'; }).join("")+'</div></section>';
   var ld=lastDone(); if(ld) out+=resolutionCard(ld);
   return out;
@@ -1675,7 +1739,7 @@ function viewBetslip(){
   var B=slipBudget(f), left=B-sumStakes(ui.slip), pots=(net.pots&&net.pots.bet)||{}, savedS=entryStake(ME,"bet:"+f,mine), after=cash(ME)+savedS-sumStakes(ui.slip);
   var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.treu||null)!==(mine.treu||null), had=!!(mine.stakes||mine.treu), qs=epQuestions(f);
   ui.leftNow=left;
-  var out=flowHead("home",epName(f))+'<h2 class="q">Wetten auf '+epName(f)+'</h2><p class="hint">Zwei Fragen pro Folge, beide drehen sich um die Vergebenen. Tipp auf eine Antwort und stell darunter deinen Einsatz ein. Die Quote zeigt, was ein T$ bringt, wenn die Antwort stimmt. Sie erscheint, sobald drei Leute auf eine Frage gesetzt haben.</p>'+
+  var out=flowHead("home",epName(f))+'<h2 class="q">Wetten auf '+epName(f)+'</h2><p class="hint">Tipp auf eine Antwort und stell darunter deinen Einsatz ein. Die Quote zeigt, was ein T$ bringt, wenn die Antwort stimmt. Sie erscheint, sobald drei Leute auf eine Frage gesetzt haben.</p>'+
     (cash(ME)+savedS<=0?'<p class="okmsg">Du bist pleite. Der Treue-Tipp kostet nichts und bringt dir Bonus-T$.</p>':'')+stepRow(left);
   qs.forEach(function(q){
     var bank=q.jackpot?jackpotFor(f):0, pot=(pots[f+":"+q.id]|0)+bank;
@@ -1683,7 +1747,7 @@ function viewBetslip(){
     out+=marketCard("slip",q,ui.slip,oddsFor("bet",f+":"+q.id),pot,note);
   });
   var tv=treuLedger()[ME]||{}, lastPick=tv.last, tp=ui.treu&&personById(ui.treu), bonus=main.rules.bets.treu;
-  out+='<section class="card market surv'+(tp?" has":"")+'"><div class="mk-h"><div class="mk-t"><h3>Treue-Tipp</h3><small>Kostenlos. Wer bleibt heute beim Flirten und geht nicht weiter? Nicht zweimal hintereinander dieselbe Person.</small></div><span class="mk-pot bonus">+'+bonus+' T$</span></div><div class="tiles many">'+
+  if(main.rules.treuOn) out+='<section class="card market surv'+(tp?" has":"")+'"><div class="mk-h"><div class="mk-t"><h3>Treue-Tipp</h3><small>Kostenlos. Wer bleibt heute beim Flirten und geht nicht weiter? Nicht zweimal hintereinander dieselbe Person.</small></div><span class="mk-pot bonus">+'+bonus+' T$</span></div><div class="tiles many">'+
     vergebeneAt(f).map(function(p){ var on=ui.treu===p.id, blocked=p.id===lastPick; return '<button class="tile'+(on?" on":"")+(blocked?" off":"")+'" data-act="treu-sel" data-v="'+h(p.id)+'" aria-pressed="'+on+'"'+(blocked?' disabled aria-label="'+h(p.name)+', letzte Folge schon gewählt"':'')+'><span class="tl-l">'+h(p.name)+(blocked?'<small>letzte Folge</small>':'')+'</span></button>'; }).join("")+'</div></section>';
   var cfg={scope:"slip",title:"Wettschein",sub:epName(f)+", "+epDate(f),qs:qs,map:ui.slip,left:left,max:main.rules.bets.ep,after:after,no:ticketNo(f),saveAct:"slip-save",
     stampOn:had&&!dirty,disabled:!dirty||left<0,extraTxt:tp?"Treue: "+tp.name:"",
@@ -1772,13 +1836,14 @@ function viewBoard(){
   var potOf=function(kind,key,bank){ var p=net.pots&&net.pots[kind]; return ((p&&p[key])|0)+(bank||0); };
   var nextBtn=function(ok){ return '<div class="actions dock"><button class="btn big primary" data-act="r-next"'+(ok?"":" disabled")+'>'+(ok?"Weiter":"Erst eine Antwort wählen")+'</button></div>'; };
   if(st.k==="q"){
-    var q=st.q, sel=q.custom?(q.custom.win||[]):(q.multi?(r[q.id]||[]):(r[q.id]?[r[q.id]]:[]));
+    var q=st.q, sel=q.custom?(q.custom.win||[]):(r[q.id]||[]);
     out+='<span class="label">'+wl+'</span><h2 class="q">'+h(q.title)+'</h2><p class="hint">'+(q.hint?h(q.hint)+'. ':'')+coinTxt(potOf("bet",f+":"+q.id,q.jackpot?jackpotFor(f):0))+' im Pott.</p>'+big("res-set",q.id,q.opts,sel,q.multi)+nextBtn(sel.length>0);
   } else if(st.k==="treu"){
     var picks=treuPicks(f).map(function(id){ return personById(id); }).filter(function(p){ return p; });
+    var tr=e.tr;
     out+='<span class="label">'+wl+' · Treue-Tipp</span><h2 class="q">Wer ist heute weiter als Flirten gegangen?</h2><p class="hint">Gefragt wird nur nach den Vergebenen, auf die jemand getippt hat. Kuscheln, Kuss oder mehr zählt als „weiter“.</p>'+
-      '<div class="tiles many ask">'+picks.map(function(p){ var on=r.untreu.indexOf(p.id)>=0; return '<button class="tile'+(on?" on":"")+'" data-act="untreu-tog" data-v="'+h(p.id)+'" aria-pressed="'+on+'"><span class="tl-l">'+h(p.name)+'</span></button>'; }).join("")+'</div>'+
-      '<div class="tiles ask"><button class="tile'+(r.treuDone&&!r.untreu.length?" on":"")+'" data-act="untreu-none" aria-pressed="'+(r.treuDone&&!r.untreu.length)+'"><span class="tl-l">Alle blieben treu</span></button></div>'+nextBtn(r.treuDone);
+      '<div class="tiles many ask">'+picks.map(function(p){ var on=tr.untreu.indexOf(p.id)>=0; return '<button class="tile'+(on?" on":"")+'" data-act="untreu-tog" data-v="'+h(p.id)+'" aria-pressed="'+on+'"><span class="tl-l">'+h(p.name)+'</span></button>'; }).join("")+'</div>'+
+      '<div class="tiles ask"><button class="tile'+(tr.done&&!tr.untreu.length?" on":"")+'" data-act="untreu-none" aria-pressed="'+(tr.done&&!tr.untreu.length)+'"><span class="tl-l">Alle blieben treu</span></button></div>'+nextBtn(tr.done);
   } else if(st.k==="live"){
     var l=st.l;
     out+='<span class="label">'+wl+' · Live-Wette</span><h2 class="q">'+h(l.q)+'</h2><p class="hint">'+coinTxt(potOf("live",f+":"+l.id))+' im Pott.</p>'+big("live-ans",l.id,l.opts,l.win||[],false)+nextBtn(l.state==="done");
@@ -1787,7 +1852,7 @@ function viewBoard(){
       '<div class="tiles ask"><button class="tile'+(!e.finale?" on":"")+'" data-act="fin-set" data-v="0" aria-pressed="'+(!e.finale)+'"><span class="tl-l">Nein</span></button><button class="tile'+(e.finale?" on":"")+'" data-act="fin-set" data-v="1" aria-pressed="'+e.finale+'"><span class="tl-l">Ja, das Finale</span></button></div>'+nextBtn(true);
   } else if(st.k==="season"){
     var sq=st.q, sw=seasonWinner(sq)||[];
-    out+='<span class="label">'+wl+' · Langzeitwette</span><h2 class="q">'+h(sq.title)+'</h2><p class="hint">'+(sq.hint?h(sq.hint)+'. ':'')+coinTxt(potOf("season",sq.id))+' im Pott.</p>'+big("sres-set",sq.id,sq.opts,sw,false)+nextBtn(sw.length>0);
+    out+='<span class="label">'+wl+' · Langzeitwette</span><h2 class="q">'+h(sq.title)+'</h2><p class="hint">'+(sq.hint?h(sq.hint)+'. ':'')+coinTxt(potOf("season",sq.id))+' im Pott.</p>'+big("sres-set",sq.id,sq.opts,sw,sq.multi)+nextBtn(sw.length>0);
   } else {
     var left=openAnswers(f);
     out+='<h2 class="q">Pötte verteilen</h2><p class="hint">'+(left?"Es sind noch "+left+" Wetten offen. Geh zurück und beantworte sie.":"Alles beantwortet. Mit „Folge abschließen“ werden die Pötte verteilt und alle sehen die Ergebnisse.")+'</p>';
@@ -1818,11 +1883,12 @@ function viewRules(){
   enter("rules");
   var BT=main.rules.bets;
   var out=flowHead("home","Regeln")+'<h2 class="q">So funktioniert’s</h2><p class="hint">Alle starten mit '+tl(BT.start)+'. Einsätze gehen vom Konto ab, gewonnene Pötte kommen drauf. Wer nach dem Finale am meisten hat, gewinnt.</p>';
-  out+='<section class="card"><h3>Wettschein</h3><p class="hint">Vor jeder Folge setzt du auf zwei Fragen zu den Vergebenen, pro Folge höchstens '+tl(BT.ep)+' (Live-Wetten zählen mit):</p><div class="sum"><div><span>Wie weit geht es heute?</span><span>Flirten, Kuscheln, Kuss oder Nacht</span></div><div><span>Bei welchem Paar fließen Tränen?</span><span>ein oder mehrere Paare</span></div></div><p class="hint">Dazu kommen Fragen, die der Admin selbst stellt. Den Jackpot gibt es bei „Wie weit geht es heute?“.</p></section>';
+  var epm=main.markets.filter(function(m){ return m.on&&m.scope==="ep"; }), jm=epm.filter(function(m){ return m.jackpot; })[0];
+  out+='<section class="card"><h3>Wettschein</h3><p class="hint">Vor jeder Folge setzt du auf diese Fragen, pro Folge höchstens '+tl(BT.ep)+' (Live-Wetten zählen mit):</p><div class="sum">'+epm.map(function(m){ return '<div><span>'+h(m.perCouple?"Pro Paar: "+m.q:m.q)+'</span><span>'+h(mkSummary(m))+'</span></div>'; }).join("")+'</div><p class="hint">Dazu kommen Fragen, die der Admin für einzelne Folgen stellt.'+(jm?' Den Jackpot gibt es bei „'+h(jm.q)+'“.':'')+'</p></section>';
   out+='<section class="card"><h3>Der Pott</h3><p class="hint">Alle Einsätze einer Frage landen in einem Pott. Wer richtig liegt, teilt ihn sich im Verhältnis der Einsätze. Beispiel: Lena setzt 10 T$ auf „Kuss“, Tom 5 T$ auf „Kuss“, Mia 15 T$ auf „Nur Flirten“. Es gibt einen Kuss, im Pott liegen 30 T$: Lena bekommt 20 T$, Tom 10 T$.</p><p class="hint">Ausgezahlt wird in ganzen T$. Reste gehen an die, die am nächsten am nächsten Dollar dran sind, so wird immer genau der ganze Pott ausgezahlt. Liegt niemand richtig, wandert der Pott als Jackpot zu „Wie weit geht es heute?“ in der nächsten Folge. Aufgelöst wird nach der Folge nur, worauf auch jemand gesetzt hat.</p></section>';
-  out+='<section class="card"><h3>Treue-Tipp</h3><p class="hint">Kostet nichts. Jede Folge tippst du auf eine*n Vergebene*n, die oder der nicht weiter als Flirten geht. Richtig: '+sgn(BT.treu)+' T$. Nicht zweimal hintereinander dieselbe Person. Wer pleite ist, kann damit wieder Geld holen.</p></section>';
+  if(main.rules.treuOn) out+='<section class="card"><h3>Treue-Tipp</h3><p class="hint">Kostet nichts. Jede Folge tippst du auf eine*n Vergebene*n, die oder der nicht weiter als Flirten geht. Richtig: '+sgn(BT.treu)+' T$. Nicht zweimal hintereinander dieselbe Person. Wer pleite ist, kann damit wieder Geld holen.</p></section>';
   out+='<section class="card"><h3>Live-Wetten</h3><p class="hint">Startet der Admin während der Folge. Sie erscheinen sofort auf allen Handys und zählen zum Höchsteinsatz der Folge.</p></section>';
-  out+='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Vor dem Saisonstart setzt du bis zu '+tl(BT.season)+'. Hier geht es um alles, was nur selten passiert: welche Paare gemeinsam gehen, ob ein Paar vorzeitig abbricht und bei wem zuerst die Grenze fällt. Ausgezahlt wird nach dem Finale.</p></section>';
+  out+='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Vor dem Saisonstart setzt du bis zu '+tl(BT.season)+'. Hier geht es um alles, was nur selten passiert. Ausgezahlt wird nach dem Finale.</p><div class="sum">'+main.markets.filter(function(m){ return m.on&&m.scope==="season"; }).map(function(m){ return '<div><span>'+h(m.perCouple?"Pro Paar: "+m.q:m.q)+'</span><span>'+h(mkSummary(m))+'</span></div>'; }).join("")+'</div></section>';
   return out;
 }
 function viewShare(){
@@ -1837,8 +1903,69 @@ function viewShare(){
     (ui.confirm==="logout"?'<p><b>Abmelden?</b> Ohne deinen Anmeldecode kommst du nicht wieder rein.</p><div class="actions"><button class="btn big danger" data-act="logout-yes">Ja, abmelden</button><button class="btn" data-act="cancel">Abbrechen</button></div>':'<div class="actions"><button class="btn" data-act="logout">Auf diesem Gerät abmelden</button></div>')+'</section>';
   return out;
 }
+function mkSummary(m){
+  var t={couples:"Paare",people:"Vergebene",yesno:"Ja oder Nein",custom:(m.opts||[]).map(function(o){ return o.label; }).join(", ")}[m.type];
+  var b=[t+(m.none?(m.type==="couples"?" oder „Bei keinem“":" oder „Niemand“"):"")];
+  if(m.perCouple) b.push("pro Paar einzeln"); if(m.multi) b.push("mehrere richtig"); if(m.jackpot) b.push("Jackpot");
+  return b.join(", ");
+}
+function mkLocked(m){
+  if(!m||m.scope!=="season") return false;
+  if(main.phase!=="join") return true;
+  var p=(net.pots&&net.pots.season)||{};
+  return Object.keys(p).some(function(k){ return (k===m.id||k.indexOf(m.id+":")===0) && (p[k]|0)>0; });
+}
+function mkFromDraft(d){
+  var lines=String(d.optsText||"").split(/\n|,/).map(function(x){ return x.trim(); }).filter(function(x){ return x; });
+  var old=(d.opts||[]), used={}, opts=[];
+  lines.forEach(function(l){ if(opts.some(function(o){ return o.label.toLowerCase()===l.toLowerCase(); })) return;
+    var keep=old.filter(function(o){ return o.label===l && !used[o.id]; })[0], id=keep?keep.id:null;
+    if(!id){ var n=0; while(old.some(function(o){ return o.id==="o"+n; }) || opts.some(function(o){ return o.id==="o"+n; })) n++; id="o"+n; }
+    used[id]=1; opts.push({id:id,label:l.slice(0,40)}); });
+  return normMarket({id:d.id,scope:d.scope,on:d.on,q:d.q,hint:d.hint,type:d.type,opts:opts,none:d.none,multi:d.multi,jackpot:d.jackpot,perCouple:d.perCouple});
+}
+function mkPreview(d){
+  var m=d.type==="custom"?mkFromDraft(d):normMarket({id:"preview",scope:d.scope,q:d.q,hint:d.hint,type:d.type,opts:[],none:d.none,multi:d.multi,jackpot:d.jackpot,perCouple:d.perCouple});
+  if(!m) return '<p class="hint">Für eigene Antworten brauchst du mindestens zwei Zeilen.</p>';
+  var qs=buildQs({couples:main.couples,persons:main.persons,markets:[m]},m.scope,curEp()||nextToOpen()), q=qs[0];
+  if(!q) return '<p class="hint">Keine Antworten möglich.</p>';
+  return '<div class="card market preview"><div class="mk-h"><div class="mk-t"><h3>'+h(q.title||"Deine Frage")+'</h3>'+(q.hint?'<small>'+h(q.hint)+'</small>':'')+'</div>'+(qs.length>1?'<span class="mk-pot">'+qs.length+' Fragen</span>':'')+'</div><div class="tiles'+(q.opts.length>4?" many":"")+'">'+q.opts.map(function(o){ return '<span class="tile"><span class="tl-l">'+h(o.label)+'</span></span>'; }).join("")+'</div></div>';
+}
+function mkEditor(){
+  var d=ui.mk, base=main.markets.filter(function(m){ return m.id===d.id; })[0], locked=mkLocked(base);
+  var tgl=function(key,label,show){ if(!show) return ""; return '<button class="tgl" data-act="mk-set" data-c="'+key+'" data-v="'+(!d[key])+'" aria-pressed="'+(!!d[key])+'"'+(locked?" disabled":"")+'><span class="tg-box" aria-hidden="true"></span>'+label+'</button>'; };
+  var out='<div class="editor mk-ed" data-notx>'+(locked?'<p class="hint">Auf diese Langzeitwette wurde schon gesetzt. Du kannst nur noch Frage und Erklärung ändern.</p>':'')+
+    '<label class="f">Frage<input type="text" id="mk-q" maxlength="100" autocomplete="off" value="'+h(d.q)+'" placeholder="Zum Beispiel: Wer bekommt ein Date?"></label>'+
+    '<label class="f">Erklärung (optional)<input type="text" id="mk-h" maxlength="140" autocomplete="off" value="'+h(d.hint)+'"></label>'+
+    '<div class="grp"><span class="sublabel">Wann</span><div class="seg seg2" role="group" aria-label="Wann"><button data-act="mk-set" data-c="scope" data-v="ep" aria-pressed="'+(d.scope==="ep")+'"'+(locked?" disabled":"")+'>Jede Folge</button><button data-act="mk-set" data-c="scope" data-v="season" aria-pressed="'+(d.scope==="season")+'"'+(locked||main.phase!=="join"?" disabled":"")+'>Langzeitwette</button></div></div>'+
+    '<div class="grp"><span class="sublabel">Antworten</span><div class="chips">'+[["couples","Paare"],["people","Vergebene"],["yesno","Ja / Nein"],["custom","Eigene Antworten"]].map(function(t){ return '<button class="chip'+(d.type===t[0]?" on":"")+'" data-act="mk-set" data-c="type" data-v="'+t[0]+'" aria-pressed="'+(d.type===t[0])+'"'+(locked?" disabled":"")+'>'+t[1]+'</button>'; }).join("")+'</div>'+
+    (d.type==="custom"?'<label class="f">Eine Antwort pro Zeile (2 bis 8)<textarea id="mk-o" rows="4"'+(locked?" disabled":"")+'>'+h(d.optsText||"")+'</textarea></label>':'')+'</div>'+
+    '<div class="tgls">'+tgl("none",d.type==="couples"?"Antwort „Bei keinem“ dazu":"Antwort „Niemand“ dazu",d.type==="couples"||d.type==="people")+
+      tgl("perCouple","Für jedes Paar einzeln fragen",d.type!=="couples")+tgl("multi","Mehrere Antworten können richtig sein",true)+tgl("jackpot","Jackpot-Wette: bekommt Pötte ohne Gewinner",d.scope==="ep")+'</div>'+
+    '<span class="sublabel">Vorschau</span>'+mkPreview(d)+
+    (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':'')+
+    '<div class="actions"><button class="btn big primary" data-act="mk-save">'+(d.isNew?"Wette anlegen":"Speichern")+'</button><button class="btn" data-act="mk-cancel">Abbrechen</button></div>'+
+    (!d.isNew&&!locked?(ui.confirm==="mk-del"?'<div class="actions"><button class="btn danger" data-act="mk-del-yes">Ja, Wette löschen</button><button class="btn" data-act="cancel">Doch nicht</button></div>':'<div><button class="btn danger" data-act="mk-del">Wette löschen</button></div>'):'')+'</div>';
+  return out;
+}
+function builderCard(){
+  var out='<section class="card"><h3>Wetten-Baukasten</h3><p class="hint">Bau Wetten aus Frage und Antworten zusammen. Änderungen an Folgen-Wetten gelten ab der nächsten Folge, die du öffnest. Langzeitwetten kannst du bis zum Saisonstart ändern.</p>';
+  [["ep","Jede Folge"],["season","Langzeitwetten"]].forEach(function(g){
+    var list=main.markets.filter(function(m){ return m.scope===g[0]; });
+    out+='<span class="sublabel">'+g[1]+'</span>'+(list.length?list.map(function(m,i){
+      if(ui.mk&&!ui.mk.isNew&&ui.mk.id===m.id) return mkEditor();
+      var fixed=m.scope==="season"&&main.phase!=="join";
+      return '<div class="mkrow'+(m.on?"":" off")+'"><div class="mk-info"><b>'+h(m.perCouple?"Pro Paar: "+m.q:m.q)+'</b><small>'+h(mkSummary(m))+(m.on?"":", ausgeschaltet")+'</small></div><div class="mk-btns">'+
+        (i>0?'<button class="btn sm" data-act="mk-up" data-v="'+h(m.id)+'" aria-label="Nach oben">↑</button>':'')+
+        (fixed?'<span class="hint">fest</span>':'<button class="btn sm" data-act="mk-toggle" data-v="'+h(m.id)+'">'+(m.on?"Ausschalten":"Einschalten")+'</button><button class="btn sm" data-act="mk-edit" data-v="'+h(m.id)+'">Bearbeiten</button>')+'</div></div>';
+    }).join(""):'<p class="hint">Noch keine.</p>');
+  });
+  out+=(ui.mk&&ui.mk.isNew)?'<span class="sublabel">Neue Wette</span>'+mkEditor():'<div class="actions"><button class="btn" data-act="mk-new">Neue Wette bauen</button></div>';
+  out+='<div class="num-in"><span>Treue-Tipp (kostenlos)</span><div class="seg seg2" role="group" aria-label="Treue-Tipp"><button data-act="treu-on" data-v="1" aria-pressed="'+main.rules.treuOn+'">An</button><button data-act="treu-on" data-v="0" aria-pressed="'+(!main.rules.treuOn)+'">Aus</button></div></div>';
+  return out+'</section>';
+}
 function viewAdmin(){
-  enter("admin",function(){ ui.pedit=null; });
+  enter("admin",function(){ ui.pedit=null; ui.mk=null; });
   var out=flowHead("home","Adminmodus")+'<h2 class="q">Adminmodus</h2>';
   if(!ui.adminOk) return out+'<section class="card"><p class="hint">Nur der Admin der Liga kann hier etwas ändern.</p></section>';
   out+='<p class="hint">Änderungen gelten sofort für alle.</p>';
@@ -1846,6 +1973,7 @@ function viewAdmin(){
   out+='<section class="card"><h3>Paare</h3><p class="hint">Bricht ein Paar ab, markierst du es hier. Ab der nächsten Folge taucht es in den Wetten nicht mehr auf.</p><div>'+main.couples.map(function(c){
     return '<div class="admrow"><span class="nm">'+h(c.name)+'</span><span class="hint">'+(c.outIn!=null?'abgereist in F'+c.outIn:'auf der Insel')+'</span>'+(c.outIn!=null?'<button class="btn sm" data-act="cp-back" data-v="'+h(c.id)+'">Zurückholen</button>':'<button class="btn sm" data-act="cp-out" data-v="'+h(c.id)+'">Abgereist</button>')+'</div>';
   }).join("")+'</div></section>';
+  out+=builderCard()+textsCard();
   out+='<section class="card"><h3>Wettbüro</h3><div>'+
     [["start","Startguthaben"],["ep","Höchsteinsatz pro Folge"],["season","Höchsteinsatz Langzeitwetten"],["treu","Bonus Treue-Tipp"]].map(function(r){
       return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+plainStepper("bet-step",main.rules.bets[r[0]],tl(main.rules.bets[r[0]])).replace(/data-act="bet-step"/g,'data-act="bet-step" data-v="'+r[0]+'"')+'</div>'; }).join("")+
@@ -1867,6 +1995,42 @@ function viewAdmin(){
   return out;
 }
 
+/* ================= text overrides (admin text mode) ================= */
+var TXO=(typeof WeakMap==="function")?new WeakMap():null;
+var TX_LETTER=/[A-Za-zÄÖÜäöüß]/;
+function txKey(t){ var nums=[]; var key=t.replace(/\d+(?:[.,]\d+)?/g,function(m){ nums.push(m); return "{n}"; }); return {key:key,nums:nums}; }
+function txFill(t,nums){ var i=0; return t.replace(/\{n\}/g,function(){ var v=nums[i++]; return v==null?"":v; }); }
+function applyTexts(root,always){
+  if(!root||!TXO||typeof document.createTreeWalker!=="function") return;
+  var T=(main&&main.texts)||{}, has=Object.keys(T).length>0;
+  if(!has && !ui.textMode && !always) return;
+  var w=document.createTreeWalker(root,4,null), n, list=[];
+  while((n=w.nextNode())) list.push(n);
+  list.forEach(function(node){
+    var par=node.parentElement; if(!par||par.closest("[data-notx],script,style,textarea")) return;
+    var orig=TXO.get(node); if(orig==null){ orig=node.nodeValue; TXO.set(node,orig); }
+    var tr=orig.trim(); if(!tr||!TX_LETTER.test(tr)) return;
+    var k=txKey(tr), ov=T[k.key], want=ov!=null?orig.replace(tr,txFill(ov,k.nums)):orig;
+    if(node.nodeValue!==want) node.nodeValue=want;
+    if(ui.textMode) par.classList.add("txe");
+  });
+}
+function txEditor(){
+  var x=ui.txEdit, T=main.texts||{}, ov=T[x.key];
+  return '<div class="sheet-wrap anim" data-notx role="dialog" aria-modal="true" aria-labelledby="tx-t"><button class="sheet-bg" data-act="tx-cancel" aria-label="Schließen" tabindex="-1"></button><div class="sheet"><span class="grab" aria-hidden="true"></span>'+
+    '<div class="sheet-h"><div><span class="label">Text ändern</span><h2 id="tx-t">'+h(x.orig.length>60?x.orig.slice(0,58)+"…":x.orig)+'</h2></div><button class="xbtn" data-act="tx-cancel" aria-label="Schließen">×</button></div>'+
+    '<label class="f">Neuer Text<textarea id="tx-val" rows="3" maxlength="400">'+h(ov!=null?ov:x.key)+'</textarea></label>'+
+    (x.key.indexOf("{n}")>=0?'<p class="hint">{n} steht für eine Zahl, die die App selbst einsetzt.</p>':'')+
+    '<p class="hint">Der Text ändert sich für alle und überall, wo er genau so vorkommt.</p>'+
+    '<div class="actions"><button class="btn big primary" data-act="tx-save">Speichern</button>'+(ov!=null?'<button class="btn" data-act="tx-reset">Original wiederherstellen</button>':'')+'</div></div></div>';
+}
+function textsCard(){
+  var T=main.texts||{}, ks=Object.keys(T);
+  return '<section class="card"><h3>Texte</h3><p class="hint">Im Textmodus tippst du auf einen beliebigen Text der Seite und änderst ihn. Den Textmodus startest du auch oben mit „Aa“.</p>'+
+    '<div class="actions"><button class="btn" data-act="tx-toggle">Textmodus starten</button></div>'+
+    (ks.length?'<span class="sublabel">Geändert ('+ks.length+')</span><div data-notx>'+ks.map(function(k){ return '<div class="admrow"><span class="nm">'+h(k)+' → '+h(T[k])+'</span><span></span><button class="btn sm" data-act="tx-del" data-v="'+h(k)+'">Zurücksetzen</button></div>'; }).join("")+'</div>':'')+'</section>';
+}
+
 /* ================= render ================= */
 var bootAt=Date.now(), fxTimer=null;
 function leadCheck(){
@@ -1885,6 +2049,7 @@ function showLeadFx(ld,prev){
   var reduce=false; try{ reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
   var kicker=prev==null?"Erste Führung":"Neue Spitze", line=(ld===ME?"Du führst":"führt")+" mit "+tl(total(ld));
   host.innerHTML='<div class="fx-wrap'+(reduce?" calm":"")+'" role="status"><canvas class="fx-confetti" aria-hidden="true"></canvas><button class="fx-card pc '+pcls(ld)+'" data-act="fx-close" aria-label="'+kicker+': '+pname(ld)+'. Schließen"><span class="fx-crown">'+CROWN_SVG+'</span><span class="fx-kicker">'+kicker+'</span><b>'+pname(ld)+'</b><span class="fx-line">'+h(line)+'</span></button></div>';
+  applyTexts(host);
   if(!reduce) confetti(host.querySelector("canvas"),ld);
   try{ if(navigator.vibrate) navigator.vibrate([30,60,30]); }catch(e){}
   fxTimer=setTimeout(function(){ var w=host.querySelector(".fx-wrap"); if(w) w.className+=" out"; fxTimer=setTimeout(function(){ host.innerHTML=""; },450); },reduce?3200:2800);
@@ -1907,6 +2072,13 @@ function renderHead(){
   var n=tvNext(), sub="Im TV als Nächstes: <strong>"+epName(n)+"</strong>, "+epDate(n)+" auf RTL+";
   document.getElementById("sub").innerHTML=sub;
   var me=document.getElementById("me");
+  if(typeof document.createElement==="function" && me && me.parentNode){
+    var tb=document.getElementById("txbtn"), show=!!(main&&ME&&isAdmin());
+    var wrap=document.getElementById("tbr");
+    if(!wrap){ wrap=document.createElement("div"); wrap.id="tbr"; wrap.className="tb-r"; me.parentNode.insertBefore(wrap,me); wrap.appendChild(me); }
+    if(show && !tb){ tb=document.createElement("button"); tb.id="txbtn"; tb.className="txbtn"; tb.setAttribute("data-act","tx-toggle"); tb.setAttribute("data-notx",""); tb.setAttribute("aria-label","Texte bearbeiten"); tb.textContent="Aa"; wrap.appendChild(tb); }
+    if(tb){ tb.hidden=!show; tb.setAttribute("aria-pressed",String(!!ui.textMode)); }
+  }
   if(main && ME && joined().indexOf(ME)>=0){ me.hidden=false; me.className="mechip "+pcls(ME); me.innerHTML='<span class="pdot"></span><span class="me-n">'+pname(ME)+'</span><b class="me-bal num">'+tl(cash(ME))+'</b>'; }
   else { me.hidden=true; me.innerHTML=""; }
 }
@@ -1933,16 +2105,35 @@ function render(){
   }
   if(main && ME && SECRET && main.phase==="season" && ["home","board","table","rules","share"].indexOf(ui.screen)>=0) html+=liveSheet();
   if(isDemo() && ui.screen!=="demo") html=demoBar()+html;
-  document.getElementById("view").innerHTML=html;
+  if(!isAdmin()){ ui.textMode=false; ui.txEdit=null; }
+  if(ui.textMode) html='<div class="txbar" data-notx><span>Textmodus: Tippe auf einen Text, um ihn zu ändern.</span><button class="btn sm" data-act="tx-done">Fertig</button></div>'+html;
+  if(ui.txEdit && main) html+=txEditor();
+  var view=document.getElementById("view"); view.innerHTML=html;
+  try{ if(document.body&&document.body.classList) document.body.classList.toggle("txmode",!!ui.textMode); }catch(x){}
+  applyTexts(view); applyTexts(typeof document.querySelector==="function"?document.querySelector(".top"):null,true);
   renderSync();
 }
 
 /* ================= actions ================= */
 function val(id){ var el=document.getElementById(id); return el?String(el.value||"").trim():""; }
 function syncEdName(){ var p=document.getElementById("pe-name"); if(p) ui.pName=p.value; }
+function syncMk(){ if(!ui.mk) return; var a=document.getElementById("mk-q"), b=document.getElementById("mk-h"), c=document.getElementById("mk-o"); if(a) ui.mk.q=a.value; if(b) ui.mk.hint=b.value; if(c) ui.mk.optsText=c.value; }
 function go(screen){ ui.screen=screen; ui.key=""; render(); goTop(); }
 function epStatus(f,s){ ep(f).status=s; ui.key=""; commitMain(); goTop(); }
-document.addEventListener("keydown",function(evt){ if(evt.key==="Escape" && ui.sheet){ ui.sheet=null; render(); } });
+document.addEventListener("keydown",function(evt){ if(evt.key==="Escape" && (ui.sheet||ui.txEdit)){ ui.sheet=null; ui.txEdit=null; render(); } });
+document.addEventListener("click",function(evt){
+  if(!ui.textMode||!isAdmin()) return;
+  var t=evt.target; if(!t||!t.closest) return;
+  if(t.closest("[data-notx]")||!t.closest("#view,.top")) return;
+  evt.preventDefault(); evt.stopPropagation();
+  var node=null;
+  try{ if(document.caretRangeFromPoint){ var rr=document.caretRangeFromPoint(evt.clientX,evt.clientY); node=rr&&rr.startContainer; } else if(document.caretPositionFromPoint){ var cp=document.caretPositionFromPoint(evt.clientX,evt.clientY); node=cp&&cp.offsetNode; } }catch(x){}
+  var good=function(n){ return n&&n.nodeType===3&&TX_LETTER.test((TXO&&TXO.get(n))||n.nodeValue||""); };
+  if(!good(node)||!t.contains(node)){ node=null; var tw=document.createTreeWalker(t,4,null), n2; while((n2=tw.nextNode())){ if(good(n2)){ node=n2; break; } } }
+  if(!node) return;
+  var orig=((TXO&&TXO.get(node))||node.nodeValue).trim(); if(!orig) return;
+  ui.txEdit={key:txKey(orig).key,orig:orig}; render();
+},true);
 document.addEventListener("focusout",function(){ setTimeout(function(){ if(ui.deferred && !inputFocused()) render(); },0); });
 document.addEventListener("click",function(evt){
   var b=evt.target.closest("[data-act]"); if(!b||b.disabled) return;
@@ -1960,10 +2151,10 @@ document.addEventListener("click",function(evt){
     case "demo-end": demoEnd(); return;
     case "demo-resolve":
       if(!isDemo()||!isAdmin()||!e||e.status!=="review") return;
-      e.res=dRandRes(main,f,treuPicks(f));
+      var drr=dRandRes(main,f,treuPicks(f)); e.res=drr.res; e.tr=drr.tr;
       e.custom.forEach(function(c){ c.win=[dPick(c.opts).id]; });
       e.live.forEach(function(l){ l.state="done"; l.win=[dPick(l.opts).id]; });
-      if(e.finale){ main.couples.forEach(function(c){ c.final=dPick(["together","apart"]); }); main.sres={abbruch:dPick(["ja","nein"]),erste:dPick(main.couples.map(function(c){ return c.id; }).concat(["none"]))}; }
+      if(e.finale) seasonQuestions().forEach(function(q){ main.sres[q.id]=[dPick(q.opts).id]; });
       ui.rstep=99;
       ui.msg="Zufällig aufgelöst."; commitMain(); return;
 
@@ -2035,37 +2226,80 @@ document.addEventListener("click",function(evt){
     case "season-start": ui.confirm="season-start"; render(); return;
     case "season-start-yes":
       if(!isAdmin()||main.phase!=="join"||joined().length<2) return;
-      main.order=joined().slice(); main.start=(ui.dset&&ui.dset.start)||main.start||tvNext(); main.phase="season";
+      main.order=joined().slice(); main.start=(ui.dset&&ui.dset.start)||main.start||tvNext(); main.phase="season"; main.sqs=buildQs(main,"season");
       ui.confirm=null; ui.key=""; ui.flash="Die Saison läuft. Öffne die nächste Folge, wenn ihr schaut."; commitMain(); return;
 
     /* episodes (admin) */
     case "ep-open":
       if(!isAdmin()||curEp()!=null) return;
-      var n=nextToOpen(); main.episodes[n]={status:"open",finale:false,res:{},custom:[],live:[]}; ui.key=""; commitMain(); return;
+      var n=nextToOpen(); main.episodes[n]={status:"open",finale:false,qs:buildQs(main,"ep",n),res:{},tr:{untreu:[],done:false},custom:[],live:[]}; ui.key=""; commitMain(); return;
     case "ep-live": ui.confirm="ep-live"; render(); return;
     case "ep-live-yes": if(!isAdmin()||!e||e.status!=="open") return; ui.confirm=null; e.status="live"; ui.screen="board"; ui.key=""; commitMain(); goTop(); return;
     case "fin-set": if(!isAdmin()||!e) return; e.finale=(v==="1"); if(!e.finale){ main.couples.forEach(function(c){ c.final=null; }); main.sres={}; } commitMain(); return;
     case "b-live-done": if(!isAdmin()||!e) return; e.live.forEach(function(l){ if(l.state==="open") l.state="closed"; }); epStatus(f,"review"); return;
     case "res-set":
-      if(!isAdmin()||!e||e.status!=="review") return; e.res=e.res||{};
-      if(cid==="traenen"){ var ra=(e.res[cid]||[]).slice();
-        if(v==="none") ra=ra.indexOf("none")>=0?[]:["none"]; else { ra=ra.filter(function(x){ return x!=="none"; }); var ri=ra.indexOf(v); if(ri>=0) ra.splice(ri,1); else ra.push(v); }
-        e.res[cid]=ra.length?ra:null; }
-      else if(cid==="stufe") e.res[cid]=e.res[cid]===v?null:v;
-      else if(cid.indexOf("c-")===0) e.custom.forEach(function(c){ if("c-"+c.id===cid) c.win=(c.win&&c.win[0]===v)?null:[v]; });
+      if(!isAdmin()||!e||e.status!=="review") return;
+      var rq=epQuestions(f).filter(function(x){ return x.id===cid; })[0]; if(!rq) return;
+      if(rq.custom){ rq.custom.win=(rq.custom.win&&rq.custom.win[0]===v)?null:[v]; commitMain(); return; }
+      var rc=(e.res[cid]||[]).slice();
+      if(rq.multi){ if(v==="none") rc=rc.indexOf("none")>=0?[]:["none"]; else { rc=rc.filter(function(x){ return x!=="none"; }); var rix=rc.indexOf(v); if(rix>=0) rc.splice(rix,1); else rc.push(v); } }
+      else rc=rc[0]===v?[]:[v];
+      if(rc.length) e.res[cid]=rc; else delete e.res[cid];
       commitMain(); return;
     case "untreu-tog":
-      if(!isAdmin()||!e||e.status!=="review") return; var ut=e.res.untreu.slice(), ui2=ut.indexOf(v); if(ui2>=0) ut.splice(ui2,1); else ut.push(v);
-      e.res.untreu=ut; e.res.treuDone=true; commitMain(); return;
-    case "untreu-none": if(!isAdmin()||!e||e.status!=="review") return; e.res.untreu=[]; e.res.treuDone=true; commitMain(); return;
+      if(!isAdmin()||!e||e.status!=="review") return; var ut=e.tr.untreu.slice(), ui2=ut.indexOf(v); if(ui2>=0) ut.splice(ui2,1); else ut.push(v);
+      e.tr.untreu=ut; e.tr.done=true; commitMain(); return;
+    case "untreu-none": if(!isAdmin()||!e||e.status!=="review") return; e.tr.untreu=[]; e.tr.done=true; commitMain(); return;
     case "live-ans": if(!isAdmin()||!e) return; e.live.forEach(function(l){ if(l.id===cid){ if(l.win&&l.win[0]===v){ l.win=null; l.state="closed"; } else { l.win=[v]; l.state="done"; } } }); commitMain(); return;
     case "sres-set":
       if(!isAdmin()||!e||!e.finale) return;
-      if(cid==="abbruch"||cid==="erste") main.sres[cid]=main.sres[cid]===v?null:v;
-      else main.couples.forEach(function(c){ if(c.id===cid) c.final=c.final===v?null:v; });
+      var sqx=seasonQuestions().filter(function(x){ return x.id===cid; })[0]; if(!sqx) return;
+      var sc2=(main.sres[cid]||[]).slice();
+      if(sqx.multi){ if(v==="none") sc2=sc2.indexOf("none")>=0?[]:["none"]; else { sc2=sc2.filter(function(x){ return x!=="none"; }); var six=sc2.indexOf(v); if(six>=0) sc2.splice(six,1); else sc2.push(v); } }
+      else sc2=sc2[0]===v?[]:[v];
+      if(sc2.length) main.sres[cid]=sc2; else delete main.sres[cid];
       commitMain(); return;
     case "r-next": ui.rstep=(ui.rstep|0)+1; render(); goTop(); return;
     case "r-prev": ui.rstep=Math.max(0,(ui.rstep|0)-1); render(); goTop(); return;
+    case "mk-new": if(!isAdmin()) return; ui.mk={isNew:true,id:"m"+makeCode(6).replace(/[^A-Za-z0-9]/g,"x"),scope:main.phase==="join"?"ep":"ep",on:true,q:"",hint:"",type:"couples",opts:[],optsText:"",none:true,multi:false,jackpot:false,perCouple:false}; ui.err=""; ui.confirm=null; render(); return;
+    case "mk-edit": if(!isAdmin()) return; var me0=main.markets.filter(function(m){ return m.id===v; })[0]; if(!me0) return; ui.mk=JSON.parse(JSON.stringify(me0)); ui.mk.optsText=me0.opts.map(function(o){ return o.label; }).join("\n"); ui.err=""; ui.confirm=null; render(); return;
+    case "mk-cancel": ui.mk=null; ui.err=""; ui.confirm=null; render(); return;
+    case "mk-set":
+      if(!isAdmin()||!ui.mk) return; syncMk();
+      if(cid==="scope"){ ui.mk.scope=v; if(v==="season") ui.mk.jackpot=false; }
+      else if(cid==="type"){ ui.mk.type=v; if(v==="couples") ui.mk.perCouple=false; if(v!=="couples"&&v!=="people") ui.mk.none=false; if(v==="custom"&&!ui.mk.optsText) ui.mk.optsText=""; }
+      else if(["none","perCouple","multi","jackpot"].indexOf(cid)>=0) ui.mk[cid]=(v==="true");
+      render(); return;
+    case "mk-save":
+      if(!isAdmin()||!ui.mk) return; syncMk(); ui.err="";
+      var dm=ui.mk, prev=main.markets.filter(function(m){ return m.id===dm.id; })[0];
+      if(!dm.q.trim()){ ui.err="Bitte eine Frage eintragen."; render(); return; }
+      var nm;
+      if(prev && mkLocked(prev)){ nm=JSON.parse(JSON.stringify(prev)); nm.q=dm.q.trim().slice(0,100); nm.hint=dm.hint.trim().slice(0,140); }
+      else { nm=mkFromDraft({id:dm.id,scope:dm.scope,on:dm.on!==false,q:dm.q.trim(),hint:dm.hint.trim(),type:dm.type,opts:prev?prev.opts:[],optsText:dm.optsText,none:dm.none,multi:dm.multi,jackpot:dm.jackpot,perCouple:dm.perCouple});
+        if(!nm){ ui.err="Eigene Antworten: Bitte mindestens zwei verschiedene Antworten eintragen, eine pro Zeile."; render(); return; } }
+      if(nm.jackpot) main.markets.forEach(function(m){ if(m.id!==nm.id) m.jackpot=false; });
+      if(prev) main.markets=main.markets.map(function(m){ return m.id===nm.id?nm:m; }); else main.markets.push(nm);
+      ui.mk=null; ui.msg="Wette „"+nm.q+"“ gespeichert."; commitMain(); return;
+    case "mk-del": ui.confirm="mk-del"; render(); return;
+    case "mk-del-yes":
+      if(!isAdmin()||!ui.mk) return; var md=main.markets.filter(function(m){ return m.id===ui.mk.id; })[0]; if(!md||mkLocked(md)) return;
+      main.markets=main.markets.filter(function(m){ return m.id!==md.id; }); ui.mk=null; ui.confirm=null; ui.msg="Wette gelöscht."; commitMain(); return;
+    case "mk-toggle": if(!isAdmin()) return; main.markets.forEach(function(m){ if(m.id===v && !(m.scope==="season"&&main.phase!=="join")) m.on=!m.on; }); commitMain(); return;
+    case "mk-up":
+      if(!isAdmin()) return; var mi=-1; main.markets.forEach(function(m,ix){ if(m.id===v) mi=ix; }); if(mi<0) return;
+      var mm=main.markets[mi], pj=-1; for(var k2=mi-1;k2>=0;k2--){ if(main.markets[k2].scope===mm.scope){ pj=k2; break; } }
+      if(pj<0) return; main.markets[mi]=main.markets[pj]; main.markets[pj]=mm; commitMain(); return;
+    case "treu-on": if(!isAdmin()) return; main.rules.treuOn=(v==="1"); commitMain(); return;
+    case "tx-toggle": if(!isAdmin()) return; ui.textMode=!ui.textMode; ui.txEdit=null; render(); return;
+    case "tx-done": ui.textMode=false; ui.txEdit=null; render(); return;
+    case "tx-cancel": ui.txEdit=null; render(); return;
+    case "tx-save":
+      if(!isAdmin()||!ui.txEdit) return; var txv=val("tx-val");
+      if(!txv||txv===ui.txEdit.key) delete main.texts[ui.txEdit.key]; else main.texts[ui.txEdit.key]=txv.slice(0,400);
+      ui.txEdit=null; commitMain(); return;
+    case "tx-reset": if(!isAdmin()||!ui.txEdit) return; delete main.texts[ui.txEdit.key]; ui.txEdit=null; commitMain(); return;
+    case "tx-del": if(!isAdmin()) return; delete main.texts[v]; commitMain(); return;
     case "cp-out": if(!isAdmin()) return; main.couples.forEach(function(c){ if(c.id===v) c.outIn=curEp()||lastDone()||nextToOpen(); }); ui.msg="Als abgereist markiert."; commitMain(); return;
     case "cp-back": if(!isAdmin()) return; main.couples.forEach(function(c){ if(c.id===v) c.outIn=null; }); commitMain(); return;
     case "b-relive": if(!isAdmin()||!e||e.status!=="review") return; epStatus(f,"live"); return;

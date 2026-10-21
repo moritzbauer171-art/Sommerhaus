@@ -33,6 +33,8 @@ Settings → Pages → „Deploy from a branch“ → Branch `main`, Ordner `/ (
   - Treue-Tipp: kostenlos eine*n Vergebene*n wählen, die oder der nicht weiter als Flirten geht (+5 T$), nicht zweimal hintereinander dieselbe Person. Wer pleite ist, kann damit wieder Geld holen.
   - Live-Wetten: startet der Admin während der Folge, sie erscheinen sofort als Pop-up auf allen Handys.
   - Langzeitwetten (bis 30 T$, vor dem Saisonstart): je Paar gemeinsam oder getrennt, ob ein Paar vorzeitig abbricht und bei welchem Paar zuerst die Grenze fällt. Abreisen gibt es nur hier, weil sie in der Sendung selten sind.
+- Wetten-Baukasten im Adminmodus: Frage + Antwort-Baustein (Paare, Vergebene, Ja/Nein oder eigene Antworten) + Schalter (mit „Bei keinem/Niemand“, pro Paar einzeln, mehrere richtig, Jackpot) + Zeitpunkt (jede Folge oder Langzeitwette), mit Vorschau. Folgen-Wetten werden beim Öffnen einer Folge eingefroren, Langzeitwetten beim Saisonstart.
+- Textmodus für den Admin: auf jeden Text tippen und ändern; die Änderung gilt für alle. Zahlen im Text bleiben als {n} dynamisch.
 - Nach jeder Folge fragt die App den Admin Schritt für Schritt nur die Wetten ab, auf die jemand gesetzt hat, und verteilt dann die Pötte.
 - Demomodus: mit drei Bots (Paula, Kenan, Lotte), wahlweise von vorn oder mitten in der Staffel. Läuft komplett auf dem Handy ohne Server, die echte Liga bleibt unberührt.
 - Der Admin öffnet jede Folge, schließt die Wetten und startet Live-Wetten. Startguthaben, Höchsteinsätze und Treue-Bonus lassen sich im Adminmodus ändern, ebenso ein vorzeitig abgereistes Paar.
