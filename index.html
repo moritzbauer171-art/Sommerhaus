@@ -162,15 +162,15 @@ h3{font-size:17px;font-weight:700;margin:0}
 .btn.danger{color:var(--exit)}
 .btn.big.danger{background:var(--exit-fill);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 22px var(--exit-tint)}
 .btn.sm{padding:7px 14px;font-size:14px}
-.btn:active,.opt:active,.chip:active{transform:scale(.98)}
+.btn:active,.opt:active,.chip:active,.evbtn:active{transform:scale(.98)}
 .linkrow{gap:0;padding-block:6px}
 .link{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-bottom:1px solid var(--hair);background:transparent;padding:14px 2px;font-weight:500;font-size:17px;cursor:pointer;text-align:left}
 .link:last-child{border-bottom:0}
 .link span:last-child{color:var(--muted);font-size:20px;line-height:1}
 .err{color:var(--exit);font-weight:600;font-size:15px;margin:0 4px}
 .okmsg{background:linear-gradient(var(--good-tint),var(--good-tint)),var(--glass);color:var(--good);font-weight:600;font-size:15px;border-radius:20px;padding:12px 16px}
-input[type=text],textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--glass-soft);border:0;box-shadow:var(--hl),inset 0 0 0 1px var(--hair);border-radius:16px;padding:14px 16px;width:100%;max-width:100%}
-input[type=text]:focus{outline:none;box-shadow:var(--hl),inset 0 0 0 2px var(--accent)}
+input[type=text],input[type=password],textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--glass-soft);border:0;box-shadow:var(--hl),inset 0 0 0 1px var(--hair);border-radius:16px;padding:14px 16px;width:100%;max-width:100%}
+input[type=text]:focus,input[type=password]:focus{outline:none;box-shadow:var(--hl),inset 0 0 0 2px var(--accent)}
 textarea{min-height:110px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
 label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:var(--muted)}
 label.f.t1{color:var(--p1)} label.f.t2{color:var(--p2)}
@@ -267,7 +267,35 @@ label.f.t1{color:var(--p1)} label.f.t2{color:var(--p2)}
 .sync{margin-top:26px;text-align:center;font-size:13px;color:var(--muted)}
 .sync i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:6px;vertical-align:middle}
 .sync.cloud i{background:var(--accent)} .sync.readonly i,.sync.error i{background:var(--exit-fill)}
-@media (prefers-reduced-motion:no-preference){.chip,.btn,.opt,.seg button{transition:background-color .2s,color .2s,box-shadow .2s,transform .12s}}
+/* event-first points board */
+.sublabel{font-size:13px;font-weight:600;color:var(--muted)}
+.evgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px}
+.evbtn{display:flex;justify-content:space-between;align-items:center;gap:8px;border:0;border-radius:18px;padding:12px 14px;min-height:52px;background:var(--glass-soft);box-shadow:var(--hl),inset 0 0 0 1px var(--hair);cursor:pointer;text-align:left;font-size:15px;font-weight:600;color:var(--ink);min-width:0}
+.evbtn span{min-width:0}
+.evbtn b{font-family:var(--round);font-weight:700;color:var(--good);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.evbtn b.neg{color:var(--exit)}
+.evbtn[aria-pressed="true"]{background:var(--ink);color:var(--bg);box-shadow:0 6px 16px rgba(0,0,0,.2)}
+.evbtn[aria-pressed="true"] b{color:inherit}
+#step2{scroll-margin-top:84px}
+.log{display:flex;flex-direction:column}
+.logrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--hair)}
+.logrow:last-child{border-bottom:0}
+.logrow .lt{min-width:0}
+.logrow .lt b{display:block;font-size:15.5px;font-weight:650}
+.logrow .lt small{display:block;font-size:13px;color:var(--muted)}
+/* admin */
+.admrow{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--hair)}
+.admrow:last-child{border-bottom:0}
+.admrow .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+.admrow b{font-family:var(--round);font-variant-numeric:tabular-nums;min-width:2.4em;text-align:right}
+.admrow.st2{grid-template-columns:minmax(0,1fr) auto}
+.stepper{display:inline-flex;align-items:center;gap:6px;background:var(--glass-soft);box-shadow:var(--hl),inset 0 0 0 1px var(--hair);border-radius:999px;padding:4px}
+.stepper button{border:0;width:36px;height:36px;border-radius:50%;background:var(--glass-strong);box-shadow:var(--hl);font-size:20px;font-weight:700;cursor:pointer;color:var(--ink);line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.stepper b{min-width:2.6em;text-align:center;font-family:var(--round);font-size:17px;font-variant-numeric:tabular-nums}
+.editor{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:20px;background:var(--glass-soft);box-shadow:inset 0 0 0 2px var(--accent);margin:6px 0}
+.editor .row2{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+.seg.seg2{grid-template-columns:repeat(2,minmax(0,1fr))}
+@media (prefers-reduced-motion:no-preference){.chip,.btn,.opt,.seg button,.evbtn{transition:background-color .2s,color .2s,box-shadow .2s,transform .12s}}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
   .card,.side,.flowhead,.dock,.opt,.banner,.champ,.cc,.livebar>div,.okmsg,.seg{background-color:var(--glass-strong)}
 }
@@ -304,10 +332,28 @@ var EVENTS=[
   {k:"laestern",label:"Lästerattacke",g:"Drama",pts:1},
   {k:"liebe",label:"Liebesbeweis",g:"Drama",pts:1},
   {k:"spruch",label:"Spruch des Abends",g:"Drama",pts:3},
+  {k:"cringe",label:"Cringemoment",g:"Drama",pts:1},
   {k:"fluch",label:"Trennung (Fluch)",g:"Drama",pts:-5}
 ];
-var EVPTS={}; EVENTS.forEach(function(e){ EVPTS[e.k]=e.pts; });
-var R={survive:2,quit:-5,finale:8,sieg:15,weekTip:3,winnerTip:10,curseTip:5};
+var DEF_AUTO={survive:2,quit:-5,finale:8,sieg:15};
+var DEF_TIPS={weekTip:3,winnerTip:10,curseTip:5};
+var CORE_KEYS=["fluch"];
+var PTS_MIN=-50, PTS_MAX=50;
+function clampPts(n){ n=Math.round(+n); if(!isFinite(n)) n=0; return Math.max(PTS_MIN,Math.min(PTS_MAX,n)); }
+function copyObj(o){ var r={}; Object.keys(o).forEach(function(k){ r[k]=o[k]; }); return r; }
+function defaultRules(){ return {events:EVENTS.map(function(e){ return {k:e.k,label:e.label,g:e.g,pts:e.pts,hidden:false,custom:false}; }),auto:copyObj(DEF_AUTO),tips:copyObj(DEF_TIPS)}; }
+function evByKey(k){ var l=state.rules.events; for(var i=0;i<l.length;i++) if(l[i].k===k) return l[i]; return null; }
+function evPts(k){ var e=evByKey(k); return e?e.pts:0; }
+function evLabel(k){ var e=evByKey(k); return e?e.label:k; }
+function visibleEvents(g){ return state.rules.events.filter(function(e){ return !e.hidden && (!g || e.g===g); }); }
+var R={};
+Object.keys(DEF_AUTO).forEach(function(k){ Object.defineProperty(R,k,{get:function(){ return state.rules.auto[k]; }}); });
+Object.keys(DEF_TIPS).forEach(function(k){ Object.defineProperty(R,k,{get:function(){ return state.rules.tips[k]; }}); });
+function rid(){ return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
+function evFromLog(log){ var ev={}; log.forEach(function(x){ x.ids.forEach(function(id){ var m=ev[id]||(ev[id]={}); m[x.k]=(m[x.k]||0)+1; }); }); return ev; }
+function logFromEv(ev){ var log=[]; if(!ev||typeof ev!=="object") return log; Object.keys(ev).forEach(function(id){ var m=ev[id]||{}; Object.keys(m).forEach(function(k){ for(var i=0;i<(m[k]|0);i++) log.push({id:rid(),k:k,ids:[id]}); }); }); return log; }
+function rebuild(e){ e.ev=evFromLog(e.log); }
+function pinHash(pin){ var x="sommerhaus-liga:"+pin, hsh=2166136261; for(var i=0;i<x.length;i++){ hsh^=x.charCodeAt(i); hsh=Math.imul(hsh,16777619)>>>0; } return ("0000000"+hsh.toString(16)).slice(-8); }
 var BASE=[
   ["hati","Hati & Alex","Hati Suárez & Alexander Molz"],
   ["michael","Michael & Shelly","Michael Naseband & Shelly Braun"],
@@ -326,7 +372,7 @@ var EP_STATES=["tip0","tip1","live","exits","winner","review","done"];
 function defaults(){
   return {v:2,phase:"setup",step:"names",players:["",""],start:null,starter:null,draftLog:[],
     couples:BASE.map(function(b){ return {id:b[0],short:b[1],full:b[2],nach:!!b[3],inFrom:b[3]?null:1,outIn:null,outType:null,owner:null,custom:false,live:false}; }),
-    tips:{winner:[null,null],curse:[null,null]},episodes:{},updated:0};
+    tips:{winner:[null,null],curse:[null,null]},episodes:{},rules:defaultRules(),admin:{pin:null},updated:0};
 }
 function normalize(raw){
   if(!raw || raw.v!==2 || !Array.isArray(raw.couples)) return defaults();
@@ -347,10 +393,23 @@ function normalize(raw){
   if(raw.episodes && typeof raw.episodes==="object"){
     Object.keys(raw.episodes).forEach(function(k){
       var e=raw.episodes[k]; if(!e) return;
+      var log=Array.isArray(e.log) ? e.log.filter(function(x){ return x && x.k && Array.isArray(x.ids) && x.ids.length; }).map(function(x){ return {id:String(x.id||rid()),k:String(x.k),ids:x.ids.map(String)}; }) : logFromEv(e.ev);
       d.episodes[k]={status:EP_STATES.indexOf(e.status)>=0?e.status:"tip0",tips:Array.isArray(e.tips)?[e.tips[0]||null,e.tips[1]||null]:[null,null],
-        ev:(e.ev&&typeof e.ev==="object")?e.ev:{},winner:e.winner||null};
+        log:log,ev:evFromLog(log),winner:e.winner||null};
     });
   }
+  if(raw.rules && Array.isArray(raw.rules.events) && raw.rules.events.length){
+    var seen={};
+    var evs=raw.rules.events.filter(function(x){ if(!x||!x.k||seen[x.k]) return false; seen[x.k]=1; return true; }).map(function(x){
+      return {k:String(x.k),label:String(x.label||x.k).slice(0,40),g:x.g==="Spiele"?"Spiele":"Drama",pts:clampPts(x.pts),hidden:!!x.hidden,custom:!!x.custom};
+    });
+    EVENTS.forEach(function(def){ if(CORE_KEYS.indexOf(def.k)>=0 && !seen[def.k]) evs.push({k:def.k,label:def.label,g:def.g,pts:def.pts,hidden:false,custom:false}); });
+    evs.forEach(function(x){ if(CORE_KEYS.indexOf(x.k)>=0) x.hidden=false; });
+    d.rules.events=evs;
+  }
+  if(raw.rules && raw.rules.auto) Object.keys(DEF_AUTO).forEach(function(k){ if(typeof raw.rules.auto[k]==="number") d.rules.auto[k]=clampPts(raw.rules.auto[k]); });
+  if(raw.rules && raw.rules.tips) Object.keys(DEF_TIPS).forEach(function(k){ if(typeof raw.rules.tips[k]==="number") d.rules.tips[k]=clampPts(raw.rules.tips[k]); });
+  if(raw.admin && typeof raw.admin.pin==="string" && /^[0-9a-f]{8}$/.test(raw.admin.pin)) d.admin.pin=raw.admin.pin;
   d.updated=raw.updated||0;
   return d;
 }
@@ -389,7 +448,7 @@ function loadLocal(){ try{ var t=localStorage.getItem(STORE_KEY); if(t) return n
 function saveLocal(){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }catch(e){} }
 
 var state=loadLocal();
-var ui={screen:"home",key:"",flash:"",sel:null,sel2:null,set:null,msg:"",err:"",confirm:null,undo:[],add:false,addSel:null,showExport:false};
+var ui={screen:"home",key:"",flash:"",sel:null,sel2:null,set:null,msg:"",err:"",confirm:null,add:false,addSel:null,showExport:false,evSel:null,cpSel:[],adminOk:false,edit:null,edName:"",edPts:1,edG:"Drama",pinChange:false};
 
 /* ---------- helpers ---------- */
 function h(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
@@ -414,7 +473,7 @@ function outsIn(f){ return state.couples.filter(function(c){return c.outIn===f;}
 function couplePts(c,f){
   var e=ep(f); if(!e || f<state.start) return 0;
   var p=0, ev=e.ev[c.id];
-  if(ev) Object.keys(ev).forEach(function(k){ if(EVPTS[k]!=null) p+=EVPTS[k]*(ev[k]||0); });
+  if(ev) Object.keys(ev).forEach(function(k){ p+=evPts(k)*(ev[k]||0); });
   if(closed(f)){
     if(alive(c,f)) p+=R.survive;
     if(c.outIn===f && c.outType==="freiwillig") p+=R.quit;
@@ -684,6 +743,7 @@ function viewHome(){
   out+='<section class="card linkrow">'+
     '<button class="link" data-act="go" data-v="table"><span>Tabelle &amp; Teams</span><span>›</span></button>'+
     '<button class="link" data-act="go" data-v="rules"><span>So gibt’s Punkte</span><span>›</span></button>'+
+    '<button class="link" data-act="go" data-v="admin"><span>Adminmodus</span><span>›</span></button>'+
     (canFix?'<button class="link" data-act="fix-ask"><span>'+h(epName(ld))+' korrigieren</span><span>›</span></button>':"")+
     (MODE==="sb"?'<button class="link" data-act="go" data-v="settings"><span>Link fürs zweite Handy</span><span>›</span></button>':"")+
     '<button class="link" data-act="go" data-v="settings"><span>Sicherung &amp; Neustart</span><span>›</span></button></section>';
@@ -693,11 +753,6 @@ function viewHome(){
   return out;
 }
 
-function chip(c,f,e){
-  var cnt=((ep(f).ev[c.id]||{})[e.k])||0;
-  return '<span class="cg"><button class="chip'+(cnt?" on":"")+'" data-act="ev" data-c="'+h(c.id)+'" data-k="'+e.k+'" aria-label="'+h(e.label)+' für '+h(c.short)+', bisher '+cnt+'">'+h(e.label)+' <span class="pts">'+sgn(e.pts)+'</span>'+(cnt>1?'<span class="cnt">×'+cnt+'</span>':"")+'</button>'+
-    (cnt?'<button class="minus" data-act="evm" data-c="'+h(c.id)+'" data-k="'+e.k+'" aria-label="'+h(e.label)+' bei '+h(c.short)+' zurücknehmen">−</button>':"")+'</span>';
-}
 function epSteps(f){ return f===10?["tip0","tip1","live","exits","winner","review"]:["tip0","tip1","live","exits","review"]; }
 
 function viewEpisode(){
@@ -713,28 +768,41 @@ function viewEpisode(){
       opt("pick-sel","none","Niemand fliegt raus","",ui.sel==="none",tcls(pi))+coupleOpts("pick-sel",house,ui.sel,tcls(pi))+'</div>'+msgs()+primary("e-tip",ui.sel?"Tipp abgeben":"Erst einen Tipp wählen",!ui.sel);
   }
   else if(e.status==="live"){
-    enter("e-"+f+"-live",function(){ ui.undo=[]; ui.add=false; ui.addSel=null; });
+    enter("e-"+f+"-live",function(){ ui.evSel=null; ui.cpSel=[]; ui.add=false; ui.addSel=null; });
+    if(ui.evSel && !evByKey(ui.evSel)) ui.evSel=null;
+    ui.cpSel=ui.cpSel.filter(function(id){ var x=byId(id); return x && inHouse(x,f); });
     var lp=[0,1].map(function(pi){ return playerFolge(pi,f); });
-    out+=head("e-back")+'<h2 class="q">'+h(label)+' läuft</h2><p class="hint">Passiert etwas, tippst du es beim Paar an. Mehrmals tippen zählt mehrmals. Vertippt? Mit „−“ oder „Letzte Eingabe rückgängig“ zurücknehmen.</p>'+
+    out+=head("e-back")+'<h2 class="q">'+h(label)+' läuft</h2><p class="hint">Passiert etwas? Tippe erst an, was passiert ist, und dann, bei welchem Paar. Das können auch mehrere Paare sein.</p>'+
       '<div class="livebar"><div class="t1"><span>'+pn(0)+'</span><b class="num">'+sgn(lp[0])+'</b></div><div class="t2"><span>'+pn(1)+'</span><b class="num">'+sgn(lp[1])+'</b></div></div>';
     if(ui.msg) out+='<p class="okmsg toast" role="status">'+h(ui.msg)+'</p>';
-    if(ui.undo.length) out+='<div class="actions"><button class="btn" data-act="undo">Letzte Eingabe rückgängig</button></div>';
-    [0,1,null].forEach(function(pi){
-      var cs=house.filter(function(c){return c.owner===pi;}); if(!cs.length) return;
-      out+='<div class="teamlabel '+tcls(pi)+'"><span class="dot"></span>'+(pi==null?"Ohne Team":"Team "+pn(pi))+'</div>';
-      cs.forEach(function(c){
-        var pts=couplePts(c,f);
-        out+='<article class="cc"><div class="cc-h"><div class="cc-name"><strong>'+h(c.short)+'</strong><span class="full">'+h(c.full)+'</span></div><span class="cc-pts num'+(pts<0?" neg":"")+'">'+sgn(pts)+'</span></div>';
-        ["Spiele","Drama"].forEach(function(g){
-          out+='<div class="grp"><span class="label">'+g+'</span><div class="chips">'+EVENTS.filter(function(x){return x.g===g;}).map(function(x){return chip(c,f,x);}).join("")+'</div></div>';
-        });
-        if(c.live && c.inFrom===f) out+='<div><button class="btn sm" data-act="unjoin" data-c="'+h(c.id)+'">Einzug zurücknehmen</button></div>';
-        out+='</article>';
-      });
+    out+='<section class="card"><span class="label">1 · Was ist passiert?</span>';
+    ["Spiele","Drama"].forEach(function(g){
+      var evs=visibleEvents(g); if(!evs.length) return;
+      out+='<div class="grp"><span class="sublabel">'+g+'</span><div class="evgrid">'+evs.map(function(x){
+        return '<button class="evbtn" data-act="evsel" data-v="'+h(x.k)+'" aria-pressed="'+(ui.evSel===x.k)+'"><span>'+h(x.label)+'</span><b class="'+(x.pts<0?"neg":"")+'">'+sgn(x.pts)+'</b></button>';
+      }).join("")+'</div></div>';
     });
+    out+='</section>';
+    if(ui.evSel){
+      var sx=evByKey(ui.evSel);
+      out+='<section class="card" id="step2"><span class="label">2 · Bei welchem Paar?</span><p class="hint">„'+h(sx.label)+'“ ('+sgn(sx.pts)+' je Paar). Tippe ein oder mehrere Paare an.</p><div class="opts">'+
+        house.map(function(c){ return opt("cp-toggle",c.id,c.short,c.owner==null?"ohne Team":"Team "+state.players[c.owner],ui.cpSel.indexOf(c.id)>=0,tcls(c.owner)); }).join("")+'</div></section>';
+    }
+    var lg=e.log.slice().reverse();
+    out+='<section class="card"><h3>Eingetragen in dieser Folge</h3>'+(lg.length?'<div class="log">'+lg.map(function(x){
+      var names=x.ids.map(function(id){ var c=byId(id); return c?c.short:"?"; }).join(", "), pts=evPts(x.k);
+      return '<div class="logrow"><div class="lt"><b>'+h(evLabel(x.k))+' <span class="'+(pts<0?"no":"ok")+'">'+sgn(pts)+(x.ids.length>1?" je Paar":"")+'</span></b><small>'+h(names)+'</small></div><button class="btn sm" data-act="log-del" data-v="'+h(x.id)+'">Entfernen</button></div>';
+    }).join("")+'</div>':'<p class="hint">Noch nichts eingetragen.</p>')+'</section>';
+    out+='<section class="card"><h3>Stand dieser Folge</h3><div class="teams">'+[0,1].map(function(pi){
+      var cs=house.filter(function(c){ return c.owner===pi; });
+      return '<div class="'+tcls(pi)+'"><div class="team-h"><span class="dot"></span>'+pn(pi)+'</div><ul class="plist">'+(cs.length?cs.map(function(c){ var pt=couplePts(c,f); return '<li><span class="cn">'+h(c.short)+'</span><span></span><span class="num">'+sgn(pt)+'</span></li>'; }).join(""):'<li class="empty">Kein Paar im Haus</li>')+'</ul></div>';
+    }).join("")+'</div></section>';
     // newcomer
     var waiting=state.couples.filter(function(c){ return c.inFrom==null && c.outIn==null; });
     out+='<section class="card"><h3>Zieht ein neues Paar ein?</h3>';
+    house.filter(function(c){ return c.live && c.inFrom===f; }).forEach(function(c){
+      out+='<div class="logrow"><div class="lt"><b>'+h(c.short)+'</b><small>in dieser Folge eingezogen, spielt für '+(c.owner==null?"niemanden":pn(c.owner))+'</small></div><button class="btn sm" data-act="unjoin" data-c="'+h(c.id)+'">Zurücknehmen</button></div>';
+    });
     if(!ui.add){
       out+='<p class="hint">Nur nutzen, wenn in dieser Folge wirklich ein Nachrücker-Paar ins Haus kommt.</p><div><button class="btn" data-act="add-open">Neues Paar eintragen</button></div>';
     } else {
@@ -747,7 +815,10 @@ function viewEpisode(){
         '<div class="actions"><button class="btn big primary" data-act="add-yes"'+(ui.addSel?"":" disabled")+'>Einzug eintragen</button><button class="btn" data-act="add-close">Abbrechen</button></div>';
     }
     out+='</section>';
-    out+=primary("e-live","Folge ist vorbei, weiter");
+    if(ui.evSel){
+      var sx2=evByKey(ui.evSel), n=ui.cpSel.length;
+      out+='<div class="actions dock"><button class="btn big primary" data-act="ev-apply"'+(n?"":" disabled")+'>'+(n?h(sx2.label)+" für "+n+" Paar"+(n===1?"":"e")+" eintragen":"Jetzt ein Paar antippen")+'</button><button class="btn" data-act="ev-cancel">Abbrechen</button></div>';
+    } else out+=primary("e-live","Folge ist vorbei, weiter");
   }
   else if(e.status==="exits"){
     enter("e-"+f+"-exits",function(){ ui.set={}; house.forEach(function(c){ ui.set[c.id]= c.outIn===f ? c.outType : "stay"; }); });
@@ -810,7 +881,7 @@ function viewRules(){
   enter("rules");
   var out=flowHead("home","Punkte")+'<h2 class="q">So gibt’s Punkte</h2>';
   ["Spiele","Drama"].forEach(function(g){
-    out+='<section class="card"><h3>'+g+'</h3><div class="rules">'+EVENTS.filter(function(e){return e.g===g;}).map(function(e){ return '<div class="rl"><span>'+h(e.label)+'</span><b>'+sgn(e.pts)+'</b></div>'; }).join("")+'</div></section>';
+    out+='<section class="card"><h3>'+g+'</h3><div class="rules">'+visibleEvents(g).map(function(e){ return '<div class="rl"><span>'+h(e.label)+'</span><b>'+sgn(e.pts)+'</b></div>'; }).join("")+'</div></section>';
   });
   out+='<section class="card"><h3>Automatisch</h3><div class="rules">'+
     '<div class="rl"><span>Paar überlebt die Folge</span><b>'+sgn(R.survive)+'</b></div>'+
@@ -821,7 +892,61 @@ function viewRules(){
     '<div class="rl"><span>Wochentipp richtig</span><b>'+sgn(R.weekTip)+'</b></div>'+
     '<div class="rl"><span>Siegertipp richtig</span><b>'+sgn(R.winnerTip)+'</b></div>'+
     '<div class="rl"><span>Fluch-Tipp richtig</span><b>'+sgn(R.curseTip)+'</b></div></div>'+
-    '<p class="hint">Neue Nachrücker-Paare bekommt, wer gerade hinten liegt.</p></section>';
+    '<p class="hint">Neue Nachrücker-Paare bekommt, wer gerade hinten liegt. Punkte und Ereignisse lassen sich im Adminmodus ändern.</p></section>';
+  return out;
+}
+function evUses(k){ var n=0; Object.keys(state.episodes).forEach(function(f){ (state.episodes[f].log||[]).forEach(function(x){ if(x.k===k) n+=x.ids.length; }); }); return n; }
+function stepper(act,key,val){ return '<div class="stepper"><button data-act="'+act+'" data-v="'+h(key)+'" data-d="-1" aria-label="Weniger">−</button><b>'+sgn(val)+'</b><button data-act="'+act+'" data-v="'+h(key)+'" data-d="1" aria-label="Mehr">+</button></div>'; }
+function pinFields(){
+  return '<label class="f">Neue PIN (4 Ziffern)<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin1" maxlength="4" autocomplete="new-password"></label>'+
+    '<label class="f">PIN wiederholen<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin2" maxlength="4" autocomplete="new-password"></label>';
+}
+function editorBlock(x){
+  var core=x && CORE_KEYS.indexOf(x.k)>=0, uses=x?evUses(x.k):0;
+  var out='<div class="editor"><label class="f">Name<input type="text" id="ed-name" maxlength="40" autocomplete="off" value="'+h(ui.edName)+'" placeholder="z. B. Cringemoment"></label>'+
+    '<div class="row2"><span class="sublabel">Punkte je Paar</span>'+stepper("ed-pts","",ui.edPts)+'</div>'+
+    '<div class="grp"><span class="sublabel">Bereich</span><div class="seg seg2" role="group" aria-label="Bereich">'+
+      '<button data-act="ed-g" data-v="Spiele" aria-pressed="'+(ui.edG==="Spiele")+'">Spiele</button><button data-act="ed-g" data-v="Drama" aria-pressed="'+(ui.edG==="Drama")+'">Drama</button></div></div>'+
+    (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+
+    '<div class="actions"><button class="btn big primary" data-act="ed-save">'+(x?"Änderung speichern":"Ereignis anlegen")+'</button><button class="btn" data-act="ed-cancel">Abbrechen</button></div>';
+  if(x){
+    if(core) out+='<p class="hint">Dieses Ereignis wird für den Fluch-Tipp gebraucht und lässt sich deshalb nicht entfernen.</p>';
+    else if(ui.confirm==="ed-del") out+='<p><b>„'+h(x.label)+'“ entfernen?</b> '+(uses?'Es wurde schon '+uses+'-mal vergeben. Es verschwindet vom Punkteboard, die bisher vergebenen Punkte bleiben in der Tabelle.':'Es wurde noch nie vergeben.')+'</p><div class="actions"><button class="btn big danger" data-act="ed-del-yes">Ja, entfernen</button><button class="btn" data-act="cancel">Abbrechen</button></div>';
+    else out+='<div><button class="btn danger" data-act="ed-del">Ereignis entfernen</button></div>';
+  }
+  return out+'</div>';
+}
+function viewAdmin(){
+  enter("admin",function(){ ui.edit=null; ui.pinChange=false; });
+  var out=flowHead("home","Adminmodus")+'<h2 class="q">Adminmodus</h2>';
+  if(!state.admin.pin){
+    return out+'<p class="hint">Lege zuerst eine Admin-PIN fest. Dann kann nur, wer die PIN kennt, Punkte und Ereignisse ändern. Merk sie dir gut.</p><section class="card">'+pinFields()+msgs()+'</section>'+primary("pin-set","PIN festlegen");
+  }
+  if(!ui.adminOk){
+    return out+'<p class="hint">Gib die Admin-PIN ein.</p><section class="card"><label class="f">PIN<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin" maxlength="4" autocomplete="current-password"></label>'+msgs()+'</section>'+primary("pin-check","Entsperren");
+  }
+  out+='<p class="hint">Änderungen gelten sofort und auch rückwirkend für alle bisherigen Folgen. Die Tabelle rechnet automatisch neu.</p>';
+  if(ui.msg) out+='<p class="okmsg toast" role="status">'+h(ui.msg)+'</p>';
+  ["Spiele","Drama"].forEach(function(g){
+    out+='<section class="card"><h3>'+g+'</h3><div>'+visibleEvents(g).map(function(x){
+      return ui.edit===x.k ? editorBlock(x) : '<div class="admrow"><span class="nm">'+h(x.label)+'</span><b>'+sgn(x.pts)+'</b><button class="btn sm" data-act="ed-open" data-v="'+h(x.k)+'">Bearbeiten</button></div>';
+    }).join("")+'</div></section>';
+  });
+  out+= ui.edit==="__new" ? '<section class="card"><h3>Neues Ereignis</h3>'+editorBlock(null)+'</section>' : '<div class="actions"><button class="btn" data-act="ed-new">Neues Ereignis anlegen</button></div>';
+  var hid=state.rules.events.filter(function(x){ return x.hidden; });
+  if(hid.length) out+='<section class="card"><h3>Entfernte Ereignisse</h3><p class="hint">Bisher vergebene Punkte zählen weiter.</p><div>'+hid.map(function(x){
+    return '<div class="admrow"><span class="nm">'+h(x.label)+'</span><b>'+sgn(x.pts)+'</b><button class="btn sm" data-act="ed-restore" data-v="'+h(x.k)+'">Zurückholen</button></div>';
+  }).join("")+'</div></section>';
+  out+='<section class="card"><h3>Automatische Punkte</h3><div>'+
+    [["survive","Paar überlebt die Folge"],["quit","Paar zieht freiwillig aus"],["finale","Paar steht im Finale"],["sieg","Paar gewinnt das Sommerhaus"]].map(function(r){ return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+stepper("auto-step",r[0],state.rules.auto[r[0]])+'</div>'; }).join("")+'</div></section>';
+  out+='<section class="card"><h3>Tipps</h3><div>'+
+    [["weekTip","Wochentipp richtig"],["winnerTip","Siegertipp richtig"],["curseTip","Fluch-Tipp richtig"]].map(function(r){ return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+stepper("tip-step",r[0],state.rules.tips[r[0]])+'</div>'; }).join("")+'</div></section>';
+  out+='<section class="card"><h3>Weitere Einstellungen</h3>';
+  out+= ui.confirm==="adm-defaults" ? '<p><b>Alle Standardwerte wiederherstellen?</b> Die ursprünglichen Ereignisse und Punkte kommen zurück. Selbst angelegte Ereignisse bleiben.</p><div class="actions"><button class="btn big danger" data-act="adm-defaults-yes">Ja, wiederherstellen</button><button class="btn" data-act="cancel">Abbrechen</button></div>'
+    : '<div><button class="btn" data-act="adm-defaults">Standardwerte wiederherstellen …</button></div>';
+  out+= ui.pinChange ? pinFields()+(ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+'<div class="actions"><button class="btn big primary" data-act="pin-set">Neue PIN speichern</button><button class="btn" data-act="pin-change-cancel">Abbrechen</button></div>'
+    : '<div><button class="btn" data-act="pin-change">Admin-PIN ändern</button></div>';
+  out+='<div><button class="btn" data-act="adm-lock">Adminmodus sperren</button></div></section>';
   return out;
 }
 function viewSettings(){
@@ -864,10 +989,12 @@ function render(){
   else if(ui.screen==="table") html=viewTable();
   else if(ui.screen==="rules") html=viewRules();
   else if(ui.screen==="settings") html=viewSettings();
+  else if(ui.screen==="admin") html=viewAdmin();
   else html=viewHome();
   v.innerHTML=html;
   renderSync();
 }
+function syncEdName(){ var el=document.getElementById("ed-name"); if(el) ui.edName=el.value; }
 function goTop(){ try{ window.scrollTo(0,0); }catch(e){} }
 
 /* ---------- actions ---------- */
@@ -926,7 +1053,7 @@ document.addEventListener("click",function(evt){
     case "s-ready": state.phase="season"; state.step="done"; ui.screen="home"; ui.key=""; commit(); goTop(); return;
 
     /* episode */
-    case "ep-start": if(!f) return; if(!e) state.episodes[f]={status:"tip0",tips:[null,null],ev:{},winner:null}; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
+    case "ep-start": if(!f) return; if(!e) state.episodes[f]={status:"tip0",tips:[null,null],log:[],ev:{},winner:null}; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
     case "ep-resume": ui.screen="episode"; ui.key=""; render(); goTop(); return;
     case "e-back":
       if(!e) return; var st=epSteps(f), k=st.indexOf(e.status);
@@ -934,15 +1061,23 @@ document.addEventListener("click",function(evt){
     case "e-tip":
       if(!e||!ui.sel) return; var tp=e.status==="tip0"?0:1; e.tips[tp]=ui.sel;
       setEpStatus(f, tp===0?"tip1":"live"); return;
-    case "ev":
-      if(!e||!c) return; var m=e.ev[c.id]||(e.ev[c.id]={}); var key=b.getAttribute("data-k"); m[key]=(m[key]||0)+1;
-      ui.undo.push({c:c.id,k:key}); ui.msg=""; commit(); return;
-    case "evm":
-      if(!e||!c) return; var m2=e.ev[c.id], k2=b.getAttribute("data-k"); if(m2&&m2[k2]){ m2[k2]--; if(!m2[k2]) delete m2[k2]; }
-      ui.msg=""; commit(); return;
-    case "undo":
-      if(!e) return; var u=ui.undo.pop(); if(u){ var m3=e.ev[u.c]; if(m3&&m3[u.k]){ m3[u.k]--; if(!m3[u.k]) delete m3[u.k]; } }
-      ui.msg=""; commit(); return;
+    case "evsel":
+      if(!e) return; ui.evSel = ui.evSel===v ? null : v; ui.cpSel=[]; ui.msg=""; render();
+      if(ui.evSel){ var s2=document.getElementById("step2"); if(s2 && s2.scrollIntoView){ try{ s2.scrollIntoView({behavior:"smooth",block:"start"}); }catch(x){ s2.scrollIntoView(); } } }
+      return;
+    case "cp-toggle":
+      var ci=ui.cpSel.indexOf(v); if(ci>=0) ui.cpSel.splice(ci,1); else ui.cpSel.push(v); render(); return;
+    case "ev-cancel": ui.evSel=null; ui.cpSel=[]; render(); return;
+    case "ev-apply":
+      if(!e||!ui.evSel||!evByKey(ui.evSel)) return;
+      var ids=ui.cpSel.filter(function(id){ var x=byId(id); return x && inHouse(x,f); });
+      if(!ids.length) return;
+      e.log.push({id:rid(),k:ui.evSel,ids:ids}); rebuild(e);
+      ui.msg=evLabel(ui.evSel)+" eingetragen: "+ids.map(function(id){ return byId(id).short; }).join(", ");
+      ui.evSel=null; ui.cpSel=[]; commit(); goTop(); return;
+    case "log-del":
+      if(!e) return; var before=e.log.length; e.log=e.log.filter(function(x){ return x.id!==v; });
+      if(e.log.length!==before){ rebuild(e); ui.msg="Eintrag entfernt."; commit(); } return;
     case "add-open": ui.add=true; ui.addSel=null; ui.err=""; render(); return;
     case "add-close": ui.add=false; ui.addSel=null; ui.err=""; render(); return;
     case "add-sel": ui.addSel=v; ui.err=""; render(); return;
@@ -959,10 +1094,10 @@ document.addEventListener("click",function(evt){
       commit(); return;
     case "unjoin":
       if(!e||!c) return;
-      Object.keys(state.episodes).forEach(function(k){ delete state.episodes[k].ev[c.id]; });
+      Object.keys(state.episodes).forEach(function(k){ var ex=state.episodes[k]; ex.log=ex.log.map(function(x){ return {id:x.id,k:x.k,ids:x.ids.filter(function(id){ return id!==c.id; })}; }).filter(function(x){ return x.ids.length; }); rebuild(ex); });
       if(c.custom) state.couples=state.couples.filter(function(x){return x.id!==c.id;});
       else { c.inFrom=null; c.owner=null; c.live=false; }
-      ui.undo=ui.undo.filter(function(x){return x.c!==c.id;}); ui.msg="Einzug zurückgenommen."; commit(); return;
+      ui.cpSel=ui.cpSel.filter(function(x){ return x!==c.id; }); ui.msg="Einzug zurückgenommen."; commit(); return;
     case "e-live": setEpStatus(f,"exits"); return;
     case "exsel": if(ui.set&&c) { ui.set[c.id]=v; ui.err=""; render(); } return;
     case "e-exits":
@@ -987,6 +1122,52 @@ document.addEventListener("click",function(evt){
       ui.confirm=null; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
 
     /* settings */
+    /* admin */
+    case "pin-set":
+      var p1=((document.getElementById("pin1")||{}).value||"").trim(), p2=((document.getElementById("pin2")||{}).value||"").trim();
+      ui.err=""; ui.msg="";
+      if(!/^[0-9]{4}$/.test(p1)){ ui.err="Die PIN muss aus genau 4 Ziffern bestehen."; render(); return; }
+      if(p1!==p2){ ui.err="Die beiden PINs stimmen nicht überein."; render(); return; }
+      state.admin.pin=pinHash(p1); ui.adminOk=true; ui.pinChange=false; ui.msg="PIN gespeichert."; commit(); goTop(); return;
+    case "pin-check":
+      var pe=((document.getElementById("pin")||{}).value||"").trim();
+      if(pinHash(pe)!==state.admin.pin){ ui.err="Falsche PIN. Versuch es noch einmal."; render(); return; }
+      ui.err=""; ui.adminOk=true; render(); goTop(); return;
+    case "pin-change": ui.pinChange=true; ui.err=""; render(); return;
+    case "pin-change-cancel": ui.pinChange=false; ui.err=""; render(); return;
+    case "adm-lock": ui.adminOk=false; ui.edit=null; ui.screen="home"; ui.key=""; render(); goTop(); return;
+    case "ed-open":
+      if(!ui.adminOk) return; var eo=evByKey(v); if(!eo) return;
+      ui.edit=v; ui.edName=eo.label; ui.edPts=eo.pts; ui.edG=eo.g; ui.err=""; ui.msg=""; ui.confirm=null; render(); return;
+    case "ed-new": if(!ui.adminOk) return; ui.edit="__new"; ui.edName=""; ui.edPts=1; ui.edG="Drama"; ui.err=""; ui.msg=""; ui.confirm=null; render(); var en=document.getElementById("ed-name"); if(en) en.focus(); return;
+    case "ed-cancel": ui.edit=null; ui.err=""; ui.confirm=null; render(); return;
+    case "ed-pts": syncEdName(); ui.edPts=clampPts(ui.edPts+(+b.getAttribute("data-d"))); render(); return;
+    case "ed-g": syncEdName(); ui.edG=v==="Spiele"?"Spiele":"Drama"; render(); return;
+    case "ed-save":
+      if(!ui.adminOk || !ui.edit) return; syncEdName();
+      var nm2=ui.edName.trim().replace(/\s+/g," ");
+      ui.err="";
+      if(!nm2){ ui.err="Bitte einen Namen eintragen."; render(); return; }
+      if(ui.edPts===0){ ui.err="Ein Ereignis braucht Plus- oder Minuspunkte, nicht 0."; render(); return; }
+      var dup=state.rules.events.some(function(x){ return !x.hidden && x.k!==ui.edit && x.label.toLowerCase()===nm2.toLowerCase(); });
+      if(dup){ ui.err="Ein Ereignis mit diesem Namen gibt es schon."; render(); return; }
+      if(ui.edit==="__new"){ state.rules.events.push({k:"e"+rid(),label:nm2,g:ui.edG,pts:ui.edPts,hidden:false,custom:true}); ui.msg="„"+nm2+"“ angelegt."; }
+      else { var es=evByKey(ui.edit); if(!es) return; es.label=nm2; es.pts=ui.edPts; es.g=ui.edG; ui.msg="„"+nm2+"“ gespeichert."; }
+      ui.edit=null; commit(); return;
+    case "ed-del": ui.confirm="ed-del"; syncEdName(); render(); return;
+    case "ed-del-yes":
+      if(!ui.adminOk) return; var ed=evByKey(ui.edit); if(!ed || CORE_KEYS.indexOf(ed.k)>=0) return;
+      if(evUses(ed.k)>0) ed.hidden=true; else state.rules.events=state.rules.events.filter(function(x){ return x.k!==ed.k; });
+      ui.msg="„"+ed.label+"“ entfernt."; ui.edit=null; ui.confirm=null; commit(); return;
+    case "ed-restore": if(!ui.adminOk) return; var er=evByKey(v); if(er){ er.hidden=false; ui.msg="„"+er.label+"“ ist wieder da."; commit(); } return;
+    case "auto-step": if(!ui.adminOk) return; state.rules.auto[v]=clampPts(state.rules.auto[v]+(+b.getAttribute("data-d"))); ui.msg=""; commit(); return;
+    case "tip-step": if(!ui.adminOk) return; state.rules.tips[v]=clampPts(state.rules.tips[v]+(+b.getAttribute("data-d"))); ui.msg=""; commit(); return;
+    case "adm-defaults": ui.confirm="adm-defaults"; render(); return;
+    case "adm-defaults-yes":
+      if(!ui.adminOk) return;
+      EVENTS.forEach(function(def){ var x=evByKey(def.k); if(x){ x.label=def.label; x.g=def.g; x.pts=def.pts; x.hidden=false; } else state.rules.events.push({k:def.k,label:def.label,g:def.g,pts:def.pts,hidden:false,custom:false}); });
+      state.rules.auto=copyObj(DEF_AUTO); state.rules.tips=copyObj(DEF_TIPS);
+      ui.confirm=null; ui.edit=null; ui.msg="Standardwerte wiederhergestellt."; commit(); return;
     case "join-open": ui.joinOpen=true; ui.joinErr=""; render(); var jl=document.getElementById("joinlink"); if(jl) jl.focus(); return;
     case "join":
       var jcode=parseCode((document.getElementById("joinlink")||{}).value);
