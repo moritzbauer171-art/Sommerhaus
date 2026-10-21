@@ -1,0 +1,997 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Sommerhaus-Liga">
+<meta name="theme-color" content="#E8F0FB" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#070B16" media="(prefers-color-scheme: dark)">
+</head>
+<body>
+<title>Sommerhaus-Liga</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* Layout: one guided column (max 640px) floating over a fixed summer wallpaper. Every surface is a translucent Liquid-Glass layer: sticky glass capsule for navigation on top, floating glass dock with the single primary action at the bottom. */
+:root{
+  --bg:#E8F0FB;
+  --ink:#1C1C1E; --muted:#5C5E66; --hair:rgba(60,60,67,.14);
+  --glass:rgba(255,255,255,.5); --glass-strong:rgba(255,255,255,.74); --glass-soft:rgba(255,255,255,.38);
+  --rim:rgba(255,255,255,.55); --rim-hi:rgba(255,255,255,.98);
+  --shadow:0 12px 32px rgba(30,46,84,.13), 0 1px 3px rgba(30,46,84,.08);
+  --hl:inset 0 1px 0 rgba(255,255,255,.85), inset 0 -1px 1px rgba(255,255,255,.3);
+  --accent:#1E9E48; --on-accent:#FFFFFF; --accent-glow:rgba(30,158,72,.35);
+  --p1:#0062D6; --p1-tint:rgba(0,122,255,.15); --p2:#B05800; --p2-tint:rgba(255,149,0,.2);
+  --exit:#D70015; --exit-fill:#FF3B30; --exit-tint:rgba(255,59,48,.15); --good:#147A36; --good-tint:rgba(52,199,89,.2);
+  --b1:#6EC1FF; --b2:#FFD35A; --b3:#79E0A0; --b4:#FF9C87; --b5:#B9A5FF;
+  --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  --round:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#070B16; --ink:#F5F5F7; --muted:#A4A5AD; --hair:rgba(235,235,245,.14);
+    --glass:rgba(40,42,52,.48); --glass-strong:rgba(46,48,60,.74); --glass-soft:rgba(255,255,255,.09);
+    --rim:rgba(255,255,255,.14); --rim-hi:rgba(255,255,255,.42);
+    --shadow:0 12px 36px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.3);
+    --hl:inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 1px rgba(255,255,255,.04);
+    --accent:#30D158; --on-accent:#032610; --accent-glow:rgba(48,209,88,.3);
+    --p1:#5AA9FF; --p1-tint:rgba(10,132,255,.26); --p2:#FFAA3D; --p2-tint:rgba(255,159,10,.24);
+    --exit:#FF6B63; --exit-fill:#FF453A; --exit-tint:rgba(255,69,58,.22); --good:#30D158; --good-tint:rgba(48,209,88,.2);
+    --b1:#1B4FD8; --b2:#B86E00; --b3:#0B8A46; --b4:#B8294A; --b5:#5638CF;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#070B16; --ink:#F5F5F7; --muted:#A4A5AD; --hair:rgba(235,235,245,.14);
+  --glass:rgba(40,42,52,.48); --glass-strong:rgba(46,48,60,.74); --glass-soft:rgba(255,255,255,.09);
+  --rim:rgba(255,255,255,.14); --rim-hi:rgba(255,255,255,.42);
+  --shadow:0 12px 36px rgba(0,0,0,.5), 0 1px 3px rgba(0,0,0,.3);
+  --hl:inset 0 1px 0 rgba(255,255,255,.16), inset 0 -1px 1px rgba(255,255,255,.04);
+  --accent:#30D158; --on-accent:#032610; --accent-glow:rgba(48,209,88,.3);
+  --p1:#5AA9FF; --p1-tint:rgba(10,132,255,.26); --p2:#FFAA3D; --p2-tint:rgba(255,159,10,.24);
+  --exit:#FF6B63; --exit-fill:#FF453A; --exit-tint:rgba(255,69,58,.22); --good:#30D158; --good-tint:rgba(48,209,88,.2);
+  --b1:#1B4FD8; --b2:#B86E00; --b3:#0B8A46; --b4:#B8294A; --b5:#5638CF;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:16px;line-height:1.4;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;
+  padding-left:max(16px, env(safe-area-inset-left,0px));padding-right:max(16px, env(safe-area-inset-right,0px));padding-block:0 40px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--glass-strong);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+button{font:inherit;color:inherit;letter-spacing:inherit}
+:focus-visible{outline:2px solid var(--p1);outline-offset:3px}
+.num{font-variant-numeric:tabular-nums}
+p{margin:0}
+
+/* wallpaper */
+.wall{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;background:var(--bg)}
+.wall i{position:absolute;border-radius:50%;opacity:.85}
+.wall i:nth-child(1){width:75vmax;height:75vmax;left:-25vmax;top:-30vmax;background:radial-gradient(circle,var(--b1) 0,transparent 68%)}
+.wall i:nth-child(2){width:60vmax;height:60vmax;right:-22vmax;top:-6vmax;background:radial-gradient(circle,var(--b2) 0,transparent 68%)}
+.wall i:nth-child(3){width:70vmax;height:70vmax;left:-24vmax;bottom:-34vmax;background:radial-gradient(circle,var(--b3) 0,transparent 68%)}
+.wall i:nth-child(4){width:58vmax;height:58vmax;right:-20vmax;bottom:-18vmax;background:radial-gradient(circle,var(--b4) 0,transparent 68%)}
+.wall i:nth-child(5){width:45vmax;height:45vmax;left:20vw;top:30vh;background:radial-gradient(circle,var(--b5) 0,transparent 68%);opacity:.55}
+@media (prefers-reduced-motion:no-preference){
+  .wall i:nth-child(odd){animation:drift 26s ease-in-out infinite alternate}
+  .wall i:nth-child(even){animation:drift 32s ease-in-out infinite alternate-reverse}
+  @keyframes drift{from{transform:translate3d(0,0,0) scale(1)}to{transform:translate3d(4vmax,3vmax,0) scale(1.08)}}
+}
+.wrap{position:relative;z-index:1;max-width:640px;margin:0 auto}
+
+/* glass material */
+.card,.side,.flowhead,.dock,.opt,.banner,.champ,.cc,.livebar>div,.okmsg,.seg{
+  position:relative;background:var(--glass);border:0;
+  -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
+  box-shadow:var(--hl),var(--shadow);
+}
+.card::before,.side::before,.flowhead::before,.dock::before,.opt::before,.banner::before,.champ::before,.cc::before,.livebar>div::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
+  background:linear-gradient(145deg,var(--rim-hi),rgba(255,255,255,0) 34%,rgba(255,255,255,0) 66%,var(--rim));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
+  mask:linear-gradient(#000 0 0) content-box exclude,linear-gradient(#000 0 0);
+}
+.card .opt,.card .seg,.cc .seg{-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--glass-soft)}
+
+/* header */
+.top{padding-top:22px;display:flex;flex-direction:column;gap:2px}
+h1{font-size:34px;font-weight:800;letter-spacing:-.03em;line-height:1.1;margin:0}
+.sub{color:var(--muted);font-size:14px}
+.sub strong{color:var(--ink);font-weight:650}
+.duel{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:8px;margin-top:14px}
+.side{border-radius:26px;padding:14px 16px 16px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.side.t1{background:linear-gradient(var(--p1-tint),var(--p1-tint)),var(--glass)}
+.side.t2{background:linear-gradient(var(--p2-tint),var(--p2-tint)),var(--glass)}
+.side .pname{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.side.t1 .pname,.side.t1 .score{color:var(--p1)} .side.t2 .pname,.side.t2 .score{color:var(--p2)}
+.score{font-family:var(--round);font-weight:700;font-size:clamp(40px,12vw,56px);line-height:1;margin-top:4px;letter-spacing:-.03em}
+.side .meta{font-size:13px;color:var(--muted)}
+.lead-tag{align-self:flex-start;font-size:11px;font-weight:700;letter-spacing:.02em;padding:3px 9px;border-radius:999px;background:var(--glass-strong);box-shadow:var(--hl);margin-bottom:4px}
+.side:not(.lead) .lead-tag{visibility:hidden}
+.vs{align-self:center;font-weight:700;color:var(--muted);font-size:13px;text-transform:uppercase;letter-spacing:.08em}
+
+main{display:flex;flex-direction:column;gap:14px;padding-top:18px}
+
+/* navigation capsule */
+.flowhead{position:sticky;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:7;display:flex;align-items:center;justify-content:space-between;gap:10px;border-radius:999px;padding:6px 16px 6px 6px;min-height:48px}
+.back{border:0;background:var(--glass-soft);box-shadow:var(--hl);color:var(--p1);font-weight:600;font-size:15px;padding:8px 14px 8px 10px;border-radius:999px;cursor:pointer;display:inline-flex;align-items:center;gap:4px}
+.back span{font-size:22px;line-height:.8;margin-top:-2px}
+.flowhead>span:first-child{padding-left:10px}
+.stepinfo{font-size:12px;font-weight:600;color:var(--muted);text-align:right}
+.dots{display:flex;gap:4px;margin-top:4px;justify-content:flex-end}
+.dots i{width:16px;height:5px;border-radius:3px;background:var(--hair)}
+.dots i.on{background:var(--accent)}
+
+.q{font-size:clamp(26px,7vw,30px);font-weight:800;letter-spacing:-.025em;line-height:1.15;margin:4px 2px 0;text-wrap:balance}
+.q .t1{color:var(--p1)} .q .t2{color:var(--p2)}
+.bigtitle{font-size:28px;font-weight:800;letter-spacing:-.025em;margin:0}
+.hint{color:var(--muted);font-size:15px;margin:0 2px}
+.card .hint{margin:0}
+.card{border-radius:28px;padding:18px;display:flex;flex-direction:column;gap:12px;min-width:0}
+h2{font-size:20px;font-weight:750;letter-spacing:-.02em;margin:0;text-wrap:balance}
+h3{font-size:17px;font-weight:700;margin:0}
+.label{font-size:13px;font-weight:600;color:var(--muted);margin:6px 4px 0;text-transform:uppercase;letter-spacing:.04em}
+
+/* options */
+.opts{display:flex;flex-direction:column;gap:10px}
+.opts.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr))}
+.opt{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:24px;padding:14px 16px;cursor:pointer;min-height:60px}
+.opt .ot{display:flex;flex-direction:column;min-width:0;flex:1}
+.opt .ot b{font-size:17px;font-weight:650}
+.opt .ot small{font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.opt .tick{width:26px;height:26px;border-radius:50%;flex:0 0 auto;display:inline-flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;color:transparent;background:var(--glass-soft);box-shadow:inset 0 0 0 1.5px var(--hair)}
+.opt[aria-pressed="true"]{background:linear-gradient(var(--good-tint),var(--good-tint)),var(--glass);box-shadow:var(--hl),inset 0 0 0 2px var(--accent),var(--shadow)}
+.opt[aria-pressed="true"] .tick{background:var(--accent);box-shadow:none;color:var(--on-accent)}
+.opt.t1[aria-pressed="true"]{background:linear-gradient(var(--p1-tint),var(--p1-tint)),var(--glass);box-shadow:var(--hl),inset 0 0 0 2px var(--p1),var(--shadow)}
+.opt.t1[aria-pressed="true"] .tick{background:var(--p1);color:#fff}
+.opt.t2[aria-pressed="true"]{background:linear-gradient(var(--p2-tint),var(--p2-tint)),var(--glass);box-shadow:var(--hl),inset 0 0 0 2px var(--p2),var(--shadow)}
+.opt.t2[aria-pressed="true"] .tick{background:var(--p2);color:#fff}
+.opt .tag{font-size:11.5px;font-weight:700;color:var(--good);background:var(--good-tint);padding:3px 9px;border-radius:999px;white-space:nowrap}
+
+/* buttons */
+.actions{display:flex;flex-direction:column;gap:8px}
+.dock{position:sticky;bottom:calc(env(safe-area-inset-bottom,0px) + 12px);z-index:6;padding:8px;border-radius:32px;margin-top:4px}
+.btn{border:0;background:var(--glass-soft);box-shadow:var(--hl),inset 0 0 0 1px var(--rim);padding:10px 18px;border-radius:999px;font-weight:600;font-size:15px;cursor:pointer;color:var(--ink)}
+.btn.big{padding:16px 20px;font-size:17px;border-radius:26px;width:100%}
+.btn.primary{background:var(--accent);background-image:linear-gradient(180deg,rgba(255,255,255,.3),rgba(255,255,255,0) 55%);color:var(--on-accent);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 8px 22px var(--accent-glow)}
+.btn.primary:disabled{background:var(--glass-soft);background-image:none;color:var(--muted);box-shadow:var(--hl),inset 0 0 0 1px var(--hair);cursor:not-allowed}
+.btn.danger{color:var(--exit)}
+.btn.big.danger{background:var(--exit-fill);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 8px 22px var(--exit-tint)}
+.btn.sm{padding:7px 14px;font-size:14px}
+.btn:active,.opt:active,.chip:active{transform:scale(.98)}
+.linkrow{gap:0;padding-block:6px}
+.link{display:flex;justify-content:space-between;align-items:center;width:100%;border:0;border-bottom:1px solid var(--hair);background:transparent;padding:14px 2px;font-weight:500;font-size:17px;cursor:pointer;text-align:left}
+.link:last-child{border-bottom:0}
+.link span:last-child{color:var(--muted);font-size:20px;line-height:1}
+.err{color:var(--exit);font-weight:600;font-size:15px;margin:0 4px}
+.okmsg{background:linear-gradient(var(--good-tint),var(--good-tint)),var(--glass);color:var(--good);font-weight:600;font-size:15px;border-radius:20px;padding:12px 16px}
+input[type=text],textarea{font:inherit;font-size:17px;color:var(--ink);background:var(--glass-soft);border:0;box-shadow:var(--hl),inset 0 0 0 1px var(--hair);border-radius:16px;padding:14px 16px;width:100%;max-width:100%}
+input[type=text]:focus{outline:none;box-shadow:var(--hl),inset 0 0 0 2px var(--accent)}
+textarea{min-height:110px;font-size:12.5px;font-family:ui-monospace,Menlo,Consolas,monospace}
+label.f{display:flex;flex-direction:column;gap:6px;font-size:14px;font-weight:600;color:var(--muted)}
+label.f.t1{color:var(--p1)} label.f.t2{color:var(--p2)}
+
+.banner{border-radius:26px;padding:16px 18px;display:flex;flex-direction:column;gap:4px}
+.banner.t1{background:linear-gradient(var(--p1-tint),var(--p1-tint)),var(--glass);color:var(--p1)}
+.banner.t2{background:linear-gradient(var(--p2-tint),var(--p2-tint)),var(--glass);color:var(--p2)}
+.banner b{font-size:24px;font-weight:800;letter-spacing:-.02em;line-height:1.15}
+.banner span{font-size:14px;font-weight:500;color:var(--muted)}
+
+/* teams */
+.teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.team-h{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px}
+.dot{width:10px;height:10px;border-radius:50%;flex:0 0 auto}
+.t1 .dot{background:var(--p1)} .t2 .dot{background:var(--p2)}
+.plist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.plist li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;padding:9px 0;border-bottom:1px solid var(--hair)}
+.plist li:last-child{border-bottom:0}
+.plist .cn{font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.plist .num{font-family:var(--round);font-weight:700;min-width:2.4em;text-align:right}
+.plist li.empty{display:block;color:var(--muted);font-size:14px}
+.st{display:inline-block;font-size:12px;font-weight:600;padding:3px 9px;border-radius:999px;background:var(--glass-soft);color:var(--muted);white-space:nowrap}
+.st.out{background:var(--exit-tint);color:var(--exit)} .st.ok{background:var(--good-tint);color:var(--good)}
+.own{display:inline-block;font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap;max-width:9em;overflow:hidden;text-overflow:ellipsis;vertical-align:middle}
+.own.t1{background:var(--p1-tint);color:var(--p1)} .own.t2{background:var(--p2-tint);color:var(--p2)} .own.free{background:var(--glass-soft);color:var(--muted)}
+
+/* progress */
+.eps{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:5px}
+.ep{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11.5px;color:var(--muted);font-weight:600}
+.ep i{width:100%;height:8px;border-radius:4px;background:var(--glass-soft);box-shadow:inset 0 0 0 1px var(--hair)}
+.ep.done i{background:var(--accent);box-shadow:none} .ep.now i{background:var(--p2);box-shadow:none} .ep.pre{opacity:.4}
+.ep.now{color:var(--ink)}
+
+/* live */
+.livebar{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.livebar div{border-radius:20px;padding:10px 14px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;font-weight:600;font-size:15px;min-width:0}
+.livebar div span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.livebar .t1{background:linear-gradient(var(--p1-tint),var(--p1-tint)),var(--glass);color:var(--p1)}
+.livebar .t2{background:linear-gradient(var(--p2-tint),var(--p2-tint)),var(--glass);color:var(--p2)}
+.livebar b{font-family:var(--round);font-weight:700;font-size:24px}
+.teamlabel{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px;margin:8px 4px 0}
+.cc{border-radius:26px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.cc-h{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
+.cc-name{min-width:0}
+.cc-name strong{display:block;font-size:18px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-name .full{display:block;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cc-pts{font-family:var(--round);font-weight:700;font-size:26px;min-width:2.2em;text-align:right;line-height:1}
+.cc-pts.neg{color:var(--exit)}
+.grp{display:flex;flex-direction:column;gap:8px}
+.grp .label{margin:0}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.cg{display:inline-flex;align-items:center}
+.chip{display:inline-flex;align-items:center;gap:6px;border:0;background:var(--glass-soft);box-shadow:var(--hl),inset 0 0 0 1px var(--hair);border-radius:999px;padding:8px 13px;font-size:14px;font-weight:500;cursor:pointer;color:var(--ink)}
+.chip .pts{font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums;font-size:13px}
+.chip.on{background:var(--ink);color:var(--bg);box-shadow:0 4px 12px rgba(0,0,0,.18)}
+.chip.on .pts{color:inherit;opacity:.7}
+.chip .cnt{font-weight:800}
+.minus{border:0;background:var(--glass-strong);box-shadow:var(--hl),inset 0 0 0 1px var(--hair),0 2px 6px rgba(0,0,0,.12);width:32px;height:32px;border-radius:50%;margin-left:-8px;cursor:pointer;font-weight:700;font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center;position:relative;color:var(--ink)}
+.toast{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);z-index:6}
+
+/* exits */
+.exrow{display:flex;flex-direction:column;gap:10px;padding:12px 0;border-bottom:1px solid var(--hair)}
+.exrow:last-child{border-bottom:0}
+.exrow .nm{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.exrow .nm b{font-size:17px;font-weight:650}
+.seg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;border-radius:16px;padding:4px;box-shadow:inset 0 0 0 1px var(--hair)}
+.seg button{border:0;background:transparent;border-radius:12px;padding:10px 4px;font-size:14px;font-weight:600;cursor:pointer;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--glass-strong);color:var(--ink);box-shadow:var(--hl),0 2px 8px rgba(0,0,0,.12)}
+.seg button.x[aria-pressed="true"]{background:var(--exit-fill);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 4px 12px var(--exit-tint)}
+
+/* review & tables */
+.sum{display:flex;flex-direction:column}
+.sum div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:11px 0;border-bottom:1px solid var(--hair);font-size:15px}
+.sum div:last-child{border-bottom:0}
+.sum div span:last-child{font-weight:700;text-align:right}
+.ok{color:var(--good)} .no{color:var(--muted)}
+.scroll{overflow-x:auto}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:15px}
+.tbl th{font-size:12.5px;font-weight:600;color:var(--muted);text-align:left;padding:6px 8px;border-bottom:1px solid var(--hair)}
+.tbl td{padding:10px 8px;border-bottom:1px solid var(--hair)}
+.tbl .r{text-align:right}
+.tbl td.win1{color:var(--p1);font-weight:700} .tbl td.win2{color:var(--p2);font-weight:700}
+.tbl tr.total td{font-weight:800;border-top:2px solid var(--ink);border-bottom:0}
+.tbl .d{color:var(--muted);font-size:13px}
+.rules{display:flex;flex-direction:column}
+.rl{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--hair);font-size:16px}
+.rl:last-child{border-bottom:0}
+.rl b{font-family:var(--round);font-variant-numeric:tabular-nums}
+.champ{text-align:center;padding:26px 18px;border-radius:32px;display:flex;flex-direction:column;gap:6px}
+.champ.t1{background:linear-gradient(var(--p1-tint),var(--p1-tint)),var(--glass);color:var(--p1)}
+.champ.t2{background:linear-gradient(var(--p2-tint),var(--p2-tint)),var(--glass);color:var(--p2)}
+.champ b{font-family:var(--round);font-weight:800;font-size:clamp(30px,9vw,42px);line-height:1.1;letter-spacing:-.02em}
+.champ span{color:var(--muted);font-weight:500}
+.sync{margin-top:26px;text-align:center;font-size:13px;color:var(--muted)}
+.sync i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--muted);margin-right:6px;vertical-align:middle}
+.sync.cloud i{background:var(--accent)} .sync.readonly i,.sync.error i{background:var(--exit-fill)}
+@media (prefers-reduced-motion:no-preference){.chip,.btn,.opt,.seg button{transition:background-color .2s,color .2s,box-shadow .2s,transform .12s}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .card,.side,.flowhead,.dock,.opt,.banner,.champ,.cc,.livebar>div,.okmsg,.seg{background-color:var(--glass-strong)}
+}
+</style>
+
+<div class="wall" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+<div class="wrap">
+  <header class="top">
+    <h1>Sommerhaus-Liga</h1>
+    <p class="sub" id="sub">Staffel 11 · Bocholt-Barlo</p>
+    <div class="duel" id="duel"></div>
+  </header>
+  <main id="view"></main>
+  <p class="sync" id="sync"><i></i><span>Gespeichert in diesem Browser</span></p>
+</div>
+
+<script>
+(function(){
+"use strict";
+var LS_KEY="sommerhaus-liga-s11-v2";
+var EPISODES=[
+  {n:1,date:"2026-09-08"},{n:2,date:"2026-09-10"},{n:3,date:"2026-09-15"},{n:4,date:"2026-09-22"},
+  {n:5,date:"2026-09-29"},{n:6,date:"2026-10-01"},{n:7,date:"2026-10-13"},{n:8,date:"2026-10-20"},
+  {n:9,date:"2026-10-27"},{n:10,date:"2026-11-03",finale:true}
+];
+var EVENTS=[
+  {k:"spiel",label:"Spiel gewonnen",g:"Spiele",pts:5},
+  {k:"schutz",label:"Nominierungsschutz",g:"Spiele",pts:3},
+  {k:"exit",label:"Exit-Challenge überstanden",g:"Spiele",pts:4},
+  {k:"nominiert",label:"Nominiert",g:"Spiele",pts:-2},
+  {k:"strafe",label:"Strafe kassiert",g:"Spiele",pts:-3},
+  {k:"streit",label:"Großer Streit",g:"Drama",pts:2},
+  {k:"traenen",label:"Tränen",g:"Drama",pts:1},
+  {k:"laestern",label:"Lästerattacke",g:"Drama",pts:1},
+  {k:"liebe",label:"Liebesbeweis",g:"Drama",pts:1},
+  {k:"spruch",label:"Spruch des Abends",g:"Drama",pts:3},
+  {k:"fluch",label:"Trennung (Fluch)",g:"Drama",pts:-5}
+];
+var EVPTS={}; EVENTS.forEach(function(e){ EVPTS[e.k]=e.pts; });
+var R={survive:2,quit:-5,finale:8,sieg:15,weekTip:3,winnerTip:10,curseTip:5};
+var BASE=[
+  ["hati","Hati & Alex","Hati Suárez & Alexander Molz"],
+  ["michael","Michael & Shelly","Michael Naseband & Shelly Braun"],
+  ["ferry","Ferry & Kathy","Ferry Pall & Kathy Hartlieb"],
+  ["anna","Anna & Tano","Anna Lisson & Tano Milingi"],
+  ["nico","Nico & Laura","Nico Legat & Laura Parrinello"],
+  ["anita","Anita & Fabrice","Anita Latifi & Fabrice Neda"],
+  ["vanessa","Vanessa & Giovanni","Vanessa Neigert & Giovanni Weisheit"],
+  ["michelle","Michelle & Sandro","Michelle Daniaux & Sandro Ritzini"],
+  ["julian","Julian & Marcell","Julian F. M. Stoeckel & Marcell Damaschke",1],
+  ["ginger","Ginger & Lukas","Ginger Costello-Wollersheim & Lukas Reiter",1]
+];
+var WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
+var EP_STATES=["tip0","tip1","live","exits","winner","review","done"];
+
+function defaults(){
+  return {v:2,phase:"setup",step:"names",players:["",""],start:null,starter:null,draftLog:[],
+    couples:BASE.map(function(b){ return {id:b[0],short:b[1],full:b[2],nach:!!b[3],inFrom:b[3]?null:1,outIn:null,outType:null,owner:null,custom:false,live:false}; }),
+    tips:{winner:[null,null],curse:[null,null]},episodes:{},updated:0};
+}
+function normalize(raw){
+  if(!raw || raw.v!==2 || !Array.isArray(raw.couples)) return defaults();
+  var d=defaults();
+  if(["setup","season","done"].indexOf(raw.phase)>=0) d.phase=raw.phase;
+  if(typeof raw.step==="string") d.step=raw.step;
+  if(Array.isArray(raw.players)) d.players=[String(raw.players[0]||""),String(raw.players[1]||"")];
+  if(raw.start>=1 && raw.start<=10) d.start=raw.start|0;
+  if(raw.starter===0||raw.starter===1) d.starter=raw.starter;
+  if(Array.isArray(raw.draftLog)) d.draftLog=raw.draftLog.filter(function(x){return typeof x==="string";});
+  d.couples=raw.couples.filter(function(c){return c&&c.id;}).map(function(c){
+    return {id:String(c.id),short:String(c.short||""),full:String(c.full||""),nach:!!c.nach,
+      inFrom:c.inFrom>=1?c.inFrom|0:null,outIn:c.outIn>=0&&c.outIn!==null?c.outIn|0:null,
+      outType:c.outType==="freiwillig"?"freiwillig":(c.outIn!=null?"raus":null),
+      owner:(c.owner===0||c.owner===1)?c.owner:null,custom:!!c.custom,live:!!c.live};
+  });
+  if(raw.tips){ ["winner","curse"].forEach(function(k){ var t=raw.tips[k]; if(Array.isArray(t)) d.tips[k]=[t[0]||null,t[1]||null]; }); }
+  if(raw.episodes && typeof raw.episodes==="object"){
+    Object.keys(raw.episodes).forEach(function(k){
+      var e=raw.episodes[k]; if(!e) return;
+      d.episodes[k]={status:EP_STATES.indexOf(e.status)>=0?e.status:"tip0",tips:Array.isArray(e.tips)?[e.tips[0]||null,e.tips[1]||null]:[null,null],
+        ev:(e.ev&&typeof e.ev==="object")?e.ev:{},winner:e.winner||null};
+    });
+  }
+  d.updated=raw.updated||0;
+  return d;
+}
+/* Supabase (used when the page runs outside claude.ai, e.g. on GitHub Pages) */
+var SB_URL="https://svsnjcgbqbrlduoztqqy.supabase.co";
+var SB_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN2c25qY2dicWJybGR1b3p0cXF5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1ODk2MjgsImV4cCI6MjEwODE2NTYyOH0.KSnTHJ5Oo3eUVlHNR21c8-UhayADsT83IQH86nnWbBM";
+var CODE_KEY="sommerhaus-liga-code";
+var MODE=(window.claude && typeof window.claude.use==="function") ? "claude" : "sb";
+function codeFromHash(){ var m=/(?:^|[#&])liga=([A-Za-z0-9_-]{16,64})/.exec(location.hash||""); return m?m[1]:null; }
+function makeCode(){
+  var a="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789", out="", arr=new Uint32Array(22);
+  try{ crypto.getRandomValues(arr); }catch(e){ for(var j=0;j<22;j++) arr[j]=Math.floor(Math.random()*1e9); }
+  for(var i=0;i<22;i++) out+=a[arr[i]%a.length]; return out;
+}
+function resolveCode(){
+  var c=codeFromHash();
+  if(!c){ try{ c=localStorage.getItem(CODE_KEY); }catch(e){} }
+  if(!c) c=makeCode();
+  try{ localStorage.setItem(CODE_KEY,c); }catch(e){}
+  if(codeFromHash()!==c){ try{ history.replaceState(null,"","#liga="+c); }catch(e){ try{ location.hash="liga="+c; }catch(x){} } }
+  return c;
+}
+var CODE = MODE==="sb" ? resolveCode() : null;
+var STORE_KEY = LS_KEY + (CODE ? ":"+CODE : "");
+function shareUrl(){ return location.href.split("#")[0]+"#liga="+CODE; }
+function loadLocal(){ try{ var t=localStorage.getItem(STORE_KEY); if(t) return normalize(JSON.parse(t)); }catch(e){} return defaults(); }
+function saveLocal(){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }catch(e){} }
+
+var state=loadLocal();
+var ui={screen:"home",key:"",flash:"",sel:null,sel2:null,set:null,msg:"",err:"",confirm:null,undo:[],add:false,addSel:null,showExport:false};
+
+/* ---------- helpers ---------- */
+function h(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function sgn(n){ return n>0?"+"+n:String(n); }
+function byId(id){ for(var i=0;i<state.couples.length;i++) if(state.couples[i].id===id) return state.couples[i]; return null; }
+function epDate(n){ var e=EPISODES[n-1], p=e.date.split("-"), d=new Date(+p[0],+p[1]-1,+p[2]); return WD[d.getDay()]+" "+(+p[2])+"."+(+p[1])+"."; }
+function epName(n){ return n===10?"Finale (Folge 10)":"Folge "+n; }
+function todayStr(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function nextTv(){ var t=todayStr(); for(var i=0;i<EPISODES.length;i++) if(EPISODES[i].date>=t) return EPISODES[i]; return null; }
+function tcls(p){ return p===0?"t1":p===1?"t2":"free"; }
+function pn(p){ return h(state.players[p]); }
+function alive(c,f){ return c.inFrom!=null && c.inFrom<=f && (c.outIn==null || c.outIn>f); }
+function inHouse(c,f){ return c.inFrom!=null && c.inFrom<=f && (c.outIn==null || c.outIn>=f); }
+function houseAt(f){ return state.couples.filter(function(c){ return inHouse(c,f); }); }
+function ep(f){ return state.episodes[f]||null; }
+function closed(f){ var e=ep(f); return !!e && (e.status==="review"||e.status==="done"); }
+function curEp(){ if(!state.start) return null; for(var f=state.start;f<=10;f++){ var e=ep(f); if(!e||e.status!=="done") return f; } return null; }
+function lastDone(){ var l=null; if(!state.start) return null; for(var f=state.start;f<=10;f++){ var e=ep(f); if(e&&e.status==="done") l=f; } return l; }
+function outsIn(f){ return state.couples.filter(function(c){return c.outIn===f;}).map(function(c){return c.id;}); }
+
+/* ---------- scoring ---------- */
+function couplePts(c,f){
+  var e=ep(f); if(!e || f<state.start) return 0;
+  var p=0, ev=e.ev[c.id];
+  if(ev) Object.keys(ev).forEach(function(k){ if(EVPTS[k]!=null) p+=EVPTS[k]*(ev[k]||0); });
+  if(closed(f)){
+    if(alive(c,f)) p+=R.survive;
+    if(c.outIn===f && c.outType==="freiwillig") p+=R.quit;
+    if(f===10 && alive(c,10)) p+=R.finale;
+    if(f===10 && e.winner===c.id) p+=R.sieg;
+  }
+  return p;
+}
+function coupleTotal(c){ var t=0; for(var f=1;f<=10;f++) t+=couplePts(c,f); return t; }
+function weekTip(pi,f){
+  var e=ep(f); if(!e || !closed(f)) return null;
+  var tip=e.tips[pi]; if(!tip) return null;
+  var outs=outsIn(f);
+  return tip==="none" ? outs.length===0 : outs.indexOf(tip)>=0;
+}
+function playerFolge(pi,f){
+  var t=weekTip(pi,f)===true?R.weekTip:0;
+  state.couples.forEach(function(c){ if(c.owner===pi) t+=couplePts(c,f); });
+  return t;
+}
+function cursed(){
+  var ids=[];
+  Object.keys(state.episodes).forEach(function(f){
+    var ev=state.episodes[f].ev||{};
+    Object.keys(ev).forEach(function(id){ if(ev[id]&&ev[id].fluch>0&&ids.indexOf(id)<0) ids.push(id); });
+  });
+  return ids;
+}
+function seasonWinner(){ var e=ep(10); return e && closed(10) ? e.winner : null; }
+function winnerTip(pi){ var w=seasonWinner(), t=state.tips.winner[pi]; if(!w||!t) return null; return t===w; }
+function curseTip(pi){
+  var t=state.tips.curse[pi]; if(!t) return null; var cs=cursed();
+  if(t==="none") return state.phase==="done" ? cs.length===0 : (cs.length?false:null);
+  return cs.indexOf(t)>=0 ? true : (state.phase==="done"?false:null);
+}
+function seasonPts(pi){ return (winnerTip(pi)===true?R.winnerTip:0)+(curseTip(pi)===true?R.curseTip:0); }
+function total(pi){ var t=seasonPts(pi); for(var f=1;f<=10;f++) t+=playerFolge(pi,f); return t; }
+function snakeTurn(){
+  var n=state.draftLog.length, round=Math.floor(n/2), first=(n%2===0), a=state.starter, b=1-a;
+  return (round%2===0)?(first?a:b):(first?b:a);
+}
+function receiverForNewcomer(f){
+  var a=total(0), b=total(1);
+  if(a!==b) return {p:a<b?0:1,why:"liegt gerade hinten"};
+  var ca=houseAt(f).filter(function(c){return c.owner===0;}).length, cb=houseAt(f).filter(function(c){return c.owner===1;}).length;
+  if(ca!==cb) return {p:ca<cb?0:1,why:"hat weniger Paare im Haus"};
+  return {p:1-state.starter,why:"Gleichstand, und im Draft hat die andere Seite angefangen"};
+}
+
+/* ---------- sync ---------- */
+var sync={ref:null,mode:"local",writing:false,again:false,timer:null,readonly:false,seenRemote:false,retried:false};
+function renderSync(){
+  var el=document.getElementById("sync"); if(!el) return;
+  var txt={local:"Gespeichert in diesem Browser",connecting:"Verbinde …",cloud:"Automatisch gespeichert",offline:"Gerade offline: wird gespeichert, sobald wieder Netz da ist",readonly:"Nur ansehen: Änderungen werden hier nicht gespeichert",error:"Speichern hakt gerade, in diesem Browser ist alles gesichert"}[sync.mode];
+  el.className="sync "+sync.mode; el.querySelector("span").textContent=txt;
+}
+function setSync(m){ sync.mode=m; renderSync(); }
+function busy(){ return sync.writing || sync.timer!==null || sync.again; }
+function commit(){
+  state.updated=Date.now(); saveLocal(); render();
+  if(sb.on){ clearTimeout(sb.timer); sb.timer=setTimeout(sbFlush,400); }
+  if(sync.ref && !sync.readonly){ clearTimeout(sync.timer); sync.timer=setTimeout(flush,500); }
+}
+function flush(){
+  sync.timer=null;
+  if(!sync.ref || sync.readonly) return;
+  if(sync.writing){ sync.again=true; return; }
+  sync.writing=true;
+  sync.ref.set({json:JSON.stringify(state),updated:state.updated}).then(function(){
+    sync.retried=false; setSync("cloud"); done();
+  },function(err){
+    var code=err&&err.code;
+    if(code==="invalid_argument"){ sync.readonly=true; setSync("readonly"); }
+    else if(code==="unavailable" && !sync.retried){ sync.retried=true; sync.writing=false; setTimeout(flush,800+Math.random()*900); return; }
+    else setSync("error");
+    done();
+  });
+  function done(){ sync.writing=false; if(sync.again){ sync.again=false; flush(); } }
+}
+var sb={on:false,version:0,timer:null,writing:false,again:false,failed:false};
+function sbBusy(){ return sb.writing || sb.timer!==null || sb.again; }
+function rpc(fn,body){
+  return fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},body:JSON.stringify(body)})
+    .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.json(); });
+}
+function sbFlush(){
+  clearTimeout(sb.timer); sb.timer=null;
+  if(sb.writing){ sb.again=true; return; }
+  sb.writing=true;
+  rpc("save_league",{p_code:CODE,p_data:state}).then(function(v){
+    sb.failed=false; if(+v) sb.version=+v; setSync("cloud"); done();
+  },function(){ sb.failed=true; setSync("offline"); done(); });
+  function done(){ sb.writing=false; if(sb.again){ sb.again=false; sbFlush(); } }
+}
+function sbPull(first){
+  if(sbBusy()) return;
+  rpc("get_league",{p_code:CODE}).then(function(rows){
+    var row=rows&&rows[0];
+    if(!row){ setSync("cloud"); if(state.updated>0) sbFlush(); return; }
+    if(sbBusy()) return;
+    if(!first && +row.version<=sb.version){ setSync("cloud"); return; }
+    sb.version=+row.version||0;
+    var next=row.data;
+    if(next && next.v===2){
+      if(JSON.stringify(next)!==JSON.stringify(state)){ state=normalize(next); saveLocal(); render(); }
+    } else if(state.updated>0) sbFlush();
+    setSync("cloud");
+  },function(){ setSync("offline"); });
+}
+function initSupabase(){
+  sb.on=true; setSync("connecting"); sbPull(true);
+  setInterval(function(){
+    if(document.visibilityState!=="visible") return;
+    if(sb.failed && !sbBusy()) sbFlush(); else sbPull(false);
+  },4000);
+  document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="visible") sbPull(false); });
+  window.addEventListener("hashchange",function(){ var c=codeFromHash(); if(c && c!==CODE){ location.reload(); } });
+}
+function initCloud(){
+  var c=window.claude; if(!c || typeof c.use!=="function") return;
+  var p; try{ p=c.use("db"); }catch(e){ return; }
+  Promise.resolve(p).then(function(db){
+    if(!db) return;
+    var ref; try{ ref=db.doc("league/main"); }catch(e){ return; }
+    sync.ref=ref; setSync("connecting");
+    ref.onSnapshot(function(snap){
+      if(!snap.exists){ if(!sync.seenRemote){ sync.seenRemote=true; setSync("cloud"); if(state.updated>0) flush(); } return; }
+      sync.seenRemote=true;
+      if(sync.mode==="connecting") setSync("cloud");
+      if(snap.metadata && snap.metadata.hasPendingWrites) return;
+      if(busy()) return;
+      var d=snap.data(); if(!d || typeof d.json!=="string") return;
+      if(d.json===JSON.stringify(state)) return;
+      var next; try{ next=JSON.parse(d.json); }catch(e){ return; }
+      if(!next || next.v!==2){ if(state.updated>0) flush(); return; }
+      state=normalize(next); saveLocal(); render();
+    },function(){ sync.ref=null; setSync("local"); });
+  },function(){});
+}
+
+/* ---------- building blocks ---------- */
+function opt(act,val,title,sub,pressed,cls,tag){
+  return '<button class="opt'+(cls?" "+cls:"")+'" data-act="'+act+'" data-v="'+h(val)+'" aria-pressed="'+(!!pressed)+'"><span class="tick" aria-hidden="true">✓</span><span class="ot"><b>'+h(title)+'</b>'+(sub?'<small>'+h(sub)+'</small>':"")+'</span>'+(tag?'<span class="tag">'+h(tag)+'</span>':"")+'</button>';
+}
+function coupleOpts(act,list,selected,cls){
+  return list.map(function(c){ return opt(act,c.id,c.short,c.full,selected===c.id,cls); }).join("");
+}
+function flowHead(backAct,label,idx,count){
+  var dots=""; if(count){ for(var i=0;i<count;i++) dots+='<i class="'+(i<=idx?"on":"")+'"></i>'; }
+  return '<div class="flowhead">'+(backAct?'<button class="back" data-act="'+backAct+'"><span aria-hidden="true">‹</span>Zurück</button>':'<span></span>')+
+    '<div><div class="stepinfo">'+h(label)+(count?" · "+(idx+1)+" von "+count:"")+'</div>'+(count?'<div class="dots">'+dots+'</div>':"")+'</div></div>';
+}
+function primary(act,label,disabled,inline){ return '<div class="actions'+(inline?"":" dock")+'"><button class="btn big primary" data-act="'+act+'"'+(disabled?" disabled":"")+'>'+h(label)+'</button></div>'; }
+function msgs(){ return (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+(ui.msg?'<p class="okmsg" role="status">'+h(ui.msg)+'</p>':""); }
+function teamsBlock(withPts){
+  return '<section class="teams">'+[0,1].map(function(pi){
+    var cs=state.couples.filter(function(c){return c.owner===pi;});
+    if(withPts) cs.sort(function(a,b){ return (a.outIn==null?0:1)-(b.outIn==null?0:1) || coupleTotal(b)-coupleTotal(a); });
+    var rows=cs.length?cs.map(function(c){
+      var st=c.outIn!=null&&c.outIn>=state.start?'<span class="st out">raus F'+c.outIn+(c.outType==="freiwillig"?" · freiwillig":"")+'</span>':(c.outIn!=null?'<span class="st out">schon raus</span>':'<span class="st ok">im Haus</span>');
+      return '<li><span class="cn">'+h(c.short)+'</span>'+st+'<span class="num">'+(withPts?coupleTotal(c):"")+'</span></li>';
+    }).join(""):'<li class="empty">Noch keine Paare</li>';
+    return '<div class="card '+tcls(pi)+'"><div class="team-h"><span class="dot"></span>Team '+pn(pi)+'</div><ul class="plist">'+rows+'</ul></div>';
+  }).join("")+'</section>';
+}
+
+/* ---------- screens: setup ---------- */
+function setupSteps(){ return state.start===1 ? ["names","start","starter","draft","tip0","tip1","ready"] : ["names","start","roster","starter","draft","tip0","tip1","ready"]; }
+function enter(key, init){ if(ui.key!==key){ ui.key=key; ui.err=""; ui.linkMsg=""; ui.msg=ui.flash||""; ui.flash=""; ui.sel=null; ui.sel2=null; ui.set=null; ui.confirm=null; if(init) init(); } }
+
+function viewSetup(){
+  var st=state.step, steps=setupSteps(), idx=Math.max(0,steps.indexOf(st)), n=steps.length, out="";
+  var head=function(back){ return flowHead(back,"Einrichtung",idx,n); };
+  if(st==="names"){
+    enter("s-names");
+    out+=head(null)+'<h2 class="q">Wer spielt mit?</h2><p class="hint">Zwei Namen, wie sie in der Tabelle stehen sollen.</p>'+
+      '<label class="f t1">Spieler*in 1<input type="text" id="n0" maxlength="20" autocomplete="off" value="'+h(state.players[0])+'" placeholder="Name"></label>'+
+      '<label class="f t2">Spieler*in 2<input type="text" id="n1" maxlength="20" autocomplete="off" value="'+h(state.players[1])+'" placeholder="Name"></label>'+msgs()+primary("s-names","Weiter");
+  }
+  else if(st==="start"){
+    enter("s-start",function(){ var nx=nextTv(); ui.sel=state.start||(nx?nx.n:1); });
+    var nx=nextTv();
+    out+=head("s-back")+'<h2 class="q">Welche Folge schaut ihr als Nächstes?</h2><p class="hint">Ab dieser Folge sammelt ihr Punkte. Alles davor zählt nicht.</p><div class="opts">'+
+      EPISODES.map(function(e){ return opt("pick-sel",e.n,epName(e.n),epDate(e.n)+", 20:15 RTL",ui.sel===e.n,"",nx&&nx.n===e.n?"Als Nächstes im TV":""); }).join("")+'</div>'+msgs()+primary("s-start","Weiter");
+  }
+  else if(st==="roster"){
+    enter("s-roster",function(){ ui.set=[]; });
+    var orig=state.couples.filter(function(c){return !c.nach;}), late=state.couples.filter(function(c){return c.nach;});
+    var setOpt=function(c){ return opt("toggle-set",c.id,c.short,c.full,ui.set.indexOf(c.id)>=0); };
+    out+=head("s-back")+'<h2 class="q">Wer ist zu Beginn von '+h(epName(state.start))+' noch im Haus?</h2><p class="hint">Tippe alle Paare an, die nach der letzten Folge noch drin sind. Wer nicht markiert ist, zählt als schon ausgezogen.</p>'+
+      '<span class="label">Startpaare</span><div class="opts">'+orig.map(setOpt).join("")+'</div>'+
+      '<span class="label">Nachrücker</span><p class="hint">Nur markieren, wenn sie schon eingezogen und noch da sind. Zieht später jemand ein, trägst du das während der Folge ein.</p><div class="opts">'+late.map(setOpt).join("")+'</div>'+
+      msgs()+primary("s-roster",ui.set.length<2?"Mindestens zwei Paare markieren":"Weiter mit "+ui.set.length+" Paaren",ui.set.length<2);
+  }
+  else if(st==="starter"){
+    enter("s-starter",function(){ ui.sel=state.starter; });
+    out+=head("s-back")+'<h2 class="q">Wer darf im Draft zuerst ein Paar wählen?</h2><p class="hint">Danach wird abwechselnd gewählt, immer zwei Paare am Stück (1-2-2-1 …). So ist es fair.</p><div class="opts two">'+
+      opt("pick-sel",0,state.players[0],"",ui.sel===0,"t1")+opt("pick-sel",1,state.players[1],"",ui.sel===1,"t2")+'</div>'+
+      '<div class="actions"><button class="btn" data-act="coin">Münze werfen lassen</button></div>'+msgs()+primary("s-starter","Weiter",ui.sel==null);
+  }
+  else if(st==="draft"){
+    enter("s-draft");
+    var avail=houseAt(state.start).filter(function(c){return c.owner==null;});
+    out+=head(state.draftLog.length?null:"s-back")+'<h2 class="q">Draft</h2>';
+    if(avail.length){
+      var t=snakeTurn();
+      out+='<div class="banner '+tcls(t)+'"><b>'+pn(t)+', du bist dran</b><span>Tippe ein Paar an. Es gehört dann zu deinem Team. Noch '+avail.length+' Paar'+(avail.length===1?"":"e")+' übrig.</span></div><div class="opts">'+
+        avail.map(function(c){ return opt("draft-pick",c.id,c.short,c.full,false,tcls(t)); }).join("")+'</div>';
+    } else {
+      out+='<p class="okmsg">Alle Paare sind verteilt.</p>';
+    }
+    out+=teamsBlock(false);
+    if(state.draftLog.length) out+='<div class="actions"><button class="btn" data-act="draft-undo">Letzte Wahl zurücknehmen</button></div>';
+    if(!avail.length) out+=primary("s-draft","Weiter zu den Saisontipps");
+  }
+  else if(st==="tip0"||st==="tip1"){
+    var pi=st==="tip0"?0:1;
+    enter("s-"+st,function(){ ui.sel=state.tips.winner[pi]; ui.sel2=state.tips.curse[pi]; });
+    var pool=state.couples.filter(function(c){ return c.outIn==null && (inHouse(c,state.start)||c.inFrom==null); });
+    out+=head("s-back")+'<h2 class="q">Saisontipps von <span class="'+tcls(pi)+'">'+pn(pi)+'</span></h2><p class="hint">'+(pi===0?"Die andere Person schaut kurz weg.":"Jetzt ist "+pn(1)+" dran, "+pn(0)+" schaut weg.")+' Die Tipps bleiben bis zum Finale verdeckt.</p>'+
+      '<span class="label">Wer gewinnt das Sommerhaus? ('+sgn(R.winnerTip)+')</span><div class="opts">'+coupleOpts("pick-sel",pool,ui.sel,tcls(pi))+'</div>'+
+      '<span class="label">Welches Paar trennt sich im Haus? ('+sgn(R.curseTip)+')</span><div class="opts">'+opt("pick-sel2","none","Kein Paar trennt sich","",ui.sel2==="none",tcls(pi))+coupleOpts("pick-sel2",pool,ui.sel2,tcls(pi))+'</div>'+
+      msgs()+primary("s-tip", !ui.sel?"Erst den Siegertipp wählen": !ui.sel2?"Jetzt noch den Fluch-Tipp wählen":"Tipps abgeben", !ui.sel||!ui.sel2);
+  }
+  else if(st==="ready"){
+    enter("s-ready");
+    out+=head("s-back")+'<h2 class="q">Alles bereit</h2><p class="hint">Eure Teams stehen. Ab jetzt führt dich die Liga durch jede Folge: erst die Wochentipps, dann Punkte während der Folge, am Ende kurz prüfen und abschließen.</p>'+
+      teamsBlock(false)+(MODE==="sb"?'<p class="hint">Spielt ihr auf zwei Handys? Den passenden Link findest du gleich in der Übersicht unter „Link fürs zweite Handy“.</p>':"")+primary("s-ready","Liga starten");
+  }
+  return out;
+}
+
+/* ---------- screens: season ---------- */
+function viewHome(){
+  enter("home");
+  var out="", cur=curEp();
+  if(state.phase==="done"){
+    var a=total(0), b=total(1), w=seasonWinner(), wc=w?byId(w):null;
+    out+='<div class="champ '+(a===b?"tie":tcls(a>b?0:1))+'"><span>Die Liga ist entschieden</span><b>'+(a===b?"Unentschieden!":pn(a>b?0:1)+" gewinnt!")+'</b><span>'+a+' zu '+b+' Punkten</span></div>';
+    out+='<section class="card"><h2>Saisontipps</h2><div class="sum">'+
+      '<div><span>Sommerhaus-Sieger</span><span>'+(wc?h(wc.short):"–")+'</span></div>'+
+      [0,1].map(function(pi){
+        var wt=winnerTip(pi), ct=curseTip(pi), t1=byId(state.tips.winner[pi]), t2=state.tips.curse[pi]==="none"?"Kein Paar":(byId(state.tips.curse[pi])||{}).short;
+        return '<div><span>'+pn(pi)+': Sieger '+h(t1?t1.short:"–")+'</span><span class="'+(wt?"ok":"no")+'">'+(wt?sgn(R.winnerTip):"daneben")+'</span></div><div><span>'+pn(pi)+': Fluch '+h(t2||"–")+'</span><span class="'+(ct?"ok":"no")+'">'+(ct?sgn(R.curseTip):"daneben")+'</span></div>';
+      }).join("")+'</div></section>';
+  } else if(cur){
+    var e=ep(cur), nx=nextTv(), future=EPISODES[cur-1].date>todayStr();
+    var stepTxt={tip0:"Wochentipps",tip1:"Wochentipps",live:"Punkte während der Folge",exits:"Wer ist ausgezogen?",winner:"Wer hat gewonnen?",review:"Kontrolle"};
+    out+='<section class="card"><span class="label">Als Nächstes</span><h2 class="bigtitle">'+h(epName(cur))+'</h2><p class="hint">'+epDate(cur)+', 20:15 RTL'+(future&&!e?". Auf RTL+ meist schon eine Woche früher.":"")+'</p>'+
+      (e?'<p>Ihr seid gerade bei: <b>'+h(stepTxt[e.status]||"")+'</b></p>'+primary("ep-resume","Weitermachen",false,true):primary("ep-start",(cur===10?"Finale":"Folge "+cur)+" starten",false,true))+'</section>';
+  }
+  if(ui.msg) out+=msgs();
+  // progress
+  out+='<section class="card"><span class="label">Staffelverlauf</span><div class="eps">'+EPISODES.map(function(x){
+    var e=ep(x.n), cls=x.n<state.start?"pre":(e&&e.status==="done"?"done":(x.n===cur?"now":""));
+    return '<div class="ep '+cls+'"><i></i>'+(x.n===10?"F":x.n)+'</div>';
+  }).join("")+'</div><p class="hint">Grün: ausgewertet. Grau ausgeblendet: vor eurem Start.</p></section>';
+  // links
+  var ld=lastDone(), canFix = ld && (!cur || !ep(cur));
+  out+='<section class="card linkrow">'+
+    '<button class="link" data-act="go" data-v="table"><span>Tabelle &amp; Teams</span><span>›</span></button>'+
+    '<button class="link" data-act="go" data-v="rules"><span>So gibt’s Punkte</span><span>›</span></button>'+
+    (canFix?'<button class="link" data-act="fix-ask"><span>'+h(epName(ld))+' korrigieren</span><span>›</span></button>':"")+
+    (MODE==="sb"?'<button class="link" data-act="go" data-v="settings"><span>Link fürs zweite Handy</span><span>›</span></button>':"")+
+    '<button class="link" data-act="go" data-v="settings"><span>Sicherung &amp; Neustart</span><span>›</span></button></section>';
+  if(ui.confirm==="fix"){
+    out+='<section class="card"><p><b>'+h(epName(ld))+' noch einmal öffnen?</b> Du gehst dann alle Schritte dieser Folge erneut durch. Deine bisherigen Eingaben bleiben erhalten.</p><div class="actions"><button class="btn big primary" data-act="fix-yes">Ja, öffnen</button><button class="btn" data-act="cancel">Abbrechen</button></div></section>';
+  }
+  return out;
+}
+
+function chip(c,f,e){
+  var cnt=((ep(f).ev[c.id]||{})[e.k])||0;
+  return '<span class="cg"><button class="chip'+(cnt?" on":"")+'" data-act="ev" data-c="'+h(c.id)+'" data-k="'+e.k+'" aria-label="'+h(e.label)+' für '+h(c.short)+', bisher '+cnt+'">'+h(e.label)+' <span class="pts">'+sgn(e.pts)+'</span>'+(cnt>1?'<span class="cnt">×'+cnt+'</span>':"")+'</button>'+
+    (cnt?'<button class="minus" data-act="evm" data-c="'+h(c.id)+'" data-k="'+e.k+'" aria-label="'+h(e.label)+' bei '+h(c.short)+' zurücknehmen">−</button>':"")+'</span>';
+}
+function epSteps(f){ return f===10?["tip0","tip1","live","exits","winner","review"]:["tip0","tip1","live","exits","review"]; }
+
+function viewEpisode(){
+  var f=curEp(); if(!f){ ui.screen="home"; return viewHome(); }
+  var e=ep(f); if(!e){ ui.screen="home"; return viewHome(); }
+  var steps=epSteps(f), idx=Math.max(0,steps.indexOf(e.status)), out="", label=epName(f);
+  var head=function(back){ return flowHead(back,label,idx,steps.length); };
+  var house=houseAt(f);
+  if(e.status==="tip0"||e.status==="tip1"){
+    var pi=e.status==="tip0"?0:1;
+    enter("e-"+f+"-"+e.status,function(){ ui.sel=e.tips[pi]; });
+    out+=head(pi===0?"home":"e-back")+'<h2 class="q">Wochentipp von <span class="'+tcls(pi)+'">'+pn(pi)+'</span>: Wer fliegt in dieser Folge raus?</h2><p class="hint">Richtig getippt bringt '+sgn(R.weekTip)+'. '+(pi===0?pn(1)+" schaut kurz weg.":pn(0)+" schaut kurz weg.")+'</p><div class="opts">'+
+      opt("pick-sel","none","Niemand fliegt raus","",ui.sel==="none",tcls(pi))+coupleOpts("pick-sel",house,ui.sel,tcls(pi))+'</div>'+msgs()+primary("e-tip",ui.sel?"Tipp abgeben":"Erst einen Tipp wählen",!ui.sel);
+  }
+  else if(e.status==="live"){
+    enter("e-"+f+"-live",function(){ ui.undo=[]; ui.add=false; ui.addSel=null; });
+    var lp=[0,1].map(function(pi){ return playerFolge(pi,f); });
+    out+=head("e-back")+'<h2 class="q">'+h(label)+' läuft</h2><p class="hint">Passiert etwas, tippst du es beim Paar an. Mehrmals tippen zählt mehrmals. Vertippt? Mit „−“ oder „Letzte Eingabe rückgängig“ zurücknehmen.</p>'+
+      '<div class="livebar"><div class="t1"><span>'+pn(0)+'</span><b class="num">'+sgn(lp[0])+'</b></div><div class="t2"><span>'+pn(1)+'</span><b class="num">'+sgn(lp[1])+'</b></div></div>';
+    if(ui.msg) out+='<p class="okmsg toast" role="status">'+h(ui.msg)+'</p>';
+    if(ui.undo.length) out+='<div class="actions"><button class="btn" data-act="undo">Letzte Eingabe rückgängig</button></div>';
+    [0,1,null].forEach(function(pi){
+      var cs=house.filter(function(c){return c.owner===pi;}); if(!cs.length) return;
+      out+='<div class="teamlabel '+tcls(pi)+'"><span class="dot"></span>'+(pi==null?"Ohne Team":"Team "+pn(pi))+'</div>';
+      cs.forEach(function(c){
+        var pts=couplePts(c,f);
+        out+='<article class="cc"><div class="cc-h"><div class="cc-name"><strong>'+h(c.short)+'</strong><span class="full">'+h(c.full)+'</span></div><span class="cc-pts num'+(pts<0?" neg":"")+'">'+sgn(pts)+'</span></div>';
+        ["Spiele","Drama"].forEach(function(g){
+          out+='<div class="grp"><span class="label">'+g+'</span><div class="chips">'+EVENTS.filter(function(x){return x.g===g;}).map(function(x){return chip(c,f,x);}).join("")+'</div></div>';
+        });
+        if(c.live && c.inFrom===f) out+='<div><button class="btn sm" data-act="unjoin" data-c="'+h(c.id)+'">Einzug zurücknehmen</button></div>';
+        out+='</article>';
+      });
+    });
+    // newcomer
+    var waiting=state.couples.filter(function(c){ return c.inFrom==null && c.outIn==null; });
+    out+='<section class="card"><h3>Zieht ein neues Paar ein?</h3>';
+    if(!ui.add){
+      out+='<p class="hint">Nur nutzen, wenn in dieser Folge wirklich ein Nachrücker-Paar ins Haus kommt.</p><div><button class="btn" data-act="add-open">Neues Paar eintragen</button></div>';
+    } else {
+      var rc=receiverForNewcomer(f);
+      out+='<p class="hint">Das Paar geht an <b>'+pn(rc.p)+'</b>, weil '+pn(rc.p)+' '+h(rc.why)+'.</p><div class="opts">'+
+        waiting.map(function(c){ return opt("add-sel",c.id,c.short,c.full,ui.addSel===c.id); }).join("")+
+        opt("add-sel","__other","Ein anderes Paar","Namen selbst eintragen",ui.addSel==="__other")+'</div>'+
+        (ui.addSel==="__other"?'<label class="f">Name des Paares<input type="text" id="addname" maxlength="30" autocomplete="off" placeholder="z. B. Mia & Ben"></label>':"")+
+        (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+
+        '<div class="actions"><button class="btn big primary" data-act="add-yes"'+(ui.addSel?"":" disabled")+'>Einzug eintragen</button><button class="btn" data-act="add-close">Abbrechen</button></div>';
+    }
+    out+='</section>';
+    out+=primary("e-live","Folge ist vorbei, weiter");
+  }
+  else if(e.status==="exits"){
+    enter("e-"+f+"-exits",function(){ ui.set={}; house.forEach(function(c){ ui.set[c.id]= c.outIn===f ? c.outType : "stay"; }); });
+    var outCount=house.filter(function(c){return ui.set[c.id]!=="stay";}).length;
+    out+=head("e-back")+'<h2 class="q">'+(f===10?"Wer ist im Finale vor der großen Entscheidung ausgeschieden?":"Ist in dieser Folge ein Paar ausgezogen?")+'</h2><p class="hint">'+(f===10?"Die Paare, die das letzte Spiel bestreiten, bleiben auf „Bleibt“.":"Lass alle auf „Bleibt“, wenn niemand gehen musste. Freiwillig heißt: Das Paar ist selbst gegangen ("+sgn(R.quit)+").")+'</p><section class="card">'+
+      house.map(function(c){
+        var v=ui.set[c.id];
+        return '<div class="exrow"><div class="nm"><b>'+h(c.short)+'</b><span class="own '+tcls(c.owner)+'">'+(c.owner==null?"ohne Team":pn(c.owner))+'</span></div><div class="seg" role="group" aria-label="'+h(c.short)+'">'+
+          '<button data-act="exsel" data-c="'+h(c.id)+'" data-v="stay" aria-pressed="'+(v==="stay")+'">Bleibt</button>'+
+          '<button class="x" data-act="exsel" data-c="'+h(c.id)+'" data-v="raus" aria-pressed="'+(v==="raus")+'">Fliegt raus</button>'+
+          '<button class="x" data-act="exsel" data-c="'+h(c.id)+'" data-v="freiwillig" aria-pressed="'+(v==="freiwillig")+'">Geht freiwillig</button></div></div>';
+      }).join("")+'</section>'+msgs()+
+      primary("e-exits", outCount===0 ? (f===10?"Niemand ausgeschieden, weiter":"Niemand ist ausgezogen, weiter") : outCount+" Paar"+(outCount===1?"":"e")+" ausgezogen, weiter");
+  }
+  else if(e.status==="winner"){
+    var fin=house.filter(function(c){ return c.outIn!==10; });
+    enter("e-10-winner",function(){ ui.sel=e.winner; });
+    out+=head("e-back")+'<h2 class="q">Wer hat das Sommerhaus gewonnen?</h2><p class="hint">Das Siegerpaar bekommt '+sgn(R.sieg)+', jedes Finalpaar zusätzlich '+sgn(R.finale)+'.</p><div class="opts">'+coupleOpts("pick-sel",fin,ui.sel,"")+'</div>'+msgs()+primary("e-winner",ui.sel?"Weiter":"Erst das Siegerpaar wählen",!ui.sel);
+  }
+  else if(e.status==="review"){
+    enter("e-"+f+"-review");
+    var outs=outsIn(f).map(byId);
+    out+=head("e-back")+'<h2 class="q">Stimmt das so?</h2><p class="hint">Prüf kurz alles. Mit „Folge abschließen“ werden die Punkte fest eingetragen.</p><section class="card"><div class="sum">'+
+      '<div><span>Ausgezogen</span><span>'+(outs.length?outs.map(function(c){return h(c.short)+(c.outType==="freiwillig"?" (freiwillig)":"");}).join(", "):"niemand")+'</span></div>'+
+      (f===10?'<div><span>Sommerhaus-Sieger</span><span>'+h((byId(e.winner)||{}).short||"–")+'</span></div>':"")+
+      [0,1].map(function(pi){
+        var t=e.tips[pi], tn=t==="none"?"Niemand":(byId(t)||{}).short, r=weekTip(pi,f);
+        return '<div><span>Tipp '+pn(pi)+': '+h(tn||"–")+'</span><span class="'+(r?"ok":"no")+'">'+(r?"richtig "+sgn(R.weekTip):"daneben")+'</span></div>';
+      }).join("")+
+      [0,1].map(function(pi){ return '<div><span>Punkte '+pn(pi)+' in dieser Folge</span><span class="num">'+sgn(playerFolge(pi,f))+'</span></div>'; }).join("")+
+      '</div></section><div class="actions dock"><button class="btn big primary" data-act="e-done">'+(f===10?"Finale abschließen":"Folge abschließen")+'</button><button class="btn" data-act="e-relive">Etwas ändern</button></div>';
+  }
+  return out;
+}
+
+function viewTable(){
+  enter("table");
+  var out=flowHead("home","Tabelle")+'<h2 class="q">Tabelle &amp; Teams</h2>'+teamsBlock(true);
+  var fl=EPISODES.filter(function(e){ return e.n>=state.start && ep(e.n); });
+  out+='<section class="card"><h2>Punkte pro Folge</h2>';
+  if(!fl.length) out+='<p class="hint">Noch keine Folge gespielt.</p>';
+  else {
+    out+='<div class="scroll"><table class="tbl"><thead><tr><th>Folge</th><th class="r">'+pn(0)+'</th><th class="r">'+pn(1)+'</th></tr></thead><tbody>';
+    fl.forEach(function(e){
+      var a=playerFolge(0,e.n), b=playerFolge(1,e.n);
+      out+='<tr><td>'+(e.n===10?"Finale":"Folge "+e.n)+(ep(e.n).status==="done"?"":' <span class="d">(läuft)</span>')+'</td><td class="r'+(a>b?" win1":"")+'">'+sgn(a)+'</td><td class="r'+(b>a?" win2":"")+'">'+sgn(b)+'</td></tr>';
+    });
+    var s0=seasonPts(0), s1=seasonPts(1);
+    if(s0||s1) out+='<tr><td>Saisontipps</td><td class="r">'+sgn(s0)+'</td><td class="r">'+sgn(s1)+'</td></tr>';
+    out+='<tr class="total"><td>Gesamt</td><td class="r">'+total(0)+'</td><td class="r">'+total(1)+'</td></tr></tbody></table></div>';
+  }
+  out+='</section><section class="card"><h2>Saisontipps</h2><p class="hint">'+(state.phase==="done"?"Nach dem Finale aufgedeckt.":"Bleiben bis nach dem Finale verdeckt.")+'</p>';
+  if(state.phase==="done"){
+    out+='<div class="sum">'+[0,1].map(function(pi){ var w=byId(state.tips.winner[pi]), c=state.tips.curse[pi]; return '<div><span>'+pn(pi)+'</span><span>'+h(w?w.short:"–")+' · '+h(c==="none"?"kein Paar":((byId(c)||{}).short||"–"))+'</span></div>'; }).join("")+'</div>';
+  }
+  out+='</section>';
+  return out;
+}
+function viewRules(){
+  enter("rules");
+  var out=flowHead("home","Punkte")+'<h2 class="q">So gibt’s Punkte</h2>';
+  ["Spiele","Drama"].forEach(function(g){
+    out+='<section class="card"><h3>'+g+'</h3><div class="rules">'+EVENTS.filter(function(e){return e.g===g;}).map(function(e){ return '<div class="rl"><span>'+h(e.label)+'</span><b>'+sgn(e.pts)+'</b></div>'; }).join("")+'</div></section>';
+  });
+  out+='<section class="card"><h3>Automatisch</h3><div class="rules">'+
+    '<div class="rl"><span>Paar überlebt die Folge</span><b>'+sgn(R.survive)+'</b></div>'+
+    '<div class="rl"><span>Paar zieht freiwillig aus</span><b>'+sgn(R.quit)+'</b></div>'+
+    '<div class="rl"><span>Paar steht im Finale</span><b>'+sgn(R.finale)+'</b></div>'+
+    '<div class="rl"><span>Paar gewinnt das Sommerhaus</span><b>'+sgn(R.sieg)+'</b></div></div></section>';
+  out+='<section class="card"><h3>Tipps</h3><div class="rules">'+
+    '<div class="rl"><span>Wochentipp richtig</span><b>'+sgn(R.weekTip)+'</b></div>'+
+    '<div class="rl"><span>Siegertipp richtig</span><b>'+sgn(R.winnerTip)+'</b></div>'+
+    '<div class="rl"><span>Fluch-Tipp richtig</span><b>'+sgn(R.curseTip)+'</b></div></div>'+
+    '<p class="hint">Neue Nachrücker-Paare bekommt, wer gerade hinten liegt.</p></section>';
+  return out;
+}
+function viewSettings(){
+  enter("settings");
+  var out=flowHead("home","Einstellungen")+'<h2 class="q">'+(MODE==="sb"?"Teilen &amp; Sicherung":"Sicherung &amp; Neustart")+'</h2>';
+  if(MODE==="sb"){
+    out+='<section class="card"><h3>Link fürs zweite Handy</h3><p class="hint">Mit diesem Link seht ihr beide dieselbe Liga, und alles, was einer einträgt, erscheint nach ein paar Sekunden auch beim anderen. Gib ihn nur deinem Gegenüber, denn wer ihn hat, kann mit eintragen.</p>'+
+      '<input type="text" id="share" readonly value="'+h(shareUrl())+'" aria-label="Link zur Liga">'+
+      '<div class="actions"><button class="btn big primary" data-act="copylink">Link kopieren</button></div>'+(ui.linkMsg?'<p class="okmsg" role="status">'+h(ui.linkMsg)+'</p>':"")+'</section>';
+  }
+  out+='<section class="card"><h3>Sicherung</h3><p class="hint">Brauchst du nur, wenn du den Stand von Hand auf ein anderes Gerät holen willst.</p><div><button class="btn" data-act="export">'+(ui.showExport?"Sicherung ausblenden":"Sicherung anzeigen")+'</button></div>';
+  if(ui.showExport) out+='<textarea id="exp" readonly>'+h(JSON.stringify(state))+'</textarea><div><button class="btn sm" data-act="copy">Kopieren</button></div>';
+  out+='<label class="f">Sicherung einfügen<textarea id="imp" placeholder="Gesicherten Text hier einfügen"></textarea></label><div><button class="btn" data-act="import">Sicherung übernehmen</button></div>'+msgs()+'</section>';
+  out+='<section class="card"><h3>Liga neu starten</h3><p class="hint">Löscht Teams, Tipps und alle Punkte. Das lässt sich nicht rückgängig machen.</p>';
+  out+= ui.confirm==="reset" ? '<p><b>Wirklich alles löschen?</b></p><div class="actions"><button class="btn big danger" data-act="reset-yes">Ja, alles löschen</button><button class="btn" data-act="cancel">Abbrechen</button></div>'
+    : '<div><button class="btn danger" data-act="reset">Neu starten …</button></div>';
+  out+='</section>';
+  return out;
+}
+
+/* ---------- render ---------- */
+function render(){
+  var nx=nextTv(), t=todayStr(), s="Staffel 11 · Bocholt-Barlo";
+  if(nx) s+=" · "+(nx.date===t?"<strong>Heute 20:15:</strong> "+h(epName(nx.n)):"Im TV als Nächstes: <strong>"+h(epName(nx.n))+"</strong>, "+epDate(nx.n));
+  document.getElementById("sub").innerHTML=s;
+  var duel=document.getElementById("duel");
+  if(state.phase==="setup"){ duel.hidden=true; duel.innerHTML=""; }
+  else {
+    duel.hidden=false;
+    var tot=[total(0),total(1)];
+    duel.innerHTML=[0,1].map(function(pi){
+      var mine=state.couples.filter(function(c){return c.owner===pi;}), inside=mine.filter(function(c){return c.outIn==null && c.inFrom!=null;}).length;
+      return '<div class="side '+tcls(pi)+(tot[pi]>tot[1-pi]?" lead":"")+'"><span class="lead-tag">vorn</span><span class="pname">'+pn(pi)+'</span><span class="score num">'+tot[pi]+'</span><span class="meta">'+inside+' Paar'+(inside===1?"":"e")+' im Haus</span></div>';
+    }).join('<div class="vs" aria-hidden="true">vs</div>');
+  }
+  var v=document.getElementById("view"), html;
+  if(state.phase==="setup") html=viewSetup();
+  else if(ui.screen==="episode") html=viewEpisode();
+  else if(ui.screen==="table") html=viewTable();
+  else if(ui.screen==="rules") html=viewRules();
+  else if(ui.screen==="settings") html=viewSettings();
+  else html=viewHome();
+  v.innerHTML=html;
+  renderSync();
+}
+function goTop(){ try{ window.scrollTo(0,0); }catch(e){} }
+
+/* ---------- actions ---------- */
+function setStep(s){ state.step=s; ui.key=""; commit(); goTop(); }
+function setupBack(){
+  var steps=setupSteps(), i=steps.indexOf(state.step);
+  if(i>0){ state.step=steps[i-1]; ui.key=""; render(); goTop(); }
+}
+function setEpStatus(f,s){ ep(f).status=s; ui.key=""; commit(); goTop(); }
+
+document.addEventListener("click",function(evt){
+  var b=evt.target.closest("[data-act]"); if(!b || b.disabled) return;
+  var act=b.getAttribute("data-act"), v=b.getAttribute("data-v"), cid=b.getAttribute("data-c"), c=cid?byId(cid):null;
+  var f=curEp(), e=f?ep(f):null;
+  switch(act){
+    /* generic selection */
+    case "pick-sel": ui.sel=(v!==null && /^\d+$/.test(v)) ? +v : v; ui.err=""; render(); return;
+    case "pick-sel2": ui.sel2=v; ui.err=""; render(); return;
+    case "toggle-set": var i=ui.set.indexOf(v); if(i>=0) ui.set.splice(i,1); else ui.set.push(v); render(); return;
+    case "home": ui.screen="home"; ui.key=""; render(); goTop(); return;
+    case "go": ui.screen=v; ui.key=""; render(); goTop(); return;
+    case "cancel": ui.confirm=null; render(); return;
+
+    /* setup */
+    case "s-back": setupBack(); return;
+    case "s-names":
+      var a=(document.getElementById("n0").value||"").trim(), bb=(document.getElementById("n1").value||"").trim();
+      if(!a||!bb){ ui.err="Bitte beide Namen eintragen."; render(); return; }
+      if(a.toLowerCase()===bb.toLowerCase()){ ui.err="Die Namen müssen sich unterscheiden."; render(); return; }
+      state.players=[a,bb]; setStep("start"); return;
+    case "s-start":
+      if(!ui.sel){ ui.err="Bitte eine Folge wählen."; render(); return; }
+      if(state.start!==ui.sel || state.draftLog.length===0){
+        state.start=ui.sel; state.draftLog=[];
+        state.couples.forEach(function(x){ x.owner=null; x.outIn=null; x.outType=null; x.inFrom=x.nach?null:1; });
+      }
+      setStep(state.start===1?"starter":"roster"); return;
+    case "s-roster":
+      if(ui.set.length<2) return;
+      state.draftLog=[];
+      state.couples.forEach(function(x){
+        x.owner=null; var on=ui.set.indexOf(x.id)>=0;
+        if(x.nach){ x.inFrom=on?state.start:null; x.outIn=null; x.outType=null; }
+        else { x.inFrom=1; x.outIn=on?null:state.start-1; x.outType=on?null:"raus"; }
+      });
+      setStep("starter"); return;
+    case "coin": ui.sel=Math.random()<0.5?0:1; ui.msg="Die Münze hat entschieden: "+state.players[ui.sel]+" fängt an."; render(); return;
+    case "s-starter": if(ui.sel!==0&&ui.sel!==1) return; state.starter=ui.sel; setStep("draft"); return;
+    case "draft-pick": var dc=byId(v); if(!dc||dc.owner!=null) return; dc.owner=snakeTurn(); state.draftLog.push(dc.id); commit(); return;
+    case "draft-undo": var last=state.draftLog.pop(); var lc=last&&byId(last); if(lc) lc.owner=null; commit(); return;
+    case "s-draft": setStep("tip0"); return;
+    case "s-tip":
+      if(!ui.sel||!ui.sel2) return;
+      var pi=state.step==="tip0"?0:1; state.tips.winner[pi]=ui.sel; state.tips.curse[pi]=ui.sel2;
+      setStep(pi===0?"tip1":"ready"); return;
+    case "s-ready": state.phase="season"; state.step="done"; ui.screen="home"; ui.key=""; commit(); goTop(); return;
+
+    /* episode */
+    case "ep-start": if(!f) return; if(!e) state.episodes[f]={status:"tip0",tips:[null,null],ev:{},winner:null}; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
+    case "ep-resume": ui.screen="episode"; ui.key=""; render(); goTop(); return;
+    case "e-back":
+      if(!e) return; var st=epSteps(f), k=st.indexOf(e.status);
+      if(k>0){ e.status=st[k-1]; ui.key=""; commit(); goTop(); } return;
+    case "e-tip":
+      if(!e||!ui.sel) return; var tp=e.status==="tip0"?0:1; e.tips[tp]=ui.sel;
+      setEpStatus(f, tp===0?"tip1":"live"); return;
+    case "ev":
+      if(!e||!c) return; var m=e.ev[c.id]||(e.ev[c.id]={}); var key=b.getAttribute("data-k"); m[key]=(m[key]||0)+1;
+      ui.undo.push({c:c.id,k:key}); ui.msg=""; commit(); return;
+    case "evm":
+      if(!e||!c) return; var m2=e.ev[c.id], k2=b.getAttribute("data-k"); if(m2&&m2[k2]){ m2[k2]--; if(!m2[k2]) delete m2[k2]; }
+      ui.msg=""; commit(); return;
+    case "undo":
+      if(!e) return; var u=ui.undo.pop(); if(u){ var m3=e.ev[u.c]; if(m3&&m3[u.k]){ m3[u.k]--; if(!m3[u.k]) delete m3[u.k]; } }
+      ui.msg=""; commit(); return;
+    case "add-open": ui.add=true; ui.addSel=null; ui.err=""; render(); return;
+    case "add-close": ui.add=false; ui.addSel=null; ui.err=""; render(); return;
+    case "add-sel": ui.addSel=v; ui.err=""; render(); return;
+    case "add-yes":
+      if(!e||!ui.addSel) return;
+      var rc=receiverForNewcomer(f), nc;
+      if(ui.addSel==="__other"){
+        var nm=((document.getElementById("addname")||{}).value||"").trim();
+        if(!nm){ ui.err="Bitte den Namen des Paares eintragen."; render(); return; }
+        nc={id:"p"+Date.now().toString(36),short:nm,full:"Nachrücker",nach:true,inFrom:f,outIn:null,outType:null,owner:rc.p,custom:true,live:true};
+        state.couples.push(nc);
+      } else { nc=byId(ui.addSel); if(!nc) return; nc.inFrom=f; nc.owner=rc.p; nc.live=true; }
+      ui.add=false; ui.addSel=null; ui.err=""; ui.msg=nc.short+" ist eingezogen und spielt ab jetzt für "+state.players[rc.p]+".";
+      commit(); return;
+    case "unjoin":
+      if(!e||!c) return;
+      Object.keys(state.episodes).forEach(function(k){ delete state.episodes[k].ev[c.id]; });
+      if(c.custom) state.couples=state.couples.filter(function(x){return x.id!==c.id;});
+      else { c.inFrom=null; c.owner=null; c.live=false; }
+      ui.undo=ui.undo.filter(function(x){return x.c!==c.id;}); ui.msg="Einzug zurückgenommen."; commit(); return;
+    case "e-live": setEpStatus(f,"exits"); return;
+    case "exsel": if(ui.set&&c) { ui.set[c.id]=v; ui.err=""; render(); } return;
+    case "e-exits":
+      if(!e||!ui.set) return;
+      var house=houseAt(f), remain=house.filter(function(x){ return ui.set[x.id]==="stay"; }).length;
+      if(remain<1){ ui.err="Mindestens ein Paar muss im Haus bleiben."; render(); return; }
+      house.forEach(function(x){ var s=ui.set[x.id]; if(s==="stay"){ if(x.outIn===f){ x.outIn=null; x.outType=null; } } else { x.outIn=f; x.outType=s; } });
+      if(f===10 && e.winner){ var wc=byId(e.winner); if(!wc || wc.outIn===10) e.winner=null; }
+      setEpStatus(f, f===10?"winner":"review"); return;
+    case "e-winner": if(!e||!ui.sel) return; e.winner=ui.sel; setEpStatus(f,"review"); return;
+    case "e-relive": setEpStatus(f,"live"); return;
+    case "e-done":
+      if(!e) return; e.status="done"; ui.screen="home"; ui.key="";
+      if(f===10){ state.phase="done"; }
+      else ui.flash=epName(f)+" ist eingetragen. Bis zur nächsten Folge!";
+      state.couples.forEach(function(x){ x.live=false; });
+      commit(); goTop(); return;
+    case "fix-ask": ui.confirm="fix"; render(); return;
+    case "fix-yes":
+      var ld=lastDone(); if(!ld) return;
+      ep(ld).status="live"; if(state.phase==="done") state.phase="season";
+      ui.confirm=null; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
+
+    /* settings */
+    case "copylink":
+      var su=shareUrl(), sfb=function(){ ui.linkMsg="Der Link ist markiert. Jetzt kopieren."; render(); var si=document.getElementById("share"); if(si){ si.focus(); si.select(); } };
+      try{ navigator.clipboard.writeText(su).then(function(){ ui.linkMsg="Link kopiert. Schick ihn deinem Gegenüber."; render(); },sfb); }catch(x){ sfb(); }
+      return;
+    case "export": ui.showExport=!ui.showExport; ui.msg=""; ui.err=""; render(); return;
+    case "copy":
+      var ta=document.getElementById("exp"), txt=ta?ta.value:"";
+      var fb=function(){ ui.msg="Der Text ist markiert. Jetzt kopieren."; render(); var t2=document.getElementById("exp"); if(t2){ t2.focus(); t2.select(); } };
+      try{ navigator.clipboard.writeText(txt).then(function(){ ui.msg="Kopiert."; render(); },fb); }catch(x){ fb(); }
+      return;
+    case "import":
+      var it=document.getElementById("imp"), raw=it?it.value.trim():"";
+      ui.msg=""; ui.err="";
+      if(!raw){ ui.err="Füge zuerst eine Sicherung ein."; render(); return; }
+      try{ var parsed=JSON.parse(raw); if(!parsed||parsed.v!==2) throw 0; state=normalize(parsed); ui.screen="home"; ui.key=""; ui.flash="Sicherung übernommen."; commit(); goTop(); }
+      catch(x){ ui.err="Das ist keine gültige Sicherung. Kopiere den kompletten Text."; render(); }
+      return;
+    case "reset": ui.confirm="reset"; render(); return;
+    case "reset-yes": state=defaults(); ui.confirm=null; ui.screen="home"; ui.key=""; commit(); goTop(); return;
+  }
+});
+
+render();
+if(MODE==="sb") initSupabase(); else initCloud();
+})();
+</script>
+
+</body>
+</html>
