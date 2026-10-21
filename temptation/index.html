@@ -416,6 +416,44 @@ body:has(.sheet-wrap){overflow:hidden}
 .rk .crown svg,.fx-crown svg{width:100%;height:100%;display:block}
 span.fx-crown{display:block}
 
+/* ---------- Wettbüro ---------- */
+.coinbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:5;display:flex;flex-direction:column;gap:8px;padding:12px 16px;border-radius:20px;background:var(--glass-strong);box-shadow:var(--hl),inset 0 0 0 1px var(--rim),var(--shadow);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4);font-size:15px}
+.coinbar b{color:var(--gold);font-size:18px}
+.coinmeter{height:6px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden}
+.coinmeter i{display:block;height:100%;border-radius:inherit;background:var(--goldgrad);transition:width .25s ease}
+.qcard{padding:0;gap:0;overflow:hidden}
+.qhead{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:none;color:inherit;font:inherit;text-align:left;padding:16px 18px;cursor:pointer;min-height:64px}
+.qhead.static{padding:0;min-height:0;cursor:default}
+.qt{display:flex;flex-direction:column;gap:3px;min-width:0}
+.qt b{font-size:16.5px;font-weight:650}
+.qt small{color:var(--muted);font-size:13px}
+.qmine{flex:0 0 auto;font-size:13px;font-weight:700;color:var(--muted);white-space:nowrap}
+.qmine.on{color:var(--gold)}
+.qpad{padding:0 18px 16px}
+p.qpad{padding-bottom:10px}
+.stakes{display:flex;flex-direction:column;gap:8px}
+.srow{display:grid;grid-template-columns:minmax(0,1fr) 40px 34px 40px;align-items:center;gap:6px;padding:6px 6px 6px 14px;border-radius:16px;background:var(--glass-soft);box-shadow:inset 0 0 0 1px var(--hair)}
+.srow.on{box-shadow:inset 0 0 0 2px var(--gold);background:linear-gradient(rgba(247,199,102,.10),rgba(247,199,102,.10)),var(--glass-soft)}
+.srow .sl{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15.5px;font-weight:550}
+.srow b{text-align:center;font-family:var(--round);font-size:18px;font-weight:800}
+.srow.on b{color:var(--gold)}
+.sbtn{width:40px;height:40px;border:0;border-radius:50%;background:var(--glass-strong);box-shadow:var(--hl);color:var(--ink);font-size:20px;font-weight:700;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.sbtn:disabled{opacity:.35;cursor:default}
+.livebet{display:flex;flex-direction:column;gap:8px;padding:11px 0;border-bottom:1px solid var(--hair)}
+.livebet:last-of-type{border-bottom:0}
+.livebet .lt{display:flex;flex-direction:column;gap:3px}
+.livebet .lt small{color:var(--muted);font-size:13px}
+.res-q{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--hair);font-size:15px}
+.res-q:last-child{border-bottom:0}
+.res-q>span:first-child{display:flex;flex-direction:column;gap:2px;min-width:0}
+.res-q small{color:var(--muted);font-size:13px}
+.res-q>span:last-child{font-weight:700;text-align:right;font-size:14px}
+.res-q .ok{background:none}
+.rkx{font-size:12.5px;color:var(--muted);padding:0 0 9px 40px;margin-top:-6px;border-bottom:1px solid var(--hair)}
+.rank .rk:has(+ .rkx){border-bottom:0}
+.rank .rkx:last-child{border-bottom:0}
+.gold{color:var(--gold)}
+
 /* ---------- Theme: tropical night (deliberately single dark look): plum night sky, palm silhouettes, gold glitter, Didone serif ---------- */
 :root:root:root{
   --bg:#170920; --ink:#F8EFFA; --muted:#C9B4D4; --hair:rgba(255,220,255,.14);
@@ -521,38 +559,11 @@ var EVENTS=[
   {k:"fin_gew",label:"Im Finale gewählt",g:"Finale",pts:12}
 ];
 var GRENZE=["kuss","nacht"];
-var CORE_KEYS=["kuss","nacht","traenen","date"];
+var CORE_KEYS=["kuss","nacht","traenen","notfall"];
 var DEF_AUTO={island:1,quit:-5};
-var DEF_TIPS={grenze:4,traenen:2,out:3,couple:3};
 var PTS_MIN=-50, PTS_MAX=50;
-var CARD_DEFS={
-  jackpot:{name:"Jackpot",cat:"sofort",val:8,w:4},
-  gewinn:{name:"Kleiner Gewinn",cat:"sofort",val:3,w:10},
-  haengematte:{name:"Hängematte",cat:"sofort",val:2,w:5},
-  niete:{name:"Niete",cat:"sofort",val:0,w:7},
-  pech:{name:"Pech gehabt",cat:"sofort",val:-3,w:10},
-  fluchk:{name:"Temptation-Fluch",cat:"sofort",w:5,needPrev:true},
-  dodn:{name:"Doppelt oder nichts",cat:"sofort",w:5,needPrev:true},
-  treue:{name:"Treue-Karte",cat:"wette",win:5,lose:-3,w:5,needV:true},
-  herz:{name:"Herzensbrecher",cat:"wette",win:5,lose:-2,w:5},
-  traenenw:{name:"Tränen-Wette",cat:"wette",per:2,lose:-4,w:5},
-  abreise:{name:"Abreise-Risiko",cat:"wette",win:4,lose:-6,w:5},
-  dramaq:{name:"Drama-Queen",cat:"wette",win:6,lose:-2,w:5},
-  datem:{name:"Date-Magnet",cat:"wette",win:5,lose:-3,w:5},
-  allin:{name:"Alles auf eine Karte",cat:"chaos",w:4,target:"own"},
-  inflation:{name:"Inflation",cat:"chaos",w:4},
-  paparazzo:{name:"Paparazzo",cat:"chaos",per:3,w:4,target:"v"},
-  engel:{name:"Schutzengel",cat:"joker",w:4},
-  zweite:{name:"Zweite Chance",cat:"joker",w:3},
-  g3:{name:"Jackpot",cat:"sofort",val:3,w:2,green:true},
-  g2:{name:"Gewinn",cat:"sofort",val:2,w:4,green:true},
-  g1:{name:"Kleiner Gewinn",cat:"sofort",val:1,w:6,green:true},
-  g0:{name:"Niete",cat:"sofort",val:0,w:6,green:true},
-  gm1:{name:"Pech gehabt",cat:"sofort",val:-1,w:6,green:true},
-  gm2:{name:"Pech gehabt",cat:"sofort",val:-2,w:4,green:true}
-};
-var DECKS={g:{name:"Grün · vorsichtig",sub:"Kleine Beträge zwischen −2 und +3"},y:{name:"Gelb · mittel",sub:"Alle Karten mit normalen Punkten"},r:{name:"Rot · Vollrisiko",sub:"Alle Karten, alle Punkte doppelt"}};
-var CAT_NAMES={sofort:"Sofort",wette:"Wette",chaos:"Chaos",joker:"Joker"};
+var DEF_BETS={ep:10,live:5,season:20,surv:2};
+var LIVE_PRESETS=["Gibt es in den nächsten 10 Minuten einen Kuss?","Fließen beim nächsten Lagerfeuer Tränen?","Gibt es heute noch eine gemeinsame Nacht?","Verlässt jemand wütend das Lagerfeuer?"];
 var EP_STATES=["open","live","exits","final","review","done"];
 var CROWN_SVG='<svg viewBox="-4 -2 72 52" aria-hidden="true"><path d="M6 40 L2 12 L18 24 L32 4 L46 24 L62 12 L58 40 Z" fill="currentColor"/><rect x="6" y="41" width="52" height="6" rx="2" fill="currentColor"/><circle cx="2" cy="12" r="3.5" fill="currentColor"/><circle cx="32" cy="4" r="3.5" fill="currentColor"/><circle cx="62" cy="12" r="3.5" fill="currentColor"/></svg>';
 
@@ -576,7 +587,7 @@ function codeFromHash(){ var m=/(?:^|[#&])liga=([A-Za-z0-9_-]{16,64})/.exec(loca
 function parseCode(t){ t=String(t||"").trim(); var m=/liga=([A-Za-z0-9_-]{16,64})/.exec(t); if(m) return m[1]; return /^[A-Za-z0-9_-]{16,64}$/.test(t)?t:null; }
 
 /* ================= model ================= */
-function defaultRules(){ return {events:EVENTS.map(function(e){ return {k:e.k,label:e.label,g:e.g,pts:e.pts,hidden:false,custom:false}; }),auto:copyObj(DEF_AUTO),tips:copyObj(DEF_TIPS),cards:{on:true,off:[]}}; }
+function defaultRules(){ return {events:EVENTS.map(function(e){ return {k:e.k,label:e.label,g:e.g,pts:e.pts,hidden:false,custom:false}; }),auto:copyObj(DEF_AUTO),bets:copyObj(DEF_BETS)}; }
 function defaultMain(){
   var persons=[], couples=[];
   COUPLES.forEach(function(c){
@@ -602,7 +613,10 @@ function normalizeMain(raw){
   if(Array.isArray(raw.couples)) d.couples=raw.couples.filter(function(c){ return c&&c.id; }).map(function(c){ return {id:String(c.id),name:String(c.name||""),a:String(c.a||""),b:String(c.b||""),final:(c.final==="together"||c.final==="apart")?c.final:null}; });
   if(raw.episodes && typeof raw.episodes==="object") Object.keys(raw.episodes).forEach(function(k){
     var e=raw.episodes[k], n=parseInt(k,10); if(!e||!(n>=1&&n<=40)) return;
+    var normQ=function(q){ return {id:String(q.id),q:String(q.q||"").slice(0,80),opts:(Array.isArray(q.opts)?q.opts:[]).filter(function(o){ return o&&o.id; }).slice(0,6).map(function(o){ return {id:String(o.id),label:String(o.label||"").slice(0,40)}; }),win:Array.isArray(q.win)?q.win.map(String):null}; };
     d.episodes[n]={status:EP_STATES.indexOf(e.status)>=0?e.status:"open",finale:!!e.finale,
+      custom:Array.isArray(e.custom)?e.custom.filter(function(q){ return q&&q.id&&Array.isArray(q.opts); }).map(normQ):[],
+      live:Array.isArray(e.live)?e.live.filter(function(q){ return q&&q.id&&Array.isArray(q.opts); }).map(function(q){ var r=normQ(q); r.state=["open","closed","done"].indexOf(q.state)>=0?q.state:"closed"; return r; }):[],
       log:Array.isArray(e.log)?e.log.filter(function(x){ return x&&x.k&&Array.isArray(x.ids)&&x.ids.length; }).map(function(x){ return {id:String(x.id||rid()),k:String(x.k),ids:x.ids.map(String)}; }):[]};
   });
   if(raw.rules){
@@ -616,8 +630,7 @@ function normalizeMain(raw){
       d.rules.events=evs;
     }
     if(raw.rules.auto) Object.keys(DEF_AUTO).forEach(function(k){ if(typeof raw.rules.auto[k]==="number") d.rules.auto[k]=clampPts(raw.rules.auto[k]); });
-    if(raw.rules.tips) Object.keys(DEF_TIPS).forEach(function(k){ if(typeof raw.rules.tips[k]==="number") d.rules.tips[k]=clampPts(raw.rules.tips[k]); });
-    if(raw.rules.cards){ d.rules.cards.on=raw.rules.cards.on!==false; if(Array.isArray(raw.rules.cards.off)) d.rules.cards.off=raw.rules.cards.off.filter(function(k){ return CARD_DEFS[k]&&!CARD_DEFS[k].green; }); }
+    if(raw.rules.bets){ var lim={ep:[1,50],live:[0,30],season:[0,100],surv:[0,20]}; Object.keys(DEF_BETS).forEach(function(k){ var x=raw.rules.bets[k]; if(typeof x==="number") d.rules.bets[k]=Math.max(lim[k][0],Math.min(lim[k][1],Math.round(x))); }); }
   }
   if(raw.assign && typeof raw.assign==="object") Object.keys(raw.assign).forEach(function(k){ if(typeof raw.assign[k]==="string") d.assign[k]=raw.assign[k]; });
   if(Array.isArray(raw.removed)) d.removed=raw.removed.filter(function(x){ return typeof x==="string"; });
@@ -657,26 +670,19 @@ function cache(){ if(!CACHE){ CACHE={}; rebuild(); } return CACHE; }
 function rebuild(){
   E={};
   entries.forEach(function(r){
-    var e=E[r.player]||(E[r.player]={id:r.player,profile:null,season:null,picks:{},tips:{},cards:{}});
+    var e=E[r.player]||(E[r.player]={id:r.player,profile:null,season:null,picks:{},bets:{},live:{}});
     var k=r.key;
     if(k==="profile") e.profile=r.data;
     else if(k==="season") e.season=r.data;
     else if(/^pick:\d+$/.test(k)) e.picks[+k.slice(5)]=r.data;
-    else if(/^tips:\d+$/.test(k)) e.tips[+k.slice(5)]=r.data;
-    else if(/^card:\d+$/.test(k)){ var cd=normCard(r.data,r.player); if(cd) e.cards[+k.slice(5)]=cd; }
+    else if(/^bet:\d+$/.test(k)) e.bets[+k.slice(4)]=r.data;
+    else if(/^live:\d+:\d+$/.test(k)) e.live[k.slice(5)]=r.data;
   });
   var removed=main?main.removed:[];
   JOINED=Object.keys(E).filter(function(id){ return E[id].profile && E[id].profile.name && removed.indexOf(id)<0; });
   JOINED.sort(function(a,b){ return (E[a].profile.joined||0)-(E[b].profile.joined||0) || (a<b?-1:1); });
   JOINED=JOINED.slice(0,MAX_PLAYERS);
   PL=(main&&main.order.length)?main.order.filter(function(id){ return JOINED.indexOf(id)>=0; }):JOINED.slice();
-}
-function normCard(c,p){
-  if(c && c.hidden) return {p:p,hidden:true,deck:null,k:null,target:null,redrawn:false};
-  if(!c || ["g","y","r","none","skip"].indexOf(c.deck)<0) return null;
-  if(c.deck!=="none" && c.deck!=="skip" && !CARD_DEFS[c.k]) return null;
-  return {p:p,deck:c.deck,k:CARD_DEFS[c.k]?c.k:null,amount:typeof c.amount==="number"?c.amount:null,prevF:c.prevF>=1?c.prevF|0:null,coin:(c.coin==="win"||c.coin==="lose")?c.coin:null,
-    target:c.target?String(c.target):null,redrawn:!!c.redrawn,replacedK:(c.replacedK&&CARD_DEFS[c.replacedK])?c.replacedK:null};
 }
 function players(){ cache(); return PL; }
 function joined(){ cache(); return JOINED; }
@@ -735,16 +741,7 @@ function ownerOf(perId){ return owners()[perId]||null; }
 function team(pid){ var own=owners(); return main.persons.filter(function(p){ return own[p.id]===pid; }); }
 
 /* scoring */
-function epMods(f){
-  var C=cache(); C.mods=C.mods||{}; if(C.mods[f]) return C.mods[f];
-  var md={infl:1,mult:{}};
-  players().forEach(function(pid){
-    var cd=E[pid]&&E[pid].cards[f]; if(!cd) return;
-    if(cd.k==="inflation") md.infl*=2;
-    else if(cd.k==="allin" && cd.target) team(pid).forEach(function(p){ if(onIsland(p,f)) md.mult[p.id]=(p.id===cd.target?3:0); });
-  });
-  C.mods[f]=md; return md;
-}
+function epMods(f){ return {infl:1,mult:{}}; }
 function personPts(per,f){
   var e=ep(f); if(!e || f<(main.start||1) || !onIsland(per,f)) return 0;
   var md=epMods(f), p=0;
@@ -757,129 +754,117 @@ function personPts(per,f){
   return p;
 }
 function personTotal(per){ var t=0; epNums().forEach(function(f){ t+=personPts(per,f); }); return t; }
-function hadEvent(f,pid,pred){ var e=ep(f); return !!e && e.log.some(function(x){ return pred(x.k) && x.ids.indexOf(pid)>=0; }); }
-function anyGrenze(f){ var e=ep(f); return !!e && e.log.some(function(x){ return GRENZE.indexOf(x.k)>=0 && x.ids.some(function(id){ var p=personById(id); return p&&p.kind==="v"; }); }); }
-function tipResult(pid,f,q){
-  if(!closed(f)) return null;
-  var t=E[pid]&&E[pid].tips[f]; if(!t||!t[q]) return null; var v=t[q];
-  if(q==="grenze") return v==="none" ? !anyGrenze(f) : hadEvent(f,v,function(k){ return GRENZE.indexOf(k)>=0; });
-  if(q==="traenen") return hadEvent(f,v,function(k){ return k==="traenen"; });
-  if(q==="out"){ var outs=main.persons.filter(function(p){ return p.outIn===f; }); return v==="none" ? outs.length===0 : outs.some(function(p){ return p.id===v; }); }
-  return null;
-}
-function tipsPts(pid,f){ var T=main.rules.tips, s=0; if(tipResult(pid,f,"grenze")) s+=T.grenze; if(tipResult(pid,f,"traenen")) s+=T.traenen; if(tipResult(pid,f,"out")) s+=T.out; return s; }
-function seasonPts(pid){ var s=0, st=E[pid]&&E[pid].season; if(!st||!st.couples) return 0; main.couples.forEach(function(c){ if(c.final && st.couples[c.id]===c.final) s+=main.rules.tips.couple; }); return s; }
-function playerEp(pid,f){ if(f<(main.start||1)) return 0; var t=tipsPts(pid,f)+cardPts(pid,f); team(pid).forEach(function(p){ t+=personPts(p,f); }); return t; }
+function seasonPts(pid){ var L=seasonLedger(); return L.pay[pid]||0; }
+function teamEp(pid,f){ var t=0; team(pid).forEach(function(p){ t+=personPts(p,f); }); return t; }
+function playerEp(pid,f){ if(f<(main.start||1)) return 0; return teamEp(pid,f)+betPts(pid,f)+survPts(pid,f); }
 function total(pid){ var C=cache(); C.tot=C.tot||{}; if(C.tot[pid]!=null) return C.tot[pid]; var t=seasonPts(pid); epNums().forEach(function(f){ t+=playerEp(pid,f); }); C.tot[pid]=t; return t; }
 function ranking(){ return players().slice().sort(function(a,b){ return total(b)-total(a) || players().indexOf(a)-players().indexOf(b); }); }
 
-/* cards */
-function cardsOn(){ return !!main.rules.cards.on; }
-function cmult(cd){ return cd.deck==="r"?2:1; }
-function cardOf(pid,f){ return (E[pid]&&E[pid].cards[f])||null; }
-function mustSkip(pid,f){ var c=cardOf(pid,f-1); return !!(c && c.k==="haengematte" && ep(f-1)); }
-function blankCard(p,deck){ return {p:p,deck:deck,k:null,amount:null,prevF:null,coin:null,target:null,redrawn:false,replacedK:null}; }
-function minePersons(pid,f){ return team(pid).filter(function(p){ return onIsland(p,f); }); }
-function eligibleCards(pid,f,deck){
-  var mine=minePersons(pid,f);
-  return Object.keys(CARD_DEFS).filter(function(k){
-    var d=CARD_DEFS[k];
-    if(deck==="g") return !!d.green;
-    if(d.green) return false;
-    if(main.rules.cards.off.indexOf(k)>=0) return false;
-    if(d.needPrev && prevDone(f)==null) return false;
-    if(d.cat==="wette" && !mine.length) return false;
-    if(d.needV && !mine.some(function(p){ return p.kind==="v"; })) return false;
-    if(d.target==="own" && !mine.length) return false;
-    if(d.target==="v" && !islandAt(f).some(function(p){ return p.kind==="v"; })) return false;
-    return true;
+/* ---------- betting office ---------- */
+function sumStakes(map){ var t=0; if(!map||typeof map!=="object") return 0; Object.keys(map).forEach(function(q){ var m=map[q]; if(m&&typeof m==="object") Object.keys(m).forEach(function(o){ t+=(+m[o])|0; }); else t+=(+m)|0; }); return t; }
+function epQuestions(f){
+  var e=ep(f); if(!e) return [];
+  var C=cache(); C.q=C.q||{}; if(C.q[f]) return C.q[f];
+  var isl=islandAt(f), vs=isl.filter(function(p){ return p.kind==="v"; }), ts=isl.filter(function(p){ return p.kind==="t"; });
+  var lab=function(p){ return {id:p.id,label:p.name}; };
+  var qs=[
+    {id:"grenze",title:"Wer überschreitet die Grenze?",hint:"Kuss oder gemeinsame Nacht mit einem*r Verführer*in. Den Jackpot gibt es nur in diesem Pott.",opts:vs.map(lab).concat([{id:"none",label:"Niemand"}])},
+    {id:"traenen",title:"Wer weint?",opts:vs.map(lab).concat([{id:"t",label:"Eine*r der Verführer*innen"},{id:"none",label:"Niemand"}])},
+    {id:"out",title:"Wer muss die Insel verlassen?",opts:ts.map(lab).concat([{id:"v",label:"Eine vergebene Person"},{id:"none",label:"Niemand"}])},
+    {id:"kuesse",title:"Wie viele Küsse gibt es?",opts:[{id:"0",label:"Keinen"},{id:"1",label:"Einen"},{id:"2",label:"Zwei"},{id:"3",label:"Drei oder mehr"}]},
+    {id:"notfall",title:"Gibt es ein Notfall-Lagerfeuer?",opts:[{id:"ja",label:"Ja"},{id:"nein",label:"Nein"}]}
+  ];
+  e.custom.forEach(function(c){ qs.push({id:"c-"+c.id,title:c.q,opts:c.opts,custom:c}); });
+  C.q[f]=qs; return qs;
+}
+function qWinners(f,q){
+  if(!closed(f)) return null;
+  var log=ep(f).log, isT=function(id){ var p=personById(id); return !!p&&p.kind==="t"; };
+  var has=function(pid,pred){ return log.some(function(x){ return pred(x.k)&&x.ids.indexOf(pid)>=0; }); };
+  var w;
+  if(q.id==="grenze"){ w=q.opts.filter(function(o){ return o.id!=="none" && has(o.id,function(k){ return GRENZE.indexOf(k)>=0; }); }).map(function(o){ return o.id; }); return w.length?w:["none"]; }
+  if(q.id==="traenen"){ w=q.opts.filter(function(o){ return o.id!=="none"&&o.id!=="t"&&has(o.id,function(k){ return k==="traenen"; }); }).map(function(o){ return o.id; });
+    if(log.some(function(x){ return x.k==="traenen" && x.ids.some(isT); })) w.push("t"); return w.length?w:["none"]; }
+  if(q.id==="out"){ var outs=main.persons.filter(function(p){ return p.outIn===f; });
+    w=outs.filter(function(p){ return p.kind==="t" && q.opts.some(function(o){ return o.id===p.id; }); }).map(function(p){ return p.id; });
+    if(outs.some(function(p){ return p.kind==="v"; })) w.push("v"); return w.length?w:["none"]; }
+  if(q.id==="kuesse") return [String(Math.min(3,log.filter(function(x){ return x.k==="kuss"; }).length))];
+  if(q.id==="notfall") return [log.some(function(x){ return x.k==="notfall"; })?"ja":"nein"];
+  if(q.custom) return Array.isArray(q.custom.win)?q.custom.win:null;
+  return null;
+}
+function potSettle(stakes,winners,bank){
+  var r={pay:{},T:bank||0,SW:0,roll:0,w:winners||[]};
+  Object.keys(stakes).forEach(function(pid){ var m=stakes[pid]||{}; Object.keys(m).forEach(function(o){ var n=(+m[o])|0; r.T+=n; if(r.w.indexOf(o)>=0) r.SW+=n; }); });
+  if(r.SW>0) Object.keys(stakes).forEach(function(pid){ var mine=0, m=stakes[pid]||{}; r.w.forEach(function(o){ mine+=(+m[o])|0; }); if(mine>0) r.pay[pid]=Math.round(r.T*mine/r.SW); });
+  else r.roll=r.T;
+  return r;
+}
+function betLedger(){
+  var C=cache(); if(C.bl) return C.bl;
+  var out={ep:{},nextBank:0}, carry=0;
+  epNums().forEach(function(f){
+    if(f<(main.start||1)) return;
+    var e=ep(f), r={pay:{},q:{},live:{},bankIn:carry,roll:0};
+    out.ep[f]=r;
+    if(!closed(f)) return;
+    epQuestions(f).forEach(function(q){
+      var st={}; players().forEach(function(pid){ var b=E[pid]&&E[pid].bets[f]; if(b&&b.stakes&&b.stakes[q.id]) st[pid]=b.stakes[q.id]; });
+      var sres=potSettle(st,qWinners(f,q)||[],q.id==="grenze"?carry:0);
+      r.q[q.id]=sres; r.roll+=sres.roll;
+      Object.keys(sres.pay).forEach(function(pid){ r.pay[pid]=(r.pay[pid]||0)+sres.pay[pid]; });
+    });
+    e.live.forEach(function(l){
+      var st={}; players().forEach(function(pid){ var b=E[pid]&&E[pid].live[f+":"+l.id]; if(b&&b.stake) st[pid]=b.stake; });
+      var sres=potSettle(st,l.state==="done"&&l.win?l.win:[],0);
+      r.live[l.id]=sres; r.roll+=sres.roll;
+      Object.keys(sres.pay).forEach(function(pid){ r.pay[pid]=(r.pay[pid]||0)+sres.pay[pid]; });
+    });
+    carry=r.roll;
   });
+  out.nextBank=carry;
+  C.bl=out; return out;
 }
-function drawCard(pid,f,deck){
-  var keys=eligibleCards(pid,f,deck); if(!keys.length) return null;
-  var tot=0; keys.forEach(function(k){ tot+=CARD_DEFS[k].w; });
-  var r=rnd()*tot, k=keys[keys.length-1];
-  for(var i=0;i<keys.length;i++){ r-=CARD_DEFS[keys[i]].w; if(r<0){ k=keys[i]; break; } }
-  var cd=blankCard(pid,deck); cd.k=k;
-  if(CARD_DEFS[k].needPrev){ cd.prevF=prevDone(f); cd.amount=playerEp(pid,cd.prevF); }
-  if(k==="dodn") cd.coin=rnd()<0.5?"win":"lose";
-  return cd;
-}
-function countMine(f,ids,pred){ var e=ep(f), n=0; if(!e) return 0; e.log.forEach(function(x){ if(pred(x.k)) x.ids.forEach(function(id){ if(ids.indexOf(id)>=0) n++; }); }); return n; }
-function betPts(cd,f){
-  var d=CARD_DEFS[cd.k], m=cmult(cd), mineP=minePersons(cd.p,f), mine=mineP.map(function(p){ return p.id; }), won=false;
-  var isG=function(k){ return GRENZE.indexOf(k)>=0; };
-  if(cd.k==="traenenw"){ var n=countMine(f,mine,function(k){ return k==="traenen"; }); return n>0 ? d.per*m*n : d.lose*m; }
-  if(cd.k==="treue") won=countMine(f,mineP.filter(function(p){ return p.kind==="v"; }).map(function(p){ return p.id; }),isG)===0;
-  else if(cd.k==="herz") won=countMine(f,mine,isG)>0;
-  else if(cd.k==="abreise") won=!mineP.some(function(p){ return p.outIn===f; });
-  else if(cd.k==="dramaq") won=countMine(f,mine,function(k){ var e=evByKey(k); return !!e && e.g==="Drama"; })>=3;
-  else if(cd.k==="datem") won=countMine(f,mine,function(k){ return k==="date"; })>=2;
-  return won ? d.win*m : d.lose*m;
-}
-function paparazzoCount(cd,f){ var e=ep(f), n=0; if(!e||!cd.target) return 0; e.log.forEach(function(x){ if(GRENZE.indexOf(x.k)>=0 && x.ids.indexOf(cd.target)>=0) n++; }); return n; }
-function instantPts(cd){
-  var d=CARD_DEFS[cd.k], m=cmult(cd);
-  if(cd.k==="fluchk") return -Math.floor(Math.max(0,cd.amount||0)/2)*m;
-  if(cd.k==="dodn") return (cd.coin==="win"?1:-1)*(cd.amount||0)*m;
-  return (d.val||0)*m;
-}
-function ledger(){
-  var C=cache(); if(C.led) return C.led;
-  var out={angels:{}};
+function betPts(pid,f){ var r=betLedger().ep[f]; return (r&&r.pay[pid])||0; }
+function jackpotFor(f){ var L=betLedger(), r=L.ep[f]; return r?r.bankIn:L.nextBank; }
+function survLedger(){
+  var C=cache(); if(C.sv) return C.sv;
+  var out={}, base=main.rules.bets.surv;
   players().forEach(function(pid){
-    var angels=0; out[pid]={};
+    var streak=0, r={pts:{},res:{},streak:0,used:[]};
     epNums().forEach(function(f){
       if(f<(main.start||1)) return;
-      var cd=cardOf(pid,f); if(!cd||!cd.k) return;
-      var d=CARD_DEFS[cd.k], r={cd:cd,pts:0,st:"",saved:0};
-      if(d.cat==="joker"){ r.st="joker"; if(cd.k==="engel") angels++; }
-      else if(d.cat==="sofort"){ r.pts=instantPts(cd); r.st="done"; }
-      else if(cd.k==="paparazzo"){ r.pts=paparazzoCount(cd,f)*d.per*cmult(cd); r.st=closed(f)?"done":"live"; }
-      else if(d.cat==="chaos") r.st="active";
-      else if(d.cat==="wette"){ if(closed(f)){ r.pts=betPts(cd,f); r.st=r.pts>=0?"win":"lose"; } else r.st="pending"; }
-      if(r.pts<0 && angels>0){ angels--; r.saved=r.pts; r.pts=0; }
-      out[pid][f]=r;
+      var b=E[pid]&&E[pid].bets[f], pick=(b&&!b.hidden&&b.surv)||null;
+      if(pick) r.used.push(pick);
+      if(!closed(f)) return;
+      var per=pick&&personById(pick);
+      if(per && stillIn(per,f)){ streak++; r.pts[f]=base*streak; r.res[f]={ok:true,pick:pick,streak:streak}; }
+      else { r.res[f]={ok:false,pick:pick}; streak=0; }
     });
-    out.angels[pid]=angels;
+    r.streak=streak; out[pid]=r;
   });
-  C.led=out; return out;
+  C.sv=out; return out;
 }
-function cardPts(pid,f){ var L=ledger(); return (L[pid]&&L[pid][f])?L[pid][f].pts:0; }
-function angelsLeft(pid){ return ledger().angels[pid]||0; }
-function secondLeft(pid){ var n=0, e=E[pid]; if(!e) return 0; Object.keys(e.cards).forEach(function(f){ var cd=e.cards[f]; if(cd.k==="zweite") n++; if(cd.redrawn) n--; }); return Math.max(0,n); }
-function cardText(cd){
-  var d=CARD_DEFS[cd.k], m=cmult(cd), n=function(x){ return sgn(x*m); }, v;
-  switch(cd.k){
-    case "fluchk": v=instantPts(cd); return "Du verlierst die Hälfte deiner Punkte aus "+epName(cd.prevF)+(m===2?", mit Rot doppelt":"")+": "+(v===0?"zum Glück 0, weil du dort nichts Positives geholt hast.":sgn(v)+".");
-    case "dodn": return "Die Münze hat entschieden: Deine "+cd.amount+" Punkte aus "+epName(cd.prevF)+" zählen "+(cd.coin==="win"?"doppelt":"nichts")+(m===2?", mit Rot alles mal zwei":"")+": "+sgn(instantPts(cd))+".";
-    case "haengematte": return "Du bekommst sofort "+n(d.val)+". Dafür liegst du bei der nächsten Folge in der Hängematte und ziehst keine Karte.";
-    case "treue": return "Überschreitet keine*r deiner Vergebenen in dieser Folge die Grenze (Kuss oder Nacht): "+n(d.win)+". Sonst "+n(d.lose)+".";
-    case "herz": return "Bekommt jemand aus deinem Team in dieser Folge einen Kuss oder eine gemeinsame Nacht: "+n(d.win)+". Sonst "+n(d.lose)+".";
-    case "traenenw": return "Jedes Mal „"+evLabel("traenen")+"“ in deinem Team: "+n(d.per)+". Kein einziges Mal: "+n(d.lose)+".";
-    case "abreise": return "Muss niemand aus deinem Team in dieser Folge die Insel verlassen: "+n(d.win)+". Sonst "+n(d.lose)+".";
-    case "dramaq": return "Sammelt dein Team in dieser Folge mindestens 3 Drama-Ereignisse: "+n(d.win)+". Sonst "+n(d.lose)+".";
-    case "datem": return "Bekommt dein Team in dieser Folge mindestens 2 Dates: "+n(d.win)+". Sonst "+n(d.lose)+".";
-    case "allin": return "Wähle eine Person aus deinem Team. Sie zählt in dieser Folge dreifach, der Rest deines Teams zählt nichts.";
-    case "inflation": return "Alle Ereignisse zählen in dieser Folge doppelt, für alle.";
-    case "paparazzo": return "Wähle eine vergebene Person. Jeder Kuss und jede gemeinsame Nacht von ihr in dieser Folge bringt dir "+n(d.per)+".";
-    case "engel": return "Du behältst diese Karte. Sie bewahrt dich automatisch vor deiner nächsten Minuskarte.";
-    case "zweite": return "Du behältst diese Karte. Damit darfst du einmal eine gezogene Karte zurücklegen und neu ziehen.";
+function survPts(pid,f){ var s=survLedger()[pid]; return (s&&s.pts[f])||0; }
+function seasonQuestions(){
+  return main.couples.map(function(c){ return {id:c.id,title:c.name,opts:[{id:"together",label:"Gemeinsam"},{id:"apart",label:"Getrennt"}]}; })
+    .concat([{id:"count",title:"Wie viele Paare gehen gemeinsam?",opts:main.couples.map(function(c,i){ return {id:String(i),label:String(i)}; }).concat([{id:String(main.couples.length),label:String(main.couples.length)}])}]);
+}
+function seasonLedger(){
+  var C=cache(); if(C.sl) return C.sl;
+  var out={pay:{},q:{},done:main.couples.length>0 && main.couples.every(function(c){ return c.final; })};
+  if(out.done){
+    var together=main.couples.filter(function(c){ return c.final==="together"; }).length;
+    seasonQuestions().forEach(function(q){
+      var st={}; players().forEach(function(pid){ var se=E[pid]&&E[pid].season; if(se&&se.stakes&&se.stakes[q.id]) st[pid]=se.stakes[q.id]; });
+      var w=q.id==="count"?[String(together)]:[main.couples.filter(function(c){ return c.id===q.id; })[0].final];
+      var r=potSettle(st,w,0); out.q[q.id]=r;
+      Object.keys(r.pay).forEach(function(pid){ out.pay[pid]=(out.pay[pid]||0)+r.pay[pid]; });
+    });
   }
-  v=instantPts(cd);
-  return v>0?"Du bekommst sofort "+sgn(v)+".":(v<0?"Du verlierst sofort "+(-v)+" Punkt"+(v===-1?"":"e")+".":"Nichts passiert.");
+  C.sl=out; return out;
 }
-function cardCls(cd){ var d=CARD_DEFS[cd.k]; if(d.cat==="sofort"){ var v=instantPts(cd); return v>0?"cat-plus":(v<0?"cat-minus":"cat-null"); } return "cat-"+d.cat; }
-function cardStatus(r){
-  var cd=r.cd, d=CARD_DEFS[cd.k];
-  if(d.cat==="joker") return {t:"behalten",c:"no"};
-  if(r.saved) return {t:"Schutzengel hat "+sgn(r.saved)+" verhindert",c:"ok"};
-  if(d.cat==="sofort") return {t:sgn(r.pts),c:r.pts>0?"ok":(r.pts<0?"bad":"no")};
-  if(d.cat==="wette") return r.st==="pending"?{t:"wird am Ende ausgewertet",c:"no"}:{t:(r.st==="win"?"gewonnen ":"verloren ")+sgn(r.pts),c:r.st==="win"?"ok":"bad"};
-  if(cd.k==="paparazzo") return {t:sgn(r.pts)+(r.st==="live"?" bisher":""),c:r.pts>0?"ok":"no"};
-  if(cd.k==="allin"){ var tp=personById(cd.target); return {t:tp?tp.name+" zählt ×3":"niemand gewählt",c:"no"}; }
-  return {t:"aktiv",c:"no"};
-}
+function liveLeft(pid,f){ var u=0, lv=(E[pid]&&E[pid].live)||{}; Object.keys(lv).forEach(function(k){ if(k.indexOf(f+":")===0 && lv[k] && lv[k].stake) u+=sumStakes(lv[k].stake); }); return main.rules.bets.live-u; }
 
 /* ================= network ================= */
 function rpc(fn,body){
@@ -927,6 +912,7 @@ function pull(){
       if(!hit) ent.push({player:it.player,key:it.key,data:it.data,at:new Date().toISOString()});
     });
     if(JSON.stringify(ent)!==JSON.stringify(entries)){ entries=ent; changed=true; }
+    var pots=res.pots||{}; if(JSON.stringify(pots)!==JSON.stringify(net.pots||{})){ net.pots=pots; changed=true; }
     saveCache();
     if(net.mode!=="online") setNet("online");
     flushPend();
@@ -959,7 +945,7 @@ function flushMain(){
   clearTimeout(net.mainTimer); net.mainTimer=null;
   if(net.mainWriting){ net.mainAgain=true; return; }
   net.mainWriting=true;
-  rpc("tl_save_league",{p_code:CODE,p_player:ME,p_secret:SECRET,p_data:main}).then(function(v){ net.mainFailed=false; if(+v) version=+v; if(net.mode!=="online") setNet("online"); done(); },
+  rpc("tl_save_league",{p_code:CODE,p_player:ME,p_secret:SECRET,p_data:main}).then(function(v){ net.mainFailed=false; if(+v) version=+v; if(net.mode!=="online") setNet("online"); done(); if(!net.mainWriting&&!net.mainTimer) pull(); },
     function(err){ if(err&&err.server){ net.mainFailed=false; ui.flashErr="Speichern abgelehnt: Nur der Admin darf die Liga ändern."; net.pulling=false; pull(); done(); return; } net.mainFailed=true; setNet("offline"); done(); });
   function done(){ net.mainWriting=false; if(net.mainAgain){ net.mainAgain=false; flushMain(); } }
 }
@@ -988,6 +974,12 @@ function enter(key,init){ if(ui.key!==key){ ui.key=key; ui.err=""; ui.msg=ui.fla
 function stepper(act,key,val){ return '<div class="stepper"><button data-act="'+act+'" data-v="'+h(key)+'" data-d="-1" aria-label="Weniger">−</button><b>'+sgn(val)+'</b><button data-act="'+act+'" data-v="'+h(key)+'" data-d="1" aria-label="Mehr">+</button></div>'; }
 function plainStepper(act,val,label){ return '<div class="stepper"><button data-act="'+act+'" data-d="-1" aria-label="Weniger">−</button><b>'+h(label||val)+'</b><button data-act="'+act+'" data-d="1" aria-label="Mehr">+</button></div>'; }
 function chip(pid,extra,cls){ return '<span class="chip-pc '+pcls(pid)+(cls?" "+cls:"")+'"><span class="pdot"></span>'+pname(pid)+(extra?" "+h(extra):"")+'</span>'; }
+function stakeRows(scope,qid,opts,map,left){
+  return '<div class="stakes">'+opts.map(function(o){ var n=(map&&map[qid]&&map[qid][o.id])|0;
+    return '<div class="srow'+(n?" on":"")+'"><span class="sl">'+h(o.label)+'</span><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="-1" aria-label="Eine Münze weniger auf '+h(o.label)+'"'+(n?"":" disabled")+'>−</button><b class="num">'+n+'</b><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="1" aria-label="Eine Münze mehr auf '+h(o.label)+'"'+(left>0?"":" disabled")+'>+</button></div>';
+  }).join("")+'</div>';
+}
+function coinBar(left,B,label){ var used=B-left; return '<div class="coinbar"><span>'+(label||"Noch")+' <b class="num">'+left+'</b> von '+B+' Münzen übrig</span><div class="coinmeter"><i style="width:'+(B?Math.round(100*used/B):0)+'%"></i></div></div>'; }
 function goTop(){ try{ window.scrollTo(0,0); }catch(e){} }
 function inputFocused(){ var a=document.activeElement; return !!a && (a.tagName==="INPUT"||a.tagName==="TEXTAREA") && !!a.closest && !!a.closest("#view"); }
 function requestRender(){ if(inputFocused()){ ui.deferred=true; return; } render(); }
@@ -1110,52 +1102,56 @@ function teamsGrid(withPts){
   }).join("")+'</section>';
 }
 function seasonTipsCard(){
-  var my=(E[ME]&&E[ME].season&&E[ME].season.couples)||{}, cur=ui.stips||copyObj(my);
-  if(!ui.stips) ui.stips=cur;
-  var locked=main.phase!=="draft"&&main.phase!=="seasontips";
-  var done=players().filter(function(pid){ var se=E[pid]&&E[pid].season; return !!se && (se.hidden || (se.couples&&Object.keys(se.couples).length===main.couples.length)); });
-  var out='<section class="card"><h3>Saisontipps</h3><p class="hint">Verlassen die Paare die Insel gemeinsam oder getrennt? Jeder richtige Tipp bringt nach dem Finale '+sgn(main.rules.tips.couple)+'. Die Tipps der anderen siehst du erst nach dem Finale.</p>';
-  main.couples.forEach(function(c){
-    out+='<div class="exrow"><div class="nm"><b>'+h(c.name)+'</b></div><div class="seg seg2" role="group" aria-label="'+h(c.name)+'">'+
-      '<button data-act="st-set" data-c="'+h(c.id)+'" data-v="together" aria-pressed="'+(cur[c.id]==="together")+'">Gemeinsam</button>'+
-      '<button data-act="st-set" data-c="'+h(c.id)+'" data-v="apart" aria-pressed="'+(cur[c.id]==="apart")+'">Getrennt</button></div></div>';
+  var my=(E[ME]&&E[ME].season&&E[ME].season.stakes)||{};
+  if(!ui.stips) ui.stips=JSON.parse(JSON.stringify(my));
+  var B=main.rules.bets.season, left=B-sumStakes(ui.stips), pots=(net.pots&&net.pots.season)||{};
+  var done=players().filter(function(pid){ var se=E[pid]&&E[pid].season; return !!se && (se.hidden || sumStakes(se.stakes)>0); });
+  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel: Verteile '+B+' Münzen. Jede Frage hat ihren eigenen Pott, ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p>'+coinBar(left,B)+'</section>';
+  seasonQuestions().forEach(function(q){
+    out+='<section class="card"><div class="qhead static"><span class="qt"><b>'+h(q.title)+'</b><small>Im Pott: '+(pots[q.id]|0)+' Münzen</small></span></div>'+stakeRows("season",q.id,q.opts,ui.stips,left)+'</section>';
   });
-  var complete=main.couples.every(function(c){ return cur[c.id]; }), saved=JSON.stringify(cur)===JSON.stringify(my)&&Object.keys(my).length===main.couples.length;
-  out+='<span class="label">Schon getippt</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",done.indexOf(pid)>=0?"":"no"); }).join("")+'</div></section>';
+  out+='<section class="card"><span class="label">Schon gesetzt</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",done.indexOf(pid)>=0?"":"no"); }).join("")+'</div></section>';
   if(isAdmin()){
-    out+='<section class="card"><h3>Saison starten</h3><p class="hint">'+(done.length<players().length?"Noch nicht alle haben getippt. Wer bis zum Start nicht tippt, bekommt dafür keine Punkte.":"Alle haben getippt.")+' Danach lassen sich die Saisontipps nicht mehr ändern.</p>'+
+    out+='<section class="card"><h3>Saison starten</h3><p class="hint">'+(done.length<players().length?"Noch nicht alle haben gesetzt. Wer bis zum Start nicht setzt, ist bei den Langzeitwetten nicht dabei.":"Alle haben gesetzt.")+' Danach lassen sich die Langzeitwetten nicht mehr ändern.</p>'+
       (ui.confirm==="season-start"?'<div class="actions"><button class="btn big primary" data-act="season-start-yes">Ja, Saison starten</button><button class="btn" data-act="cancel">Abbrechen</button></div>':'<div class="actions"><button class="btn" data-act="season-start">Saison starten …</button></div>')+'</section>';
   }
-  out+=primary("st-save",saved?"Tipps gespeichert ✓":(complete?"Tipps speichern":"Erst alle 4 Paare tippen"),!complete||saved||locked);
+  var dirty=JSON.stringify(ui.stips)!==JSON.stringify(my), has=sumStakes(my)>0;
+  out+=primary("season-save",dirty?(sumStakes(ui.stips)?"Langzeitwetten speichern":"Erst Münzen setzen"):(has?"Langzeitwetten gespeichert ✓":"Erst Münzen setzen"),!dirty||!sumStakes(ui.stips));
   return out;
 }
 function episodeCard(){
   var f=curEp(), out="";
   if(f==null){
-    var n=nextToOpen();
-    out+='<section class="card"><span class="label">Als Nächstes</span><h2 class="bigtitle">'+epName(n)+'</h2><p class="hint">'+epDate(n)+' auf RTL+</p>';
-    if(isAdmin()) out+='<p class="hint">Öffne die Folge vor dem Schauen. Dann können alle tippen und Karten ziehen.</p>'+primary("ep-open",epName(n)+" öffnen",false,true);
-    else out+='<p class="hint">Sobald der Admin die Folge öffnet, kannst du tippen und eine Karte ziehen.</p>';
+    var n=nextToOpen(), jp=jackpotFor(n);
+    out+='<section class="card"><span class="label">Als Nächstes</span><h2 class="bigtitle">'+epName(n)+'</h2><p class="hint">'+epDate(n)+' auf RTL+'+(jp?' · <b class="gold">Jackpot '+jp+' Münzen</b>':'')+'</p>';
+    if(isAdmin()) out+='<p class="hint">Öffne die Folge vor dem Schauen. Dann können alle ihren Wettschein ausfüllen.</p>'+primary("ep-open",epName(n)+" öffnen",false,true);
+    else out+='<p class="hint">Sobald der Admin die Folge öffnet, kannst du deinen Wettschein ausfüllen.</p>';
     out+='</section>';
-    var ld=lastDone(); if(ld) out+=epSummary(ld);
+    var ld=lastDone(); if(ld) out+=epSummary(ld)+resolutionCard(ld);
     return out;
   }
-  var e=ep(f);
-  out+='<section class="card"><span class="label">'+epDate(f)+'</span><h2 class="bigtitle">'+epName(f)+(e.finale?" · Finale":"")+'</h2>';
+  var e=ep(f), jp2=jackpotFor(f);
+  out+='<section class="card"><span class="label">'+epDate(f)+(jp2?' · Jackpot '+jp2:'')+'</span><h2 class="bigtitle">'+epName(f)+(e.finale?" · Finale":"")+'</h2>';
   if(e.status==="open"){
-    var mt=E[ME]&&E[ME].tips[f], mc=cardOf(ME,f);
-    out+='<p class="hint">Tipps und Karten sind offen, bis der Admin die Folge startet.</p><div class="actions">'+
-      '<button class="btn big '+(mt?"":"primary")+'" data-act="go" data-v="tips">'+(mt?"Tipps ändern":"Tipps abgeben")+'</button>'+
-      (cardsOn()?'<button class="btn big'+(mc||mt?(mc?"":" primary"):"")+'" data-act="go" data-v="card">'+(mc?"Deine Zockerkarte ansehen":"Zockerkarte")+'</button>':"")+'</div>'+
-      '<span class="label">Getippt</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",E[pid]&&E[pid].tips[f]?"":"no"); }).join("")+'</div>'+
-      (cardsOn()?'<span class="label">Karte entschieden</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",cardOf(pid,f)?"":"no"); }).join("")+'</div>':"");
+    var mb=E[ME]&&E[ME].bets[f];
+    out+='<p class="hint">Die Wetten sind offen, bis der Admin die Folge startet.</p>'+primary("go-slip",mb?"Wettschein ansehen":"Wettschein ausfüllen",false,true)+
+      '<span class="label">Wettschein abgegeben</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",E[pid]&&E[pid].bets[f]?"":"no"); }).join("")+'</div></section>';
     if(isAdmin()){
-      var missing=players().filter(function(pid){ return !(E[pid]&&E[pid].tips[f]); }).length;
-      out+= ui.confirm==="ep-live" ? '<p><b>Tipps schließen?</b> '+(missing?missing+" haben noch nicht getippt und bekommen für diese Folge keine Tipp-Punkte.":"")+'</p><div class="actions"><button class="btn big primary" data-act="ep-live-yes">Ja, Folge starten</button><button class="btn" data-act="cancel">Abbrechen</button></div>'
-        : '<div class="actions"><button class="btn" data-act="ep-live">Tipps schließen und Folge starten …</button></div>';
+      var pots=(net.pots&&net.pots.bet)||{};
+      out+='<section class="card"><h3>Eigene Wetten</h3><p class="hint">Du kannst Fragen ergänzen, zum Beispiel „Wer bekommt das Date?“. Die löst du nach der Folge selbst auf.</p>'+
+        e.custom.map(function(c){ var pot=pots[f+":c-"+c.id]|0; return '<div class="admrow"><span class="nm">'+h(c.q)+'</span><span class="hint">'+c.opts.length+' Antworten</span>'+(pot?'<span class="hint">Pott '+pot+'</span>':'<button class="btn sm" data-act="cq-del" data-v="'+h(c.id)+'">Entfernen</button>')+'</div>'; }).join("")+
+        '<label class="f">Frage<input type="text" id="cq" maxlength="80" autocomplete="off" placeholder="Wer bekommt das Date?"></label><label class="f">Antworten, mit Komma getrennt<input type="text" id="co" maxlength="160" autocomplete="off" placeholder="Gloria, Tara, Carina"></label>'+
+        (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+'<div class="actions"><button class="btn" data-act="cq-add">Wette hinzufügen</button></div>';
+      var missing=players().filter(function(pid){ return !(E[pid]&&E[pid].bets[f]); }).length;
+      out+= ui.confirm==="ep-live" ? '<p><b>Wetten schließen?</b> '+(missing?missing+" haben noch keinen Wettschein abgegeben.":"")+'</p><div class="actions"><button class="btn big primary" data-act="ep-live-yes">Ja, Folge starten</button><button class="btn" data-act="cancel">Abbrechen</button></div>'
+        : '<div class="actions"><button class="btn" data-act="ep-live">Wetten schließen und Folge starten …</button></div>';
+      out+='</section>';
     }
-  } else if(e.status==="live"){
-    out+='<p class="hint">Die Folge läuft. '+(isAdmin()?"Trag ein, was passiert.":"Der Admin trägt die Punkte ein, du siehst sie live.")+'</p>'+primary("go-board",isAdmin()?"Punkte eintragen":"Live-Punkte ansehen",false,true);
+    return out;
+  }
+  if(e.status==="live"){
+    var openLive=e.live.filter(function(l){ return l.state==="open"; }).length;
+    out+='<p class="hint">Die Folge läuft. '+(isAdmin()?"Trag ein, was passiert, und starte Live-Wetten.":"Der Admin trägt die Punkte ein. Live-Wetten erscheinen automatisch bei dir.")+(openLive?' <b class="gold">'+openLive+' Live-Wette offen.</b>':'')+'</p>'+primary("go-board",isAdmin()?"Punkte eintragen":"Live-Punkte ansehen",false,true);
   } else {
     out+='<p class="hint">'+(isAdmin()?"Die Folge ist vorbei. Schließ die Auswertung ab.":"Die Folge wird gerade ausgewertet.")+'</p>'+(isAdmin()?primary("go-board","Weiter auswerten",false,true):"");
   }
@@ -1164,73 +1160,96 @@ function episodeCard(){
 function epSummary(f){
   var rk=players().slice().sort(function(a,b){ return playerEp(b,f)-playerEp(a,f); });
   return '<section class="card"><h3>'+epName(f)+': so lief es</h3><div class="rank">'+rk.map(function(pid){
-    return '<div class="rk '+pcls(pid)+'"><span class="pos"></span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span></span><span class="pts num">'+sgn(playerEp(pid,f))+'</span></div>';
+    return '<div class="rk '+pcls(pid)+'"><span class="pos"></span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span></span><span class="pts num">'+sgn(playerEp(pid,f))+'</span></div><div class="rkx">Team '+sgn(teamEp(pid,f))+' · Wetten '+sgn(betPts(pid,f))+' · Überleben '+sgn(survPts(pid,f))+'</div>';
   }).join("")+'</div></section>';
 }
+function resolutionCard(f){
+  var L=betLedger().ep[f]; if(!L||!closed(f)) return "";
+  var e=ep(f), rows="";
+  var row=function(title,opts,r){
+    if(!r) return "";
+    var wl=opts.filter(function(o){ return r.w.indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", ")||"–";
+    var n=Object.keys(r.pay).length;
+    return '<div class="res-q"><span><b>'+h(title)+'</b><small>Richtig: '+h(wl)+'</small></span><span class="num">'+(r.T?(r.SW?'Pott '+r.T+' · '+n+'× gewonnen':(e.finale?'Pott '+r.T+' · ohne Gewinner':'Pott '+r.T+' → Jackpot')):'kein Einsatz')+'</span></div>';
+  };
+  epQuestions(f).forEach(function(q){ rows+=row(q.title,q.opts,L.q[q.id]); });
+  e.live.forEach(function(l){ rows+=row("Live: "+l.q,l.opts,L.live[l.id]); });
+  var surv=players().map(function(pid){ var r=survLedger()[pid]&&survLedger()[pid].res[f]; if(!r||!r.pick) return ""; var p=personById(r.pick);
+    return '<div class="res-q"><span><b>'+pname(pid)+' · Überleben</b><small>'+h(p?p.name:"?")+'</small></span><span class="'+(r.ok?"ok":"bad")+'">'+(r.ok?"Serie "+r.streak+" · "+sgn(survPts(pid,f)):"Serie weg")+'</span></div>'; }).join("");
+  return '<section class="card"><h3>Auflösung '+epName(f)+'</h3><div>'+rows+surv+'</div>'+(L.roll&&!e.finale?'<p class="hint">'+L.roll+' Münzen ohne Gewinner wandern als Jackpot in den Grenz-Pott der nächsten Folge.</p>':'')+'</section>';
+}
 function championCard(){
-  var rk=ranking(), w=rk[0], tie=rk.length>1&&total(rk[0])===total(rk[1]);
+  var rk=ranking(), w=rk[0], tie=rk.length>1&&total(rk[0])===total(rk[1]), SL=seasonLedger();
   var out='<div class="champ '+(tie?"tie":"")+' pc '+pcls(w)+'"><span>Die Liga ist entschieden</span><b>'+(tie?"Unentschieden an der Spitze!":pname(w)+" gewinnt!")+'</b><span>mit '+total(w)+' Punkten</span></div>';
-  out+='<section class="card"><h3>Saisontipps</h3><div class="sum">'+main.couples.map(function(c){ return '<div><span>'+h(c.name)+'</span><span>'+(c.final==="together"?"gemeinsam":(c.final==="apart"?"getrennt":"–"))+'</span></div>'; }).join("")+'</div>'+
-    '<div class="sum">'+players().map(function(pid){ return '<div><span>'+pname(pid)+'</span><span class="ok">'+sgn(seasonPts(pid))+'</span></div>'; }).join("")+'</div></section>';
+  out+='<section class="card"><h3>Langzeitwetten</h3><div class="sum">'+main.couples.map(function(c){ return '<div><span>'+h(c.name)+'</span><span>'+(c.final==="together"?"gemeinsam":(c.final==="apart"?"getrennt":"–"))+'</span></div>'; }).join("")+'</div>'+
+    '<div class="sum">'+players().map(function(pid){ return '<div><span>'+pname(pid)+'</span><span class="ok">'+sgn(SL.pay[pid]||0)+'</span></div>'; }).join("")+'</div></section>';
+  var ld=lastDone(); if(ld) out+=resolutionCard(ld);
   return out;
 }
-
-/* ================= tips & cards (player) ================= */
-function viewTips(){
+/* ================= betting slip & live bets (player) ================= */
+function viewBetslip(){
   var f=curEp(), e=f&&ep(f);
   if(!e||e.status!=="open"){ ui.screen="home"; return viewHome(); }
-  var mt=(E[ME]&&E[ME].tips[f])||{};
-  enter("tips-"+f,function(){ ui.sel=mt.grenze||null; ui.sel2=mt.traenen||null; ui.sel3=mt.out||null; });
-  var isl=islandAt(f), vs=isl.filter(function(p){ return p.kind==="v"; }), ts=isl.filter(function(p){ return p.kind==="t"; }), T=main.rules.tips;
-  var out=flowHead("home",epName(f))+'<h2 class="q">Deine Tipps</h2><p class="hint">Die anderen sehen deine Tipps erst nach der Folge. Ändern geht, bis der Admin die Folge startet.</p>';
-  out+='<section class="card"><h3>Wer überschreitet die Grenze? <span class="ok">'+sgn(T.grenze)+'</span></h3><p class="hint">Kuss oder gemeinsame Nacht mit einem*r Verführer*in.</p><div class="opts">'+opt("tip1","none","Niemand","",ui.sel==="none")+vs.map(function(p){ return personOpt("tip1",p,ui.sel===p.id); }).join("")+'</div></section>';
-  out+='<section class="card"><h3>Wer weint? <span class="ok">'+sgn(T.traenen)+'</span></h3><span class="sublabel">Vergebene</span><div class="opts">'+vs.map(function(p){ return personOpt("tip2",p,ui.sel2===p.id); }).join("")+'</div><span class="sublabel">Verführer*innen</span><div class="opts">'+ts.map(function(p){ return personOpt("tip2",p,ui.sel2===p.id); }).join("")+'</div></section>';
-  out+='<section class="card"><h3>Wer muss die Insel verlassen? <span class="ok">'+sgn(T.out)+'</span></h3><div class="opts">'+opt("tip3","none","Niemand","",ui.sel3==="none")+ts.map(function(p){ return personOpt("tip3",p,ui.sel3===p.id); }).join("")+'<span class="sublabel">Vergebene</span>'+vs.map(function(p){ return personOpt("tip3",p,ui.sel3===p.id); }).join("")+'</div></section>';
-  var ok=ui.sel&&ui.sel2&&ui.sel3;
-  out+=msgs()+primary("tips-save",ok?"Tipps abgeben":"Erst alle 3 Fragen beantworten",!ok);
+  var mine=(E[ME]&&E[ME].bets[f])||{};
+  enter("slip-"+f,function(){ ui.slip=JSON.parse(JSON.stringify(mine.stakes||{})); ui.surv=mine.surv||null; ui.openQ="grenze"; });
+  var B=main.rules.bets.ep, left=B-sumStakes(ui.slip), pots=(net.pots&&net.pots.bet)||{};
+  var out=flowHead("home",epName(f))+'<h2 class="q">Dein Wettschein</h2><p class="hint">Verteile '+B+' Münzen. Alle Einsätze einer Frage landen in einem Pott, und wer richtig liegt, teilt ihn sich. Je weniger richtig liegen, desto mehr bekommt jede*r. Was die anderen setzen, siehst du erst nach dem Start.</p>'+coinBar(left,B);
+  epQuestions(f).forEach(function(q){
+    var open=ui.openQ===q.id, myQ=sumStakes({x:ui.slip[q.id]||{}}), bank=q.id==="grenze"?jackpotFor(f):0, pot=(pots[f+":"+q.id]|0)+bank;
+    out+='<section class="card qcard'+(open?" open":"")+'"><button class="qhead" data-act="q-open" data-v="'+h(q.id)+'" aria-expanded="'+open+'"><span class="qt"><b>'+h(q.title)+'</b><small>Im Pott: '+pot+' Münzen'+(bank?' · inkl. Jackpot '+bank:'')+(q.custom?' · Frage vom Admin':'')+'</small></span><span class="qmine'+(myQ?" on":"")+'">'+(myQ?myQ+" gesetzt":"setzen ›")+'</span></button>'+
+      (open?(q.hint?'<p class="hint qpad">'+h(q.hint)+'</p>':'')+'<div class="qpad">'+stakeRows("slip",q.id,q.opts,ui.slip,left)+'</div>':'')+'</section>';
+  });
+  var sv=survLedger()[ME]||{streak:0,used:[]}, used=sv.used.filter(function(id){ return id!==mine.surv; });
+  var pool=islandAt(f).filter(function(p){ return p.kind==="t" && used.indexOf(p.id)<0; }), next=main.rules.bets.surv*(sv.streak+1);
+  out+='<section class="card"><h3>Überlebenswette</h3><p class="hint">Wähle eine*n Verführer*in, die oder der diese Folge übersteht. Richtig: '+sgn(next)+' (Serie '+(sv.streak+1)+'). Falsch oder kein Tipp: Die Serie startet von vorn. Jede Person nur einmal pro Staffel.</p><div class="opts">'+
+    pool.map(function(p){ return personOpt("surv-sel",p,ui.surv===p.id); }).join("")+'</div></section>';
+  var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.surv||null)!==(mine.surv||null), had=!!(mine.stakes||mine.surv);
+  out+=msgs()+primary("slip-save",dirty?(had?"Änderungen speichern":"Wettschein abgeben"):(had?"Wettschein gespeichert ✓":"Erst Münzen setzen"),!dirty);
   return out;
 }
-function viewCard(){
-  var f=curEp(), e=f&&ep(f);
-  if(!e||e.status!=="open"||!cardsOn()){ ui.screen="home"; return viewHome(); }
-  var cd=cardOf(ME,f), out="";
-  enter("card-"+f,function(){ ui.sel=null; });
-  out+=flowHead("home",epName(f))+'<h2 class="q">Deine Zockerkarte</h2>';
-  var a=angelsLeft(ME), z=secondLeft(ME), jk=[];
-  if(a) jk.push("Schutzengel"+(a>1?" ×"+a:"")); if(z) jk.push("Zweite Chance"+(z>1?" ×"+z:""));
-  var jkHtml=jk.length?'<span class="label">Deine Joker</span><div class="jokers">'+jk.map(function(x){ return '<span class="jk">'+h(x)+'</span>'; }).join("")+'</div>':"";
-  if(ui.flashErr){ out+='<p class="err" role="alert">'+h(ui.flashErr)+'</p>'; ui.flashErr=""; }
-  if(cd){
-    if(cd.deck==="none") return out+'<p class="hint">Diesmal ohne Karte. Deine Punkte bleiben sicher.</p>'+primary("home","Zurück zur Übersicht");
-    if(cd.deck==="skip") return out+'<p class="hint">Du liegst diesmal in der Hängematte und ziehst keine Karte.</p>'+primary("home","Zurück zur Übersicht");
-    var d=CARD_DEFS[cd.k], big=d.cat==="sofort"?sgn(instantPts(cd)):"";
-    out+='<p class="hint">'+h(DECKS[cd.deck].name)+(cd.replacedK?' · neu gezogen statt „'+h(CARD_DEFS[cd.replacedK].name)+'“':"")+'</p>'+
-      '<article class="pcard '+cardCls(cd)+(ui.cardAnim?" flip":"")+'"><span class="cat">'+CAT_NAMES[d.cat]+'</span><h3>'+h(d.name)+'</h3>'+(big?'<span class="big num">'+big+'</span>':"")+'<p>'+h(cardText(cd))+'</p></article>';
-    ui.cardAnim=false;
-    var needT=!!d.target && !cd.target;
-    if(d.target){
-      var pool=d.target==="own"?minePersons(ME,f):islandAt(f).filter(function(p){ return p.kind==="v"; });
-      out+='<span class="label">'+(cd.k==="allin"?"Wer soll dreifach zählen?":"Wen verfolgt dein Paparazzo?")+'</span><div class="opts">'+pool.map(function(p){ return personOpt("card-target",p,cd.target===p.id); }).join("")+'</div>';
-    }
-    out+=jkHtml;
-    if(z>0 && !cd.redrawn && cd.k!=="zweite") out+='<div class="actions"><button class="btn" data-act="card-second">Zweite Chance einsetzen und neu ziehen</button></div>';
-    return out+primary("home",needT?"Erst eine Person wählen":"Fertig",needT);
+function liveSheet(){
+  if(!main||main.phase!=="season") return "";
+  var f=curEp(), e=f&&ep(f); if(!e||e.status!=="live"||ui.evSel) return "";
+  ui.liveSeen=ui.liveSeen||[];
+  var l=e.live.filter(function(x){ return x.state==="open" && !(E[ME]&&E[ME].live[f+":"+x.id]) && ui.liveSeen.indexOf(f+":"+x.id)<0; })[0];
+  if(!l||liveLeft(ME,f)<=0) return "";
+  if(ui.liveFor!==f+":"+l.id){ ui.liveFor=f+":"+l.id; ui.liveStake={}; ui.liveAnim=true; try{ if(navigator.vibrate) navigator.vibrate([40,40,40]); }catch(x){} }
+  var put=sumStakes(ui.liveStake), left=liveLeft(ME,f)-put, pot=((net.pots&&net.pots.live)||{})[f+":"+l.id]|0;
+  var html='<div class="sheet-wrap'+(ui.liveAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="live-t"><button class="sheet-bg" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht" tabindex="-1"></button><div class="sheet"><span class="grab" aria-hidden="true"></span>'+
+    '<div class="sheet-h"><div><span class="label">Live-Wette · Pott '+pot+'</span><h2 id="live-t">'+h(l.q)+'</h2></div><button class="xbtn" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht">×</button></div>'+
+    '<p class="hint">Noch '+left+' Live-Münzen für diese Folge. Schnell sein: Der Admin schließt die Wette gleich.</p>'+stakeRows("live",l.id,l.opts,liveMap(l.id),left)+
+    '<div class="actions"><button class="btn big primary" data-act="live-bet" data-v="'+h(l.id)+'"'+(put?"":" disabled")+'>'+(put?put+" Münze"+(put===1?"":"n")+" setzen":"Erst Münzen setzen")+'</button></div></div></div>';
+  ui.liveAnim=false; return html;
+}
+function liveMap(id){ var m={}; m[id]=ui.liveStake||{}; return m; }
+function liveList(f,admin){
+  var e=ep(f), pots=(net.pots&&net.pots.live)||{};
+  if(!e.live.length && !admin) return "";
+  var out='<section class="card"><h3>Live-Wetten</h3>';
+  if(!e.live.length) out+='<p class="hint">Noch keine Live-Wette in dieser Folge.</p>';
+  e.live.forEach(function(l){
+    var mine=E[ME]&&E[ME].live[f+":"+l.id], put=mine&&mine.stake?sumStakes(mine.stake):0, pot=pots[f+":"+l.id]|0;
+    var st=l.state==="open"?"Wetten offen":(l.state==="closed"?"Wetten geschlossen":"Richtig: "+l.opts.filter(function(o){ return (l.win||[]).indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", "));
+    var my=put?" · Du: "+l.opts.filter(function(o){ return mine.stake[o.id]; }).map(function(o){ return o.label+" "+mine.stake[o.id]; }).join(", "):"";
+    out+='<div class="livebet"><div class="lt"><b>'+h(l.q)+'</b><small>'+h(st)+' · Pott '+pot+h(my)+'</small></div>';
+    if(admin){
+      if(l.state==="open") out+='<div class="chips"><button class="btn sm" data-act="live-close" data-v="'+h(l.id)+'">Wetten schließen</button>'+(!put&&liveLeft(ME,f)>0?'<button class="btn sm" data-act="live-reopen" data-v="'+h(l.id)+'">Selbst mitsetzen</button>':'')+'</div>';
+      else if(l.state==="closed") out+='<div class="chips">'+l.opts.map(function(o){ return '<button class="chip" data-act="live-win" data-c="'+h(l.id)+'" data-v="'+h(o.id)+'">'+h(o.label)+' ist richtig</button>'; }).join("")+'</div>';
+      else out+='<div><button class="btn sm" data-act="live-undo" data-v="'+h(l.id)+'">Auflösung ändern</button></div>';
+    } else if(l.state==="open" && !put && liveLeft(ME,f)>0) out+='<div><button class="btn sm" data-act="live-reopen" data-v="'+h(l.id)+'">Jetzt setzen</button></div>';
+    out+='</div>';
+  });
+  if(admin && ep(f).status==="live"){
+    if(ui.liveForm){
+      out+='<div class="editor"><span class="sublabel">Vorschläge</span><div class="chips">'+LIVE_PRESETS.map(function(t,i){ return '<button class="chip'+(ui.liveQ===t?" on":"")+'" data-act="live-preset" data-v="'+i+'">'+h(t)+'</button>'; }).join("")+'</div>'+
+        '<label class="f">Frage<input type="text" id="lq" maxlength="80" autocomplete="off" value="'+h(ui.liveQ||"")+'"></label><label class="f">Antworten, mit Komma getrennt<input type="text" id="lo" maxlength="160" autocomplete="off" value="'+h(ui.liveO||"Ja, Nein")+'"></label>'+
+        (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+'<div class="actions"><button class="btn big primary" data-act="live-start">Live-Wette starten</button><button class="btn" data-act="live-form-close">Abbrechen</button></div></div>';
+    } else out+='<div class="actions"><button class="btn" data-act="live-form">Neue Live-Wette starten</button></div>';
   }
-  if(mustSkip(ME,f)) return out+'<p class="hint">Du liegst wegen der Hängematten-Karte diesmal aus und darfst keine Karte ziehen.</p>'+primary("card-go","Verstanden");
-  out+='<p class="hint">Du musst nicht ziehen. Eine Karte kann dir Punkte bringen, aber auch welche kosten. Ohne Karte bleibt alles sicher.</p>'+jkHtml+'<div class="opts">'+
-    ["g","y","r"].map(function(dk){ return eligibleCards(ME,f,dk).length ? opt("deck-sel",dk,DECKS[dk].name,DECKS[dk].sub,ui.sel===dk,"dk dk-"+dk) : ""; }).join("")+
-    opt("deck-sel","none","Lieber sicher","Keine Karte, deine Punkte bleiben, wie sie sind",ui.sel==="none","dk dk-n")+'</div>'+msgs()+
-    primary("card-go",!ui.sel?"Erst auswählen":(ui.sel==="none"?"Ohne Karte weiter":"Karte ziehen"),!ui.sel);
-  return out;
+  return out+'</section>';
 }
 
 /* ================= board (live + admin evaluation) ================= */
-function cardsBlock(f){
-  var L=ledger(), rows=players().map(function(pid){ var r=L[pid]&&L[pid][f]; if(!r) return ""; var st=cardStatus(r); return '<div class="cardrow"><div class="lt"><b>'+pname(pid)+': '+h(CARD_DEFS[r.cd.k].name)+'</b><small>'+h(cardText(r.cd))+'</small></div><span class="rs '+st.c+'">'+h(st.t)+'</span></div>'; }).join("");
-  if(!rows) return "";
-  var md=epMods(f);
-  return '<section class="card"><h3>Zockerkarten dieser Folge</h3>'+(md.infl>1?'<p class="okmsg">Inflation: Alle Ereignisse zählen gerade ×'+md.infl+'.</p>':"")+'<div>'+rows+'</div></section>';
-}
 function liveStandings(f){
   var rk=players().slice().sort(function(a,b){ return playerEp(b,f)-playerEp(a,f); });
   return '<section class="card"><h3>Stand dieser Folge</h3><div class="rank">'+rk.map(function(pid){
@@ -1251,31 +1270,28 @@ function viewBoard(){
   var label=epName(f)+(e.finale?" · Finale":"");
   if(!isAdmin()){
     enter("watch-"+f);
-    var o=flowHead("home",label)+'<h2 class="q">'+(e.status==="live"?"Live-Punkte":"Wird ausgewertet")+'</h2><p class="hint">Aktualisiert sich alle paar Sekunden von selbst.</p>';
-    return o+liveStandings(f)+cardsBlock(f)+logBlock(f,false);
+    return flowHead("home",label)+'<h2 class="q">'+(e.status==="live"?"Live-Punkte":"Wird ausgewertet")+'</h2><p class="hint">Aktualisiert sich alle paar Sekunden von selbst.</p>'+liveStandings(f)+liveList(f,false)+logBlock(f,false);
   }
-  var head=flowHead(idx===0?"home":"b-back",label,idx,steps.length), out="";
-  var isl=islandAt(f);
+  var head=flowHead(idx===0?"home":"b-back",label,idx,steps.length), out="", isl=islandAt(f);
+  var kindTabs='<div class="seg tabs" role="group" aria-label="Gruppe"><button data-act="tab-kind" data-v="v" aria-pressed="'+(ui.tabKind==="v")+'">Vergebene</button><button data-act="tab-kind" data-v="t" aria-pressed="'+(ui.tabKind==="t")+'">Verführer*innen</button></div>';
   if(e.status==="live"){
-    enter("live-"+f,function(){ ui.evSel=null; ui.cpSel=[]; });
+    enter("live-"+f,function(){ ui.evSel=null; ui.cpSel=[]; ui.liveForm=false; });
     if(ui.evSel && !evByKey(ui.evSel)) ui.evSel=null;
     out+=head+'<h2 class="q">'+h(label)+' läuft</h2><p class="hint">Tippe erst an, was passiert ist, und dann, bei wem. Das können auch mehrere Personen sein.</p>';
     if(ui.msg) out+='<p class="okmsg toast" role="status">'+h(ui.msg)+'</p>';
     out+='<section class="card"><div class="num-in"><span>Ist das die Finalfolge?</span><div class="seg seg2" role="group" aria-label="Finale"><button data-act="fin-set" data-v="0" aria-pressed="'+(!e.finale)+'">Nein</button><button data-act="fin-set" data-v="1" aria-pressed="'+e.finale+'">Ja</button></div></div></section>';
-    out+=cardsBlock(f);
     out+='<section class="card"><span class="label">Was ist passiert?</span>';
     GROUPS.forEach(function(g){
       if(g==="Finale" && !e.finale) return;
       var evs=visibleEvents(g); if(!evs.length) return;
       out+='<div class="grp"><span class="sublabel">'+g+'</span><div class="evgrid">'+evs.map(function(x){ return '<button class="evbtn" data-act="evsel" data-v="'+h(x.k)+'" aria-pressed="'+(ui.evSel===x.k)+'"><span>'+h(x.label)+'</span><b class="'+(x.pts<0?"neg":"")+'">'+sgn(x.pts)+'</b></button>'; }).join("")+'</div></div>';
     });
-    out+='</section>'+logBlock(f,true)+liveStandings(f);
+    out+='</section>'+liveList(f,true)+logBlock(f,true)+liveStandings(f);
     if(ui.evSel){
       var sx=evByKey(ui.evSel), list=isl.filter(function(p){ return p.kind===ui.tabKind; });
       out+='<div class="sheet-wrap'+(ui.sheetAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="sheet-t"><button class="sheet-bg" data-act="ev-cancel" aria-label="Schließen" tabindex="-1"></button>'+
         '<div class="sheet"><span class="grab" aria-hidden="true"></span><div class="sheet-h"><div><span class="label">Bei wem?</span><h2 id="sheet-t">'+h(sx.label)+'<b class="'+(sx.pts<0?"neg":"")+'">'+sgn(sx.pts)+'</b></h2></div><button class="xbtn" data-act="ev-cancel" aria-label="Schließen">×</button></div>'+
-        '<div class="seg tabs" role="group" aria-label="Gruppe"><button data-act="tab-kind" data-v="v" aria-pressed="'+(ui.tabKind==="v")+'">Vergebene</button><button data-act="tab-kind" data-v="t" aria-pressed="'+(ui.tabKind==="t")+'">Verführer*innen</button></div>'+
-        '<div class="sheet-list"><div class="opts">'+list.map(function(p){ return personOpt("cp-toggle",p,ui.cpSel.indexOf(p.id)>=0); }).join("")+'</div></div>'+
+        kindTabs+'<div class="sheet-list"><div class="opts">'+list.map(function(p){ return personOpt("cp-toggle",p,ui.cpSel.indexOf(p.id)>=0); }).join("")+'</div></div>'+
         '<div class="actions"><button class="btn big primary" id="ev-apply-btn" data-act="ev-apply"'+(ui.cpSel.length?"":" disabled")+'>'+applyLabel()+'</button></div></div></div>';
       ui.sheetAnim=false;
     } else out+=primary("b-live-done","Folge ist vorbei, weiter");
@@ -1284,8 +1300,7 @@ function viewBoard(){
     enter("exits-"+f,function(){ ui.set={}; isl.forEach(function(p){ ui.set[p.id]=p.outIn===f?p.outType:"stay"; }); });
     var shown=isl.filter(function(p){ return p.kind===ui.tabKind; });
     var nOut=isl.filter(function(p){ return ui.set[p.id]&&ui.set[p.id]!=="stay"; }).length;
-    out+=head+'<h2 class="q">Wer hat die Insel verlassen?</h2><p class="hint">Lass alle auf „Bleibt“, wenn niemand gegangen ist. „Geht freiwillig“ kostet '+main.rules.auto.quit+'.</p>'+
-      '<div class="seg tabs" role="group" aria-label="Gruppe"><button data-act="tab-kind" data-v="v" aria-pressed="'+(ui.tabKind==="v")+'">Vergebene</button><button data-act="tab-kind" data-v="t" aria-pressed="'+(ui.tabKind==="t")+'">Verführer*innen</button></div>'+
+    out+=head+'<h2 class="q">Wer hat die Insel verlassen?</h2><p class="hint">Lass alle auf „Bleibt“, wenn niemand gegangen ist. „Freiwillig“ kostet '+main.rules.auto.quit+'.</p>'+kindTabs+
       '<section class="card">'+shown.map(function(p){ var v=ui.set[p.id]||"stay", own=ownerOf(p.id);
         return '<div class="exrow"><div class="nm"><b>'+h(p.name)+'</b>'+(own?chip(own):'<span class="own free">ohne Team</span>')+'</div><div class="seg" role="group" aria-label="'+h(p.name)+'">'+
           '<button data-act="exsel" data-c="'+h(p.id)+'" data-v="stay" aria-pressed="'+(v==="stay")+'">Bleibt</button>'+
@@ -1296,25 +1311,28 @@ function viewBoard(){
   else if(e.status==="final"){
     enter("final-"+f,function(){ ui.set={}; main.couples.forEach(function(c){ ui.set[c.id]=c.final; }); });
     var all=main.couples.every(function(c){ return ui.set[c.id]; });
-    out+=head+'<h2 class="q">Wie sind die Paare gegangen?</h2><p class="hint">Danach werden die Saisontipps ausgewertet.</p><section class="card">'+main.couples.map(function(c){ var v=ui.set[c.id];
+    out+=head+'<h2 class="q">Wie sind die Paare gegangen?</h2><p class="hint">Danach werden die Langzeitwetten ausgezahlt.</p><section class="card">'+main.couples.map(function(c){ var v=ui.set[c.id];
       return '<div class="exrow"><div class="nm"><b>'+h(c.name)+'</b></div><div class="seg seg2" role="group" aria-label="'+h(c.name)+'"><button data-act="finsel" data-c="'+h(c.id)+'" data-v="together" aria-pressed="'+(v==="together")+'">Gemeinsam</button><button data-act="finsel" data-c="'+h(c.id)+'" data-v="apart" aria-pressed="'+(v==="apart")+'">Getrennt</button></div></div>';
     }).join("")+'</section>'+primary("b-final",all?"Weiter":"Erst alle Paare eintragen",!all);
   }
   else if(e.status==="review"){
     enter("review-"+f);
-    var outs=main.persons.filter(function(p){ return p.outIn===f; }), T=main.rules.tips;
-    var tipTxt=function(v){ if(!v) return "–"; if(v==="none") return "Niemand"; var p=personById(v); return p?p.name:"?"; };
-    out+=head+'<h2 class="q">Stimmt das so?</h2><p class="hint">Mit „Folge abschließen“ sehen alle die Ergebnisse und Tipps.</p>';
+    var openC=e.custom.filter(function(c){ return !c.win; }), openL=e.live.filter(function(l){ return l.state!=="done"; });
+    var outs=main.persons.filter(function(p){ return p.outIn===f; });
+    out+=head+'<h2 class="q">Auflösung</h2><p class="hint">Mit „Folge abschließen“ sehen alle die Ergebnisse und wer was gesetzt hat.</p>';
     out+='<section class="card"><div class="sum"><div><span>Abgereist</span><span>'+(outs.length?outs.map(function(p){ return h(p.name)+(p.outType==="freiwillig"?" (freiwillig)":""); }).join(", "):"niemand")+'</span></div>'+
       (e.finale?main.couples.map(function(c){ return '<div><span>'+h(c.name)+'</span><span>'+(c.final==="together"?"gemeinsam":"getrennt")+'</span></div>'; }).join(""):"")+'</div></section>';
-    players().forEach(function(pid){
-      var t=(E[pid]&&E[pid].tips[f])||{}, L=ledger(), r=L[pid]&&L[pid][f];
-      var row=function(lbl,q,pts){ var res=tipResult(pid,f,q); return '<div><span>'+lbl+': '+h(tipTxt(t[q]))+'</span><span class="'+(res?"ok":"no")+'">'+(t[q]?(res?sgn(pts):"daneben"):"kein Tipp")+'</span></div>'; };
-      out+='<section class="card '+pcls(pid)+'"><div class="team-h"><span class="pdot"></span>'+pname(pid)+'<span class="num" style="margin-left:auto">'+sgn(playerEp(pid,f))+'</span></div><div class="sum">'+
-        row("Grenze","grenze",T.grenze)+row("Tränen","traenen",T.traenen)+row("Abreise","out",T.out)+
-        (r?(function(){ var st=cardStatus(r); return '<div><span>Karte: '+h(CARD_DEFS[r.cd.k].name)+'</span><span class="'+st.c+'">'+h(st.t)+'</span></div>'; })():"")+'</div></section>';
-    });
-    out+='<div class="actions dock"><button class="btn big primary" data-act="b-done">'+(e.finale?"Finale abschließen":"Folge abschließen")+'</button><button class="btn" data-act="b-relive">Etwas ändern</button></div>';
+    if(e.custom.length) out+='<section class="card"><h3>Eigene Wetten auflösen</h3>'+e.custom.map(function(c){
+      return '<div class="livebet"><div class="lt"><b>'+h(c.q)+'</b><small>'+(c.win?"Richtig: "+c.opts.filter(function(o){ return c.win.indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", "):"Noch offen")+'</small></div><div class="chips">'+
+        c.opts.map(function(o){ return '<button class="chip'+(c.win&&c.win.indexOf(o.id)>=0?" on":"")+'" data-act="cq-win" data-c="'+h(c.id)+'" data-v="'+h(o.id)+'">'+h(o.label)+'</button>'; }).join("")+'</div></div>';
+    }).join("")+'</section>';
+    if(e.live.length) out+=liveList(f,true);
+    out+=resolutionCard(f);
+    out+='<section class="card"><h3>Punkte dieser Folge</h3><div class="rank">'+players().map(function(pid){
+      return '<div class="rk '+pcls(pid)+'"><span class="pos"></span><span class="nm"><span class="pdot"></span><span>'+pname(pid)+'</span></span><span class="pts num">'+sgn(playerEp(pid,f))+'</span></div><div class="rkx">Team '+sgn(teamEp(pid,f))+' · Wetten '+sgn(betPts(pid,f))+' · Überleben '+sgn(survPts(pid,f))+'</div>';
+    }).join("")+'</div></section>';
+    var ready=!openC.length && !openL.length;
+    out+='<div class="actions dock"><button class="btn big primary" data-act="b-done"'+(ready?"":" disabled")+'>'+(ready?(e.finale?"Finale abschließen":"Folge abschließen"):"Erst alle Wetten auflösen")+'</button><button class="btn" data-act="b-relive">Etwas ändern</button></div>';
   }
   return out;
 }
@@ -1334,23 +1352,21 @@ function viewTable(){
       '<tr class="total"><td>Gesamt</td>'+pl.map(function(pid){ return '<td class="r">'+total(pid)+'</td>'; }).join("")+'</tr></tbody></table></div>';
   }
   out+='</section>';
-  if(lastDone()){ var ld=lastDone(); out+='<section class="card"><h3>Tipps aus '+epName(ld)+'</h3><div class="sum">'+players().map(function(pid){
-    var t=(E[pid]&&E[pid].tips[ld])||{}, nm=function(v){ if(!v) return "–"; if(v==="none") return "Niemand"; var p=personById(v); return p?p.name:"?"; };
-    return '<div><span>'+pname(pid)+'</span><span>'+h(nm(t.grenze))+' · '+h(nm(t.traenen))+' · '+h(nm(t.out))+'</span></div>';
-  }).join("")+'</div><p class="hint">Reihenfolge: Grenze · Tränen · Abreise</p></section>'; }
+  if(lastDone()) out+=resolutionCard(lastDone());
   return out;
 }
 function viewRules(){
   enter("rules");
-  var out=flowHead("home","Punkte")+'<h2 class="q">So gibt’s Punkte</h2><p class="hint">Dein Team aus Vergebenen und Verführer*innen sammelt Punkte für alles, was es auf der Insel tut. Dazu kommen deine Tipps und Karten.</p>';
+  var out=flowHead("home","Punkte")+'<h2 class="q">So gibt’s Punkte</h2><p class="hint">Dein Team aus Vergebenen und Verführer*innen sammelt Punkte für alles, was es auf der Insel tut. Dazu kommt, was du im Wettbüro gewinnst.</p>';
   GROUPS.forEach(function(g){ var evs=visibleEvents(g); if(!evs.length) return;
     out+='<section class="card"><h3>'+g+'</h3><div class="rules">'+evs.map(function(e){ return '<div class="rl"><span>'+h(e.label)+'</span><b>'+sgn(e.pts)+'</b></div>'; }).join("")+'</div>'+(g==="Finale"?'<p class="hint">Nur in der Finalfolge.</p>':"")+'</section>';
   });
-  var A=main.rules.auto, T=main.rules.tips;
+  var A=main.rules.auto, BT=main.rules.bets;
   out+='<section class="card"><h3>Automatisch</h3><div class="rules"><div class="rl"><span>Pro Folge noch auf der Insel</span><b>'+sgn(A.island)+'</b></div><div class="rl"><span>Verlässt die Insel freiwillig</span><b>'+sgn(A.quit)+'</b></div></div></section>';
-  out+='<section class="card"><h3>Tipps</h3><div class="rules"><div class="rl"><span>Grenze richtig getippt</span><b>'+sgn(T.grenze)+'</b></div><div class="rl"><span>Tränen richtig getippt</span><b>'+sgn(T.traenen)+'</b></div><div class="rl"><span>Abreise richtig getippt</span><b>'+sgn(T.out)+'</b></div><div class="rl"><span>Saisontipp pro Paar</span><b>'+sgn(T.couple)+'</b></div></div></section>';
-  out+='<section class="card"><h3>Zockerkarten</h3><p class="hint">'+(cardsOn()?"Vor jeder Folge darfst du eine Karte ziehen, musst aber nicht.":"Gerade ausgeschaltet.")+'</p><div class="rules"><div class="rl"><span>Grüner Stapel</span><b>−2 bis +3</b></div><div class="rl"><span>Gelber Stapel</span><b>normal</b></div><div class="rl"><span>Roter Stapel</span><b>alles ×2</b></div></div>'+
-    '<p class="hint">Sofortkarten zählen gleich, Wetten nach der Folge, Chaoskarten nur in dieser Folge, Joker behältst du.</p></section>';
+  out+='<section class="card"><h3>Wettbüro</h3><div class="rules"><div class="rl"><span>Münzen pro Folge (Wettschein)</span><b>'+BT.ep+'</b></div><div class="rl"><span>Live-Münzen pro Folge</span><b>'+BT.live+'</b></div><div class="rl"><span>Münzen für Langzeitwetten</span><b>'+BT.season+'</b></div><div class="rl"><span>Überlebenswette pro Serienschritt</span><b>'+sgn(BT.surv)+'</b></div></div>'+
+    '<p class="hint">Jede Frage hat einen Pott mit allen Einsätzen. Wer richtig liegt, teilt ihn sich im Verhältnis der Einsätze. Ausgezahlte Münzen zählen als Punkte. Liegt niemand richtig, wandert der Pott als Jackpot in den Grenz-Pott der nächsten Folge.</p>'+
+    '<p class="hint">Überlebenswette: Jede Woche eine*n Verführer*in wählen, die oder der bleibt. Mit jedem Treffer in Folge steigt der Gewinn (Serie 1: '+sgn(BT.surv)+', Serie 2: '+sgn(2*BT.surv)+' …). Jede Person nur einmal pro Staffel.</p>'+
+    '<p class="hint">Live-Wetten startet der Admin während der Folge. Sie erscheinen sofort auf allen Handys.</p></section>';
   return out;
 }
 function viewShare(){
@@ -1372,7 +1388,7 @@ function editorBlock(x){
     (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+
     '<div class="actions"><button class="btn big primary" data-act="ed-save">'+(x?"Änderung speichern":"Ereignis anlegen")+'</button><button class="btn" data-act="ed-cancel">Abbrechen</button></div>';
   if(x){
-    if(core) out+='<p class="hint">Dieses Ereignis brauchen Tipps oder Karten, deshalb lässt es sich nicht entfernen.</p>';
+    if(core) out+='<p class="hint">Dieses Ereignis braucht das Wettbüro, deshalb lässt es sich nicht entfernen.</p>';
     else if(ui.confirm==="ed-del") out+='<p><b>„'+h(x.label)+'“ entfernen?</b> '+(uses?"Es wurde schon "+uses+"-mal vergeben. Die bisherigen Punkte bleiben.":"Es wurde noch nie vergeben.")+'</p><div class="actions"><button class="btn big danger" data-act="ed-del-yes">Ja, entfernen</button><button class="btn" data-act="cancel">Abbrechen</button></div>';
     else out+='<div><button class="btn danger" data-act="ed-del">Ereignis entfernen</button></div>';
   }
@@ -1406,11 +1422,12 @@ function viewAdmin(){
   out+= ui.edit==="__new" ? '<section class="card"><h3>Neues Ereignis</h3>'+editorBlock(null)+'</section>' : '<div class="actions"><button class="btn" data-act="ed-new">Neues Ereignis anlegen</button></div>';
   var hid=main.rules.events.filter(function(x){ return x.hidden; });
   if(hid.length) out+='<section class="card"><h3>Entfernte Ereignisse</h3><div>'+hid.map(function(x){ return '<div class="admrow"><span class="nm">'+h(x.label)+'</span><b>'+sgn(x.pts)+'</b><button class="btn sm" data-act="ed-restore" data-v="'+h(x.k)+'">Zurückholen</button></div>'; }).join("")+'</div></section>';
-  out+='<section class="card"><h3>Automatische Punkte &amp; Tipps</h3><div>'+
-    [["auto","island","Pro Folge noch auf der Insel"],["auto","quit","Verlässt die Insel freiwillig"],["tips","grenze","Tipp Grenze"],["tips","traenen","Tipp Tränen"],["tips","out","Tipp Abreise"],["tips","couple","Saisontipp pro Paar"]].map(function(r){
-      return '<div class="admrow st2"><span class="nm">'+r[2]+'</span>'+stepper("rule-step",r[0]+"."+r[1],main.rules[r[0]][r[1]])+'</div>'; }).join("")+'</div></section>';
-  out+='<section class="card"><h3>Zockerkarten</h3><div class="seg seg2" role="group" aria-label="Zockerkarten"><button data-act="cards-on" data-v="1" aria-pressed="'+cardsOn()+'">An</button><button data-act="cards-on" data-v="0" aria-pressed="'+(!cardsOn())+'">Aus</button></div>'+
-    (cardsOn()?'<p class="hint">Tippe eine Karte an, um sie aus dem gelben und roten Stapel zu nehmen oder wieder hineinzulegen.</p><div class="opts">'+Object.keys(CARD_DEFS).filter(function(k){ return !CARD_DEFS[k].green; }).map(function(k){ var d=CARD_DEFS[k], inn=main.rules.cards.off.indexOf(k)<0; return opt("card-toggle",k,d.name,CAT_NAMES[d.cat]+(inn?" · im Stapel":" · draußen"),inn,""); }).join("")+'</div>':"")+'</section>';
+  out+='<section class="card"><h3>Automatische Punkte &amp; Wettbüro</h3><div>'+
+    [["auto","island","Pro Folge noch auf der Insel"],["auto","quit","Verlässt die Insel freiwillig"]].map(function(r){
+      return '<div class="admrow st2"><span class="nm">'+r[2]+'</span>'+stepper("rule-step",r[0]+"."+r[1],main.rules[r[0]][r[1]])+'</div>'; }).join("")+
+    [["ep","Münzen pro Folge"],["live","Live-Münzen pro Folge"],["season","Münzen für Langzeitwetten"],["surv","Überlebenswette pro Serienschritt"]].map(function(r){
+      return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+plainStepper("bet-step",main.rules.bets[r[0]],String(main.rules.bets[r[0]])).replace(/data-act="bet-step"/g,'data-act="bet-step" data-v="'+r[0]+'"')+'</div>'; }).join("")+
+    '<p class="hint">Änderungen an den Münzen gelten ab der nächsten Folge, bei bereits abgegebenen Wettscheinen bleibt der alte Einsatz.</p></div></section>';
   out+='<section class="card"><h3>Anmeldecodes</h3><p class="hint">Hat jemand seinen Code verloren? Erstelle einen neuen und gib ihn persönlich weiter. Der alte Code gilt dann nicht mehr.</p><div>'+joined().map(function(pid){
     var shown=ui.resetShown&&ui.resetShown.pid===pid;
     return '<div class="admrow"><span class="nm">'+pname(pid)+(pid===ME?" (du)":"")+'</span>'+(shown?'<b class="num codeinline">'+h(ui.resetShown.code)+'</b>':'<span></span>')+
@@ -1487,11 +1504,11 @@ function render(){
     else if(ui.screen==="rules") html=viewRules();
     else if(ui.screen==="share") html=viewShare();
     else if(ui.screen==="admin") html=viewAdmin();
-    else if(ui.screen==="tips") html=viewTips();
-    else if(ui.screen==="card") html=viewCard();
+    else if(ui.screen==="slip") html=viewBetslip();
     else if(ui.screen==="board") html=viewBoard();
     else html=viewHome();
   }
+  if(main && ME && SECRET && main.phase==="season" && ["home","board","table","rules","share"].indexOf(ui.screen)>=0) html+=liveSheet();
   document.getElementById("view").innerHTML=html;
   renderSync();
 }
@@ -1598,19 +1615,14 @@ document.addEventListener("click",function(evt){
       saveEntry(who,"pick:"+ds.slot,{person:per.id},"Dieser Pick hat nicht geklappt. Der Draft wurde aktualisiert.");
       return;
 
-    /* season tips */
-    case "st-set": if(!ui.stips) ui.stips={}; ui.stips[cid]=v; render(); return;
-    case "st-save":
-      if(!main.couples.every(function(c){ return ui.stips&&ui.stips[c.id]; })) return;
-      var cp={}; main.couples.forEach(function(c){ cp[c.id]=ui.stips[c.id]; });
-      saveEntry(ME,"season",{couples:cp},"Die Saisontipps sind schon geschlossen."); return;
+    /* season */
     case "season-start": ui.confirm="season-start"; render(); return;
     case "season-start-yes": if(!isAdmin()) return; main.phase="season"; ui.confirm=null; ui.key=""; ui.flash="Die Saison läuft. Öffne die nächste Folge, wenn ihr schaut."; commitMain(); return;
 
     /* episodes (admin) */
     case "ep-open":
       if(!isAdmin()||curEp()!=null) return;
-      var n=nextToOpen(); main.episodes[n]={status:"open",finale:false,log:[]}; ui.key=""; commitMain(); return;
+      var n=nextToOpen(); main.episodes[n]={status:"open",finale:false,log:[],custom:[],live:[]}; ui.key=""; commitMain(); return;
     case "ep-live": ui.confirm="ep-live"; render(); return;
     case "ep-live-yes": if(!isAdmin()||!e||e.status!=="open") return; ui.confirm=null; e.status="live"; ui.screen="board"; ui.key=""; commitMain(); goTop(); return;
     case "fin-set": if(!isAdmin()||!e) return; e.finale=(v==="1"); commitMain(); return;
@@ -1631,7 +1643,7 @@ document.addEventListener("click",function(evt){
       ui.msg=evLabel(ui.evSel)+" eingetragen: "+ids.map(function(id){ return personById(id).name; }).join(", ");
       ui.evSel=null; ui.cpSel=[]; commitMain(); return;
     case "log-del": if(!isAdmin()||!e) return; e.log=e.log.filter(function(x){ return x.id!==v; }); ui.msg="Eintrag entfernt."; commitMain(); return;
-    case "b-live-done": if(!isAdmin()||!e) return; epStatus(f,"exits"); return;
+    case "b-live-done": if(!isAdmin()||!e) return; e.live.forEach(function(l){ if(l.state==="open") l.state="closed"; }); epStatus(f,"exits"); return;
     case "exsel": if(ui.set){ ui.set[cid]=v; render(); } return;
     case "b-exits":
       if(!isAdmin()||!e||!ui.set) return;
@@ -1643,32 +1655,73 @@ document.addEventListener("click",function(evt){
       main.couples.forEach(function(c){ c.final=ui.set[c.id]; }); epStatus(f,"review"); return;
     case "b-relive": if(!isAdmin()||!e) return; epStatus(f,"live"); return;
     case "b-done":
-      if(!isAdmin()||!e) return; e.status="done"; if(e.finale) main.phase="done";
+      if(!isAdmin()||!e) return;
+      if(e.custom.some(function(c){ return !c.win; }) || e.live.some(function(l){ return l.state!=="done"; })) return;
+      e.status="done"; if(e.finale) main.phase="done";
       ui.screen="home"; ui.key=""; ui.flash=e.finale?"":epName(f)+" ist abgeschlossen. Alle sehen jetzt die Ergebnisse."; commitMain(); goTop(); return;
 
-    /* tips & cards (player) */
-    case "tip1": ui.sel=v; render(); return;
-    case "tip2": ui.sel2=v; render(); return;
-    case "tip3": ui.sel3=v; render(); return;
-    case "tips-save":
-      if(!e||e.status!=="open"||!ui.sel||!ui.sel2||!ui.sel3) return;
-      ui.flash="Deine Tipps sind abgegeben."; ui.screen="home"; ui.key="";
-      saveEntry(ME,"tips:"+f,{grenze:ui.sel,traenen:ui.sel2,out:ui.sel3},"Zu spät: Die Tipps für diese Folge sind schon geschlossen."); goTop(); return;
-    case "deck-sel": ui.sel=v; render(); return;
-    case "card-go":
-      if(!e||e.status!=="open"||cardOf(ME,f)) return;
-      if(mustSkip(ME,f)){ saveEntry(ME,"card:"+f,blankCard(ME,"skip"),"Die Karten für diese Folge sind schon geschlossen."); return; }
-      if(!ui.sel) return;
-      if(ui.sel==="none"){ saveEntry(ME,"card:"+f,blankCard(ME,"none"),"Die Karten für diese Folge sind schon geschlossen."); return; }
-      var nc=drawCard(ME,f,ui.sel); if(!nc){ ui.err="Aus diesem Stapel kann gerade keine Karte gezogen werden."; render(); return; }
-      ui.cardAnim=true; saveEntry(ME,"card:"+f,nc,"Zu spät: Die Karten für diese Folge sind schon geschlossen."); goTop(); return;
-    case "card-target":
-      if(!e||e.status!=="open") return; var tc=cardOf(ME,f); if(!tc||!tc.k||!CARD_DEFS[tc.k].target) return;
-      var tc2=JSON.parse(JSON.stringify(tc)); tc2.target=v; saveEntry(ME,"card:"+f,tc2,"Zu spät: Die Folge läuft schon."); return;
-    case "card-second":
-      if(!e||e.status!=="open") return; var sc=cardOf(ME,f); if(!sc||!sc.k||sc.redrawn||sc.k==="zweite"||secondLeft(ME)<1) return;
-      var nc2=drawCard(ME,f,sc.deck); if(!nc2) return; nc2.redrawn=true; nc2.replacedK=sc.k; ui.cardAnim=true;
-      saveEntry(ME,"card:"+f,nc2,"Zu spät: Die Folge läuft schon."); goTop(); return;
+    /* betting office */
+    case "go-slip": go("slip"); return;
+    case "q-open": ui.openQ=ui.openQ===v?null:v; render(); return;
+    case "stk":
+      var sc=b.getAttribute("data-s"), q=b.getAttribute("data-q"), dd=+b.getAttribute("data-d");
+      if(sc==="live"){
+        if(!ui.liveStake) ui.liveStake={};
+        if(dd>0 && (liveLeft(ME,f)-sumStakes(ui.liveStake))<=0) return;
+        var lv=(ui.liveStake[v]|0)+dd; if(lv<=0) delete ui.liveStake[v]; else ui.liveStake[v]=lv; render(); return;
+      }
+      var map=sc==="slip"?ui.slip:ui.stips, B=sc==="slip"?main.rules.bets.ep:main.rules.bets.season;
+      if(!map) return;
+      if(dd>0 && sumStakes(map)>=B) return;
+      map[q]=map[q]||{}; var nv=(map[q][v]|0)+dd; if(nv<=0) delete map[q][v]; else map[q][v]=nv; if(!Object.keys(map[q]).length) delete map[q];
+      render(); return;
+    case "surv-sel": ui.surv=ui.surv===v?null:v; render(); return;
+    case "slip-save":
+      if(!e||e.status!=="open") return;
+      ui.msg="Wettschein gespeichert.";
+      saveEntry(ME,"bet:"+f,{stakes:JSON.parse(JSON.stringify(ui.slip||{})),surv:ui.surv||null},"Zu spät: Die Wetten für diese Folge sind schon geschlossen."); return;
+    case "season-save":
+      if(!ui.stips||!sumStakes(ui.stips)) return;
+      saveEntry(ME,"season",{stakes:JSON.parse(JSON.stringify(ui.stips))},"Die Langzeitwetten sind schon geschlossen."); return;
+    case "live-skip": ui.liveSeen=ui.liveSeen||[]; ui.liveSeen.push(f+":"+v); ui.liveFor=null; render(); return;
+    case "live-reopen": ui.liveSeen=(ui.liveSeen||[]).filter(function(x){ return x!==f+":"+v; }); ui.liveFor=null; render(); return;
+    case "live-bet":
+      if(!e||e.status!=="live"||!ui.liveStake||!sumStakes(ui.liveStake)) return;
+      var stake=JSON.parse(JSON.stringify(ui.liveStake)); ui.liveFor=null; ui.liveStake={};
+      saveEntry(ME,"live:"+f+":"+v,{stake:stake},"Zu spät: Diese Live-Wette ist schon geschlossen."); return;
+    case "live-form": if(!isAdmin()) return; ui.liveForm=true; ui.liveQ=""; ui.liveO="Ja, Nein"; ui.err=""; render(); return;
+    case "live-form-close": ui.liveForm=false; ui.err=""; render(); return;
+    case "live-preset": ui.liveO=val("lo")||"Ja, Nein"; ui.liveQ=LIVE_PRESETS[+v]||""; render(); return;
+    case "live-start":
+      if(!isAdmin()||!e||e.status!=="live") return;
+      var lq=val("lq"), lo=val("lo").split(/[,\n]/).map(function(x){ return x.trim(); }).filter(function(x){ return x; });
+      ui.liveQ=lq; ui.liveO=val("lo"); ui.err="";
+      if(lq.length<3){ ui.err="Bitte eine Frage eintragen."; render(); return; }
+      lo=lo.filter(function(x,i){ return lo.map(function(y){ return y.toLowerCase(); }).indexOf(x.toLowerCase())===i; });
+      if(lo.length<2||lo.length>6){ ui.err="Bitte 2 bis 6 verschiedene Antworten, mit Komma getrennt."; render(); return; }
+      var lid=String(e.live.reduce(function(m,x){ return Math.max(m,+x.id||0); },0)+1);
+      e.live.push({id:lid,q:lq,opts:lo.map(function(x,i){ return {id:"o"+i,label:x.slice(0,40)}; }),win:null,state:"open"});
+      ui.liveSeen=ui.liveSeen||[]; ui.liveSeen.push(f+":"+lid);
+      ui.liveForm=false; ui.msg="Live-Wette gestartet. Sie erscheint jetzt auf allen Handys."; commitMain(); return;
+    case "live-close": if(!isAdmin()||!e) return; e.live.forEach(function(l){ if(l.id===v) l.state="closed"; }); commitMain(); return;
+    case "live-win": if(!isAdmin()||!e) return; e.live.forEach(function(l){ if(l.id===cid){ l.win=[v]; l.state="done"; } }); commitMain(); return;
+    case "live-undo": if(!isAdmin()||!e) return; e.live.forEach(function(l){ if(l.id===v){ l.win=null; l.state="closed"; } }); commitMain(); return;
+    case "cq-add":
+      if(!isAdmin()||!e||e.status!=="open") return;
+      var cq=val("cq"), co=val("co").split(/[,\n]/).map(function(x){ return x.trim(); }).filter(function(x){ return x; }); ui.err="";
+      if(cq.length<3){ ui.err="Bitte eine Frage eintragen."; render(); return; }
+      co=co.filter(function(x,i){ return co.map(function(y){ return y.toLowerCase(); }).indexOf(x.toLowerCase())===i; });
+      if(co.length<2||co.length>6){ ui.err="Bitte 2 bis 6 verschiedene Antworten, mit Komma getrennt."; render(); return; }
+      e.custom.push({id:rid(),q:cq,opts:co.map(function(x,i){ return {id:"o"+i,label:x.slice(0,40)}; }),win:null});
+      ui.flash=""; ui.msg="Wette hinzugefügt."; commitMain(); return;
+    case "cq-del":
+      if(!isAdmin()||!e||e.status!=="open") return;
+      if(((net.pots&&net.pots.bet)||{})[f+":c-"+v]){ ui.err="Auf diese Wette wurde schon gesetzt, sie kann nicht mehr entfernt werden."; render(); return; }
+      e.custom=e.custom.filter(function(c){ return c.id!==v; }); commitMain(); return;
+    case "cq-win": if(!isAdmin()||!e) return; e.custom.forEach(function(c){ if(c.id===cid) c.win=[v]; }); commitMain(); return;
+    case "bet-step":
+      if(!isAdmin()) return; var lim={ep:[1,50],live:[0,30],season:[0,100],surv:[0,20]}[v]; if(!lim) return;
+      main.rules.bets[v]=Math.max(lim[0],Math.min(lim[1],main.rules.bets[v]+(+b.getAttribute("data-d")))); commitMain(); return;
 
     /* admin */
     case "pe-open":
@@ -1711,10 +1764,6 @@ document.addEventListener("click",function(evt){
     case "rule-step":
       if(!isAdmin()) return; var pp=v.split("."); if(!main.rules[pp[0]]||main.rules[pp[0]][pp[1]]==null) return;
       main.rules[pp[0]][pp[1]]=clampPts(main.rules[pp[0]][pp[1]]+(+b.getAttribute("data-d"))); ui.msg=""; commitMain(); return;
-    case "cards-on": if(!isAdmin()) return; main.rules.cards.on=(v==="1"); commitMain(); return;
-    case "card-toggle":
-      if(!isAdmin()||!CARD_DEFS[v]||CARD_DEFS[v].green) return; var oi=main.rules.cards.off.indexOf(v);
-      if(oi>=0) main.rules.cards.off.splice(oi,1); else main.rules.cards.off.push(v); commitMain(); return;
     case "rm-ask": ui.confirm="rm-"+v; render(); return;
     case "rm-yes": if(!isAdmin()||main.phase!=="join") return; if(main.removed.indexOf(v)<0) main.removed.push(v); ui.confirm=null; ui.msg="Entfernt."; commitMain(); return;
     case "fix-ask": ui.confirm="fix"; render(); return;
