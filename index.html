@@ -29,7 +29,7 @@
   --accent:#1E9E48; --on-accent:#FFFFFF; --accent-glow:rgba(30,158,72,.35);
   --p1:#0062D6; --p1-tint:rgba(0,122,255,.15); --p2:#B05800; --p2-tint:rgba(255,149,0,.2);
   --exit:#D70015; --exit-fill:#FF3B30; --exit-tint:rgba(255,59,48,.15); --good:#147A36; --good-tint:rgba(52,199,89,.2);
-  --gold:#F5A300;
+  --gold:#F5A300; --violet:#7C4DFF; --teal:#0B8A8A;
   --b1:#6EC1FF; --b2:#FFD35A; --b3:#79E0A0; --b4:#FF9C87; --b5:#B9A5FF;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   --round:ui-rounded,"SF Pro Rounded",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -44,7 +44,7 @@
     --accent:#30D158; --on-accent:#032610; --accent-glow:rgba(48,209,88,.3);
     --p1:#5AA9FF; --p1-tint:rgba(10,132,255,.26); --p2:#FFAA3D; --p2-tint:rgba(255,159,10,.24);
     --exit:#FF6B63; --exit-fill:#FF453A; --exit-tint:rgba(255,69,58,.22); --good:#30D158; --good-tint:rgba(48,209,88,.2);
-    --gold:#FFC94A;
+    --gold:#FFC94A; --violet:#B39CFF; --teal:#4FD1C5;
     --b1:#1B4FD8; --b2:#B86E00; --b3:#0B8A46; --b4:#B8294A; --b5:#5638CF;
     color-scheme:dark;
   }
@@ -58,7 +58,7 @@
   --accent:#30D158; --on-accent:#032610; --accent-glow:rgba(48,209,88,.3);
   --p1:#5AA9FF; --p1-tint:rgba(10,132,255,.26); --p2:#FFAA3D; --p2-tint:rgba(255,159,10,.24);
   --exit:#FF6B63; --exit-fill:#FF453A; --exit-tint:rgba(255,69,58,.22); --good:#30D158; --good-tint:rgba(48,209,88,.2);
-  --gold:#FFC94A;
+  --gold:#FFC94A; --violet:#B39CFF; --teal:#4FD1C5;
   --b1:#1B4FD8; --b2:#B86E00; --b3:#0B8A46; --b4:#B8294A; --b5:#5638CF;
   color-scheme:dark;
 }
@@ -92,7 +92,7 @@ p{margin:0}
   -webkit-backdrop-filter:blur(24px) saturate(180%);backdrop-filter:blur(24px) saturate(180%);
   box-shadow:var(--hl),var(--shadow);
 }
-.fx-card::before,.sheet::before,.card::before,.side::before,.flowhead::before,.dock::before,.opt::before,.banner::before,.champ::before,.cc::before,.livebar>div::before{
+.pcard::before,.fx-card::before,.sheet::before,.card::before,.side::before,.flowhead::before,.dock::before,.opt::before,.banner::before,.champ::before,.cc::before,.livebar>div::before{
   content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;
   background:linear-gradient(145deg,var(--rim-hi),rgba(255,255,255,0) 34%,rgba(255,255,255,0) 66%,var(--rim));
   -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;
@@ -298,6 +298,27 @@ label.f.t1{color:var(--p1)} label.f.t2{color:var(--p2)}
 .editor{display:flex;flex-direction:column;gap:12px;padding:14px;border-radius:20px;background:var(--glass-soft);box-shadow:inset 0 0 0 2px var(--accent);margin:6px 0}
 .editor .row2{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
 .seg.seg2{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* gamble cards */
+.dk .ot b::before{content:"";display:inline-block;width:12px;height:12px;border-radius:4px;margin-right:8px;vertical-align:-1px;background:var(--dk)}
+.dk-g{--dk:#34C759} .dk-y{--dk:#FFCC00} .dk-r{--dk:#FF3B30} .dk-n{--dk:var(--hair)}
+.pcard{position:relative;border-radius:28px;padding:28px 22px 22px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;overflow:hidden;
+  background:var(--glass-strong);-webkit-backdrop-filter:blur(26px) saturate(180%);backdrop-filter:blur(26px) saturate(180%);box-shadow:var(--hl),var(--shadow)}
+.pcard::after{content:"";position:absolute;inset:0 0 auto;height:8px;background:var(--cat)}
+.pcard .cat{font-size:12px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:999px;color:var(--cat);background:var(--glass-soft);box-shadow:inset 0 0 0 1.5px var(--cat)}
+.pcard h3{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.pcard .big{font-family:var(--round);font-weight:800;font-size:48px;line-height:1;color:var(--cat)}
+.pcard p{font-size:16px;color:var(--ink)}
+.cat-plus{--cat:var(--good)} .cat-minus{--cat:var(--exit)} .cat-null{--cat:var(--muted)} .cat-wette{--cat:var(--teal)} .cat-chaos{--cat:var(--violet)} .cat-joker{--cat:var(--gold)}
+.pcard.flip{animation:flipIn .75s cubic-bezier(.2,1.2,.3,1) both}
+@keyframes flipIn{0%{transform:perspective(900px) rotateY(100deg) scale(.85);opacity:0}100%{transform:perspective(900px) rotateY(0) scale(1);opacity:1}}
+@media (prefers-reduced-motion:reduce){.pcard.flip{animation:fadeIn .3s ease both}}
+.jokers{display:flex;flex-wrap:wrap;gap:6px}
+.jk{font-size:13px;font-weight:700;padding:5px 11px;border-radius:999px;background:var(--glass-soft);box-shadow:var(--hl),inset 0 0 0 1.5px var(--gold);color:var(--ink)}
+.cardrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;padding:10px 0;border-bottom:1px solid var(--hair);align-items:center}
+.cardrow:last-child{border-bottom:0}
+.cardrow .lt{min-width:0} .cardrow .lt b{display:block;font-size:15px} .cardrow .lt small{display:block;font-size:13px;color:var(--muted)}
+.cardrow .rs{font-weight:700;text-align:right;font-size:14px}
+.bad{color:var(--exit)}
 /* lead change */
 .fx{position:fixed;inset:0;z-index:30;pointer-events:none}
 .fx-wrap{position:absolute;inset:0;display:flex;justify-content:center;align-items:flex-start;padding:calc(env(safe-area-inset-top,0px) + 96px) 16px 0}
@@ -395,10 +416,39 @@ var EVENTS=[
 var DEF_AUTO={survive:2,quit:-5,finale:8,sieg:15};
 var DEF_TIPS={weekTip:3,winnerTip:10,curseTip:5};
 var CORE_KEYS=["fluch"];
+var CARD_DEFS={
+  jackpot:{name:"Jackpot",cat:"sofort",val:8,w:4},
+  gewinn:{name:"Kleiner Gewinn",cat:"sofort",val:3,w:10},
+  gartenhaus:{name:"Gartenhaus",cat:"sofort",val:2,w:5},
+  niete:{name:"Niete",cat:"sofort",val:0,w:7},
+  pech:{name:"Pech gehabt",cat:"sofort",val:-3,w:10},
+  fluchk:{name:"Sommerhaus-Fluch",cat:"sofort",w:5,needPrev:true},
+  dodn:{name:"Doppelt oder nichts",cat:"sofort",w:5,needPrev:true},
+  treue:{name:"Treue-Karte",cat:"wette",win:5,lose:-3,w:5,ev:"streit"},
+  unverw:{name:"Unverwundbar",cat:"wette",win:5,lose:-4,w:5,ev:"nominiert"},
+  spielglueck:{name:"Spielglück",cat:"wette",win:4,lose:-2,w:5,ev:"spiel"},
+  dramaq:{name:"Drama-Queen",cat:"wette",win:6,lose:-2,w:5},
+  traenenw:{name:"Tränen-Wette",cat:"wette",per:2,lose:-4,w:5,ev:"traenen"},
+  exitrisiko:{name:"Exit-Risiko",cat:"wette",win:4,lose:-6,w:5},
+  allin:{name:"Alles auf eine Karte",cat:"chaos",w:4,target:"own"},
+  tausch:{name:"Partnertausch",cat:"chaos",w:3},
+  inflation:{name:"Inflation",cat:"chaos",w:4},
+  kopfgeld:{name:"Kopfgeld",cat:"chaos",per:2,w:4,target:"any"},
+  engel:{name:"Schutzengel",cat:"joker",w:4},
+  zweite:{name:"Zweite Chance",cat:"joker",w:3},
+  g3:{name:"Jackpot",cat:"sofort",val:3,w:2,green:true},
+  g2:{name:"Gewinn",cat:"sofort",val:2,w:4,green:true},
+  g1:{name:"Kleiner Gewinn",cat:"sofort",val:1,w:6,green:true},
+  g0:{name:"Niete",cat:"sofort",val:0,w:6,green:true},
+  gm1:{name:"Pech gehabt",cat:"sofort",val:-1,w:6,green:true},
+  gm2:{name:"Pech gehabt",cat:"sofort",val:-2,w:4,green:true}
+};
+var DECKS={g:{name:"Grün · vorsichtig",sub:"Kleine Beträge zwischen −2 und +3"},y:{name:"Gelb · mittel",sub:"Alle Karten mit normalen Punkten"},r:{name:"Rot · Vollrisiko",sub:"Alle Karten, alle Punkte doppelt"}};
+var CAT_NAMES={sofort:"Sofort",wette:"Wette",chaos:"Chaos",joker:"Joker"};
 var PTS_MIN=-50, PTS_MAX=50;
 function clampPts(n){ n=Math.round(+n); if(!isFinite(n)) n=0; return Math.max(PTS_MIN,Math.min(PTS_MAX,n)); }
 function copyObj(o){ var r={}; Object.keys(o).forEach(function(k){ r[k]=o[k]; }); return r; }
-function defaultRules(){ return {events:EVENTS.map(function(e){ return {k:e.k,label:e.label,g:e.g,pts:e.pts,hidden:false,custom:false}; }),auto:copyObj(DEF_AUTO),tips:copyObj(DEF_TIPS)}; }
+function defaultRules(){ return {events:EVENTS.map(function(e){ return {k:e.k,label:e.label,g:e.g,pts:e.pts,hidden:false,custom:false}; }),auto:copyObj(DEF_AUTO),tips:copyObj(DEF_TIPS),cards:{on:true,off:[]}}; }
 function evByKey(k){ var l=state.rules.events; for(var i=0;i<l.length;i++) if(l[i].k===k) return l[i]; return null; }
 function evPts(k){ var e=evByKey(k); return e?e.pts:0; }
 function evLabel(k){ var e=evByKey(k); return e?e.label:k; }
@@ -424,7 +474,7 @@ var BASE=[
   ["ginger","Ginger & Lukas","Ginger Costello-Wollersheim & Lukas Reiter",1]
 ];
 var WD=["So","Mo","Di","Mi","Do","Fr","Sa"];
-var EP_STATES=["tip0","tip1","live","exits","winner","review","done"];
+var EP_STATES=["cards0","cards1","tip0","tip1","live","exits","winner","review","done"];
 
 function defaults(){
   return {v:2,phase:"setup",step:"names",players:["",""],start:null,starter:null,draftLog:[],
@@ -452,7 +502,11 @@ function normalize(raw){
       var e=raw.episodes[k]; if(!e) return;
       var log=Array.isArray(e.log) ? e.log.filter(function(x){ return x && x.k && Array.isArray(x.ids) && x.ids.length; }).map(function(x){ return {id:String(x.id||rid()),k:String(x.k),ids:x.ids.map(String)}; }) : logFromEv(e.ev);
       d.episodes[k]={status:EP_STATES.indexOf(e.status)>=0?e.status:"tip0",tips:Array.isArray(e.tips)?[e.tips[0]||null,e.tips[1]||null]:[null,null],
-        log:log,ev:evFromLog(log),winner:e.winner||null};
+        log:log,ev:evFromLog(log),winner:e.winner||null,withCards:!!e.withCards,
+        cards:Array.isArray(e.cards)?e.cards.filter(function(c){ return c && (c.p===0||c.p===1) && ["g","y","r","none","skip"].indexOf(c.deck)>=0 && (c.deck==="none"||c.deck==="skip"||!!CARD_DEFS[c.k]); }).map(function(c){
+          return {p:c.p,deck:c.deck,k:CARD_DEFS[c.k]?c.k:null,amount:typeof c.amount==="number"?c.amount:null,prevF:c.prevF>=1?c.prevF|0:null,coin:(c.coin==="win"||c.coin==="lose")?c.coin:null,
+            target:c.target?String(c.target):null,redrawn:!!c.redrawn,replacedK:(c.replacedK&&CARD_DEFS[c.replacedK])?c.replacedK:null};
+        }):[]};
     });
   }
   if(raw.rules && Array.isArray(raw.rules.events) && raw.rules.events.length){
@@ -466,6 +520,7 @@ function normalize(raw){
   }
   if(raw.rules && raw.rules.auto) Object.keys(DEF_AUTO).forEach(function(k){ if(typeof raw.rules.auto[k]==="number") d.rules.auto[k]=clampPts(raw.rules.auto[k]); });
   if(raw.rules && raw.rules.tips) Object.keys(DEF_TIPS).forEach(function(k){ if(typeof raw.rules.tips[k]==="number") d.rules.tips[k]=clampPts(raw.rules.tips[k]); });
+  if(raw.rules && raw.rules.cards){ d.rules.cards.on=raw.rules.cards.on!==false; if(Array.isArray(raw.rules.cards.off)) d.rules.cards.off=raw.rules.cards.off.filter(function(k){ return CARD_DEFS[k] && !CARD_DEFS[k].green; }); }
   if(raw.admin && typeof raw.admin.pin==="string" && /^[0-9a-f]{8}$/.test(raw.admin.pin)) d.admin.pin=raw.admin.pin;
   d.updated=raw.updated||0;
   return d;
@@ -529,14 +584,15 @@ function outsIn(f){ return state.couples.filter(function(c){return c.outIn===f;}
 /* ---------- scoring ---------- */
 function couplePts(c,f){
   var e=ep(f); if(!e || f<state.start) return 0;
-  var p=0, ev=e.ev[c.id];
-  if(ev) Object.keys(ev).forEach(function(k){ p+=evPts(k)*(ev[k]||0); });
+  var p=0, ev=e.ev[c.id], md=epMods(f);
+  if(ev) Object.keys(ev).forEach(function(k){ p+=evPts(k)*(ev[k]||0)*md.infl; });
   if(closed(f)){
     if(alive(c,f)) p+=R.survive;
     if(c.outIn===f && c.outType==="freiwillig") p+=R.quit;
     if(f===10 && alive(c,10)) p+=R.finale;
     if(f===10 && e.winner===c.id) p+=R.sieg;
   }
+  if(md.mult[c.id]!=null) p*=md.mult[c.id];
   return p;
 }
 function coupleTotal(c){ var t=0; for(var f=1;f<=10;f++) t+=couplePts(c,f); return t; }
@@ -547,9 +603,133 @@ function weekTip(pi,f){
   return tip==="none" ? outs.length===0 : outs.indexOf(tip)>=0;
 }
 function playerFolge(pi,f){
-  var t=weekTip(pi,f)===true?R.weekTip:0;
-  state.couples.forEach(function(c){ if(c.owner===pi) t+=couplePts(c,f); });
-  return t;
+  var t=weekTip(pi,f)===true?R.weekTip:0, md=epMods(f);
+  state.couples.forEach(function(c){ var o=c.owner; if(o==null) return; if(md.swap) o=1-o; if(o===pi) t+=couplePts(c,f); });
+  return t+cardPts(pi,f);
+}
+/* ---------- gamble cards ---------- */
+var CACHE=null;
+function cache(){ if(!CACHE) CACHE={led:null,mods:{}}; return CACHE; }
+function cardsOn(){ return !!state.rules.cards.on; }
+function cmult(cd){ return cd.deck==="r"?2:1; }
+function rnd(){ try{ var a=new Uint32Array(1); crypto.getRandomValues(a); return a[0]/4294967296; }catch(e){ return Math.random(); } }
+function prevDone(f){ if(!state.start) return null; for(var x=f-1;x>=state.start;x--){ var e=ep(x); if(e&&e.status==="done") return x; } return null; }
+function cardOf(f,p){ var e=ep(f); if(!e||!e.cards) return null; for(var i=0;i<e.cards.length;i++) if(e.cards[i].p===p) return e.cards[i]; return null; }
+function mustSkip(p,f){ var c=cardOf(f-1,p); return !!(c && c.k==="gartenhaus"); }
+function blankCard(p,deck){ return {p:p,deck:deck,k:null,amount:null,prevF:null,coin:null,target:null,redrawn:false,replacedK:null}; }
+function eligibleCards(p,f,deck){
+  return Object.keys(CARD_DEFS).filter(function(k){
+    var d=CARD_DEFS[k];
+    if(deck==="g") return !!d.green;
+    if(d.green) return false;
+    if(state.rules.cards.off.indexOf(k)>=0) return false;
+    if(d.needPrev && prevDone(f)==null) return false;
+    if(d.ev){ var x=evByKey(d.ev); if(!x||x.hidden) return false; }
+    if(d.target==="own" && !houseAt(f).some(function(c){ return c.owner===p; })) return false;
+    if(d.target==="any" && !houseAt(f).length) return false;
+    return true;
+  });
+}
+function drawCard(p,f,deck){
+  var keys=eligibleCards(p,f,deck); if(!keys.length) return null;
+  var tot=0; keys.forEach(function(k){ tot+=CARD_DEFS[k].w; });
+  var r=rnd()*tot, k=keys[keys.length-1];
+  for(var i=0;i<keys.length;i++){ r-=CARD_DEFS[keys[i]].w; if(r<0){ k=keys[i]; break; } }
+  var cd=blankCard(p,deck); cd.k=k;
+  if(CARD_DEFS[k].needPrev){ cd.prevF=prevDone(f); cd.amount=playerFolge(p,cd.prevF); }
+  if(k==="dodn") cd.coin=rnd()<0.5?"win":"lose";
+  return cd;
+}
+function myCouplesAt(p,f){ return houseAt(f).filter(function(c){ return c.owner===p; }).map(function(c){ return c.id; }); }
+function countFor(f,ids,pred){ var e=ep(f), n=0; if(!e) return 0; e.log.forEach(function(x){ if(pred(x)) x.ids.forEach(function(id){ if(ids.indexOf(id)>=0) n++; }); }); return n; }
+function betPts(cd,f){
+  var d=CARD_DEFS[cd.k], m=cmult(cd), mine=myCouplesAt(cd.p,f), won=false;
+  if(cd.k==="traenenw"){ var n=countFor(f,mine,function(x){ return x.k==="traenen"; }); return n>0 ? d.per*m*n : d.lose*m; }
+  if(cd.k==="treue") won=countFor(f,mine,function(x){ return x.k==="streit"; })===0;
+  else if(cd.k==="unverw") won=countFor(f,mine,function(x){ return x.k==="nominiert"; })===0;
+  else if(cd.k==="spielglueck") won=countFor(f,mine,function(x){ return x.k==="spiel"; })>0;
+  else if(cd.k==="dramaq") won=countFor(f,mine,function(x){ var ev=evByKey(x.k); return !!ev && ev.g==="Drama"; })>=3;
+  else if(cd.k==="exitrisiko") won=!mine.some(function(id){ var c=byId(id); return !!c && c.outIn===f; });
+  return won ? d.win*m : d.lose*m;
+}
+function kopfgeldCount(cd,f){ var e=ep(f), n=0; if(!e||!cd.target) return 0; e.log.forEach(function(x){ if(evPts(x.k)<0 && x.ids.indexOf(cd.target)>=0) n++; }); return n; }
+function instantPts(cd){
+  var d=CARD_DEFS[cd.k], m=cmult(cd);
+  if(cd.k==="fluchk") return -Math.floor(Math.max(0,cd.amount||0)/2)*m;
+  if(cd.k==="dodn") return (cd.coin==="win"?1:-1)*(cd.amount||0)*m;
+  return (d.val||0)*m;
+}
+function ledger(){
+  var C=cache(); if(C.led) return C.led;
+  var angels=[0,0], out={};
+  for(var f=1;f<=10;f++){
+    var e=ep(f); if(!e||!e.cards||!e.cards.length||f<(state.start||1)) continue;
+    out[f]=[null,null];
+    e.cards.forEach(function(cd){
+      var d=CARD_DEFS[cd.k]; if(!d) return;
+      var r={cd:cd,pts:0,st:"",saved:0};
+      if(d.cat==="joker"){ r.st="joker"; if(cd.k==="engel") angels[cd.p]++; }
+      else if(d.cat==="sofort"){ r.pts=instantPts(cd); r.st="done"; }
+      else if(cd.k==="kopfgeld"){ r.pts=kopfgeldCount(cd,f)*d.per*cmult(cd); r.st=closed(f)?"done":"live"; }
+      else if(d.cat==="chaos") r.st="active";
+      if(r.pts<0 && angels[cd.p]>0){ angels[cd.p]--; r.saved=r.pts; r.pts=0; }
+      out[f][cd.p]=r;
+    });
+    e.cards.forEach(function(cd){
+      var d=CARD_DEFS[cd.k]; if(!d||d.cat!=="wette") return;
+      var r=out[f][cd.p];
+      if(closed(f)){ r.pts=betPts(cd,f); r.st=r.pts>=0?"win":"lose"; if(r.pts<0 && angels[cd.p]>0){ angels[cd.p]--; r.saved=r.pts; r.pts=0; } }
+      else r.st="pending";
+    });
+  }
+  out.angels=angels;
+  C.led=out; return out;
+}
+function cardPts(p,f){ var L=ledger(); return (L[f]&&L[f][p])?L[f][p].pts:0; }
+function angelsLeft(p){ return ledger().angels[p]; }
+function secondLeft(p){ var n=0; Object.keys(state.episodes).forEach(function(f){ (state.episodes[f].cards||[]).forEach(function(cd){ if(cd.p!==p) return; if(cd.k==="zweite") n++; if(cd.redrawn) n--; }); }); return Math.max(0,n); }
+function epMods(f){
+  var C=cache(); if(C.mods[f]) return C.mods[f];
+  var md={infl:1,swap:false,mult:{}}, e=ep(f);
+  if(e&&e.cards) e.cards.forEach(function(cd){
+    if(cd.k==="inflation") md.infl*=2;
+    else if(cd.k==="tausch") md.swap=!md.swap;
+    else if(cd.k==="allin" && cd.target) houseAt(f).forEach(function(c){ if(c.owner===cd.p) md.mult[c.id]=(c.id===cd.target?3:0); });
+  });
+  C.mods[f]=md; return md;
+}
+function cardText(cd){
+  var d=CARD_DEFS[cd.k], m=cmult(cd), n=function(x){ return sgn(x*m); }, v;
+  switch(cd.k){
+    case "fluchk": v=instantPts(cd); return "Du verlierst die Hälfte deiner Punkte aus "+epName(cd.prevF)+(m===2?", mit Rot doppelt":"")+": "+(v===0?"zum Glück 0, weil du dort nichts Positives geholt hast.":sgn(v)+".");
+    case "dodn": return "Die Münze hat entschieden: Deine "+cd.amount+" Punkte aus "+epName(cd.prevF)+" zählen "+(cd.coin==="win"?"doppelt":"nichts")+(m===2?", mit Rot alles mal zwei":"")+": "+sgn(instantPts(cd))+".";
+    case "gartenhaus": return "Du bekommst sofort "+n(d.val)+". Dafür sitzt du bei der nächsten Folge im Gartenhaus und darfst keine Karte ziehen.";
+    case "treue": return "Bekommt keins deiner Paare in dieser Folge „"+evLabel("streit")+"“: "+n(d.win)+". Sonst "+n(d.lose)+".";
+    case "unverw": return "Wird keins deiner Paare in dieser Folge nominiert: "+n(d.win)+". Sonst "+n(d.lose)+".";
+    case "spielglueck": return "Gewinnt eins deiner Paare in dieser Folge ein Spiel: "+n(d.win)+". Sonst "+n(d.lose)+".";
+    case "dramaq": return "Sammeln deine Paare in dieser Folge mindestens 3 Drama-Ereignisse: "+n(d.win)+". Sonst "+n(d.lose)+".";
+    case "traenenw": return "Jedes Mal „"+evLabel("traenen")+"“ bei deinen Paaren: "+n(d.per)+". Kein einziges Mal: "+n(d.lose)+".";
+    case "exitrisiko": return "Zieht keins deiner Paare in dieser Folge aus: "+n(d.win)+". Sonst "+n(d.lose)+".";
+    case "allin": return "Wähle eins deiner Paare. Es zählt in dieser Folge dreifach, deine anderen Paare zählen nichts.";
+    case "tausch": return "In dieser Folge punktest du mit den Paaren deines Gegenübers und umgekehrt.";
+    case "inflation": return "Alle Ereignisse zählen in dieser Folge doppelt, für euch beide.";
+    case "kopfgeld": return "Wähle ein Paar. Jedes Minus-Ereignis, das es in dieser Folge bekommt, bringt dir "+n(d.per)+".";
+    case "engel": return "Du behältst diese Karte. Sie bewahrt dich automatisch vor deiner nächsten Minuskarte.";
+    case "zweite": return "Du behältst diese Karte. Damit darfst du einmal eine gezogene Karte zurücklegen und neu ziehen.";
+  }
+  v=instantPts(cd);
+  return v>0?"Du bekommst sofort "+sgn(v)+".":(v<0?"Du verlierst sofort "+(-v)+" Punkt"+(v===-1?"":"e")+".":"Nichts passiert.");
+}
+function cardCls(cd){ var d=CARD_DEFS[cd.k]; if(d.cat==="sofort"){ var v=instantPts(cd); return v>0?"cat-plus":(v<0?"cat-minus":"cat-null"); } return "cat-"+d.cat; }
+function cardStatus(r){
+  var cd=r.cd, d=CARD_DEFS[cd.k];
+  if(d.cat==="joker") return {t:"behalten",c:"no"};
+  if(r.saved) return {t:"Schutzengel hat "+sgn(r.saved)+" verhindert",c:"ok"};
+  if(d.cat==="sofort") return {t:sgn(r.pts),c:r.pts>0?"ok":(r.pts<0?"bad":"no")};
+  if(d.cat==="wette") return r.st==="pending"?{t:"wird am Ende ausgewertet",c:"no"}:{t:(r.st==="win"?"gewonnen ":"verloren ")+sgn(r.pts),c:r.st==="win"?"ok":"bad"};
+  if(cd.k==="kopfgeld") return {t:sgn(r.pts)+(r.st==="live"?" bisher":""),c:r.pts>0?"ok":"no"};
+  if(cd.k==="allin"){ var tc=byId(cd.target); return {t:tc?tc.short+" zählt ×3":"kein Paar gewählt",c:"no"}; }
+  return {t:"aktiv",c:"no"};
 }
 function cursed(){
   var ids=[];
@@ -590,7 +770,7 @@ function renderSync(){
 function setSync(m){ sync.mode=m; renderSync(); }
 function busy(){ return sync.writing || sync.timer!==null || sync.again; }
 function commit(){
-  state.updated=Date.now(); saveLocal(); render();
+  CACHE=null; state.updated=Date.now(); saveLocal(); render();
   if(sb.on){ clearTimeout(sb.timer); sb.timer=setTimeout(sbFlush,400); }
   if(sync.ref && !sync.readonly){ clearTimeout(sync.timer); sync.timer=setTimeout(flush,500); }
 }
@@ -785,7 +965,7 @@ function viewHome(){
       }).join("")+'</div></section>';
   } else if(cur){
     var e=ep(cur), nx=nextTv(), future=EPISODES[cur-1].date>todayStr();
-    var stepTxt={tip0:"Wochentipps",tip1:"Wochentipps",live:"Punkte während der Folge",exits:"Wer ist ausgezogen?",winner:"Wer hat gewonnen?",review:"Kontrolle"};
+    var stepTxt={cards0:"Zockerkarten",cards1:"Zockerkarten",tip0:"Wochentipps",tip1:"Wochentipps",live:"Punkte während der Folge",exits:"Wer ist ausgezogen?",winner:"Wer hat gewonnen?",review:"Kontrolle"};
     out+='<section class="card"><span class="label">Als Nächstes</span><h2 class="bigtitle">'+h(epName(cur))+'</h2><p class="hint">'+epDate(cur)+', 20:15 RTL'+(future&&!e?". Auf RTL+ meist schon eine Woche früher.":"")+'</p>'+
       (e?'<p>Ihr seid gerade bei: <b>'+h(stepTxt[e.status]||"")+'</b></p>'+primary("ep-resume","Weitermachen",false,true):primary("ep-start",(cur===10?"Finale":"Folge "+cur)+" starten",false,true))+'</section>';
   }
@@ -810,7 +990,38 @@ function viewHome(){
   return out;
 }
 
-function epSteps(f){ return f===10?["tip0","tip1","live","exits","winner","review"]:["tip0","tip1","live","exits","review"]; }
+function epSteps(f){ var e=ep(f), base=f===10?["tip0","tip1","live","exits","winner","review"]:["tip0","tip1","live","exits","review"]; return (e&&e.withCards)?["cards0","cards1"].concat(base):base; }
+function viewCardStep(f,e,pi,head,idx){
+  var cd=cardOf(f,pi), out="";
+  enter("e-"+f+"-cards"+pi,function(){ ui.sel=null; });
+  out+=head(idx===0?"home":"e-back")+'<h2 class="q">Zockerkarte für <span class="'+tcls(pi)+'">'+pn(pi)+'</span></h2>';
+  var a=angelsLeft(pi), z=secondLeft(pi), jk=[];
+  if(a) jk.push("Schutzengel"+(a>1?" ×"+a:"")); if(z) jk.push("Zweite Chance"+(z>1?" ×"+z:""));
+  var jkHtml=jk.length?'<span class="label">Deine Joker</span><div class="jokers">'+jk.map(function(x){ return '<span class="jk">'+h(x)+'</span>'; }).join("")+'</div>':"";
+  if(cd){
+    if(cd.deck==="none") return out+'<p class="hint">Diesmal ohne Karte. Deine Punkte bleiben sicher.</p>'+primary("card-next","Weiter");
+    if(cd.deck==="skip") return out+'<p class="hint">'+pn(pi)+' sitzt diesmal im Gartenhaus und zieht keine Karte.</p>'+primary("card-next","Weiter");
+    var d=CARD_DEFS[cd.k], big=d.cat==="sofort"?sgn(instantPts(cd)):"";
+    out+='<p class="hint">'+h(DECKS[cd.deck].name)+(cd.replacedK?' · neu gezogen statt „'+h(CARD_DEFS[cd.replacedK].name)+'“':"")+'</p>'+
+      '<article class="pcard '+cardCls(cd)+(ui.cardAnim?" flip":"")+'"><span class="cat">'+CAT_NAMES[d.cat]+'</span><h3>'+h(d.name)+'</h3>'+(big?'<span class="big num">'+big+'</span>':"")+'<p>'+h(cardText(cd))+'</p></article>';
+    ui.cardAnim=false;
+    var needT=!!d.target && !cd.target;
+    if(d.target){
+      var pool=d.target==="own"?houseAt(f).filter(function(c){ return c.owner===pi; }):houseAt(f);
+      out+='<span class="label">'+(cd.k==="allin"?"Welches Paar soll dreifach zählen?":"Auf welches Paar setzt du das Kopfgeld aus?")+'</span><div class="opts">'+
+        pool.map(function(c){ return opt("card-target",c.id,c.short,c.owner==null?"ohne Team":"Team "+state.players[c.owner],cd.target===c.id,tcls(c.owner)); }).join("")+'</div>';
+    }
+    out+=jkHtml;
+    if(z>0 && !cd.redrawn && cd.k!=="zweite") out+='<div class="actions"><button class="btn" data-act="card-second">Zweite Chance einsetzen und neu ziehen</button></div>';
+    return out+primary("card-next",needT?"Erst ein Paar wählen":"Weiter",needT);
+  }
+  if(mustSkip(pi,f)) return out+'<p class="hint">'+pn(pi)+' sitzt wegen der Gartenhaus-Karte diesmal aus und darf keine Karte ziehen.</p>'+primary("card-go","Weiter");
+  out+='<p class="hint">Du musst nicht ziehen. Eine Karte kann dir Punkte bringen, aber auch welche kosten. Ohne Karte bleibt alles sicher.</p>'+jkHtml+'<div class="opts">'+
+    ["g","y","r"].map(function(dk){ return eligibleCards(pi,f,dk).length ? opt("deck-sel",dk,DECKS[dk].name,DECKS[dk].sub,ui.sel===dk,"dk dk-"+dk) : ""; }).join("")+
+    opt("deck-sel","none","Lieber sicher","Keine Karte, deine Punkte bleiben, wie sie sind",ui.sel==="none","dk dk-n")+'</div>'+msgs()+
+    primary("card-go",!ui.sel?"Erst auswählen":(ui.sel==="none"?"Ohne Karte weiter":"Karte ziehen"),!ui.sel);
+  return out;
+}
 
 function viewEpisode(){
   var f=curEp(); if(!f){ ui.screen="home"; return viewHome(); }
@@ -818,10 +1029,13 @@ function viewEpisode(){
   var steps=epSteps(f), idx=Math.max(0,steps.indexOf(e.status)), out="", label=epName(f);
   var head=function(back){ return flowHead(back,label,idx,steps.length); };
   var house=houseAt(f);
-  if(e.status==="tip0"||e.status==="tip1"){
+  if(e.status==="cards0"||e.status==="cards1"){
+    out+=viewCardStep(f,e,e.status==="cards0"?0:1,head,idx);
+  }
+  else if(e.status==="tip0"||e.status==="tip1"){
     var pi=e.status==="tip0"?0:1;
     enter("e-"+f+"-"+e.status,function(){ ui.sel=e.tips[pi]; });
-    out+=head(pi===0?"home":"e-back")+'<h2 class="q">Wochentipp von <span class="'+tcls(pi)+'">'+pn(pi)+'</span>: Wer fliegt in dieser Folge raus?</h2><p class="hint">Richtig getippt bringt '+sgn(R.weekTip)+'. '+(pi===0?pn(1)+" schaut kurz weg.":pn(0)+" schaut kurz weg.")+'</p><div class="opts">'+
+    out+=head(idx===0?"home":"e-back")+'<h2 class="q">Wochentipp von <span class="'+tcls(pi)+'">'+pn(pi)+'</span>: Wer fliegt in dieser Folge raus?</h2><p class="hint">Richtig getippt bringt '+sgn(R.weekTip)+'. '+(pi===0?pn(1)+" schaut kurz weg.":pn(0)+" schaut kurz weg.")+'</p><div class="opts">'+
       opt("pick-sel","none","Niemand fliegt raus","",ui.sel==="none",tcls(pi))+coupleOpts("pick-sel",house,ui.sel,tcls(pi))+'</div>'+msgs()+primary("e-tip",ui.sel?"Tipp abgeben":"Erst einen Tipp wählen",!ui.sel);
   }
   else if(e.status==="live"){
@@ -832,6 +1046,11 @@ function viewEpisode(){
     out+=head("e-back")+'<h2 class="q">'+h(label)+' läuft</h2><p class="hint">Passiert etwas? Tippe erst an, was passiert ist, und dann, bei welchem Paar. Das können auch mehrere Paare sein.</p>'+
       '<div class="livebar"><div class="t1"><span>'+pn(0)+'</span><b class="num">'+sgn(lp[0])+'</b></div><div class="t2"><span>'+pn(1)+'</span><b class="num">'+sgn(lp[1])+'</b></div></div>';
     if(ui.msg) out+='<p class="okmsg toast" role="status">'+h(ui.msg)+'</p>';
+    var lr=ledger()[f], md0=epMods(f);
+    if(lr && (lr[0]||lr[1])){
+      out+='<section class="card"><h3>Zockerkarten dieser Folge</h3>'+(md0.infl>1?'<p class="okmsg">Inflation: Alle Ereignisse zählen gerade ×'+md0.infl+'.</p>':"")+(md0.swap?'<p class="okmsg">Partnertausch: Die Punkte der Paare gehen in dieser Folge an das andere Team.</p>':"")+'<div>'+
+        [0,1].map(function(pi){ var r=lr[pi]; if(!r) return ""; var st=cardStatus(r); return '<div class="cardrow"><div class="lt"><b>'+pn(pi)+': '+h(CARD_DEFS[r.cd.k].name)+'</b><small>'+h(cardText(r.cd))+'</small></div><span class="rs '+st.c+'">'+h(st.t)+'</span></div>'; }).join("")+'</div></section>';
+    }
     out+='<section class="card"><span class="label">1 · Was ist passiert?</span>';
     ["Spiele","Drama"].forEach(function(g){
       var evs=visibleEvents(g); if(!evs.length) return;
@@ -908,6 +1127,7 @@ function viewEpisode(){
         var t=e.tips[pi], tn=t==="none"?"Niemand":(byId(t)||{}).short, r=weekTip(pi,f);
         return '<div><span>Tipp '+pn(pi)+': '+h(tn||"–")+'</span><span class="'+(r?"ok":"no")+'">'+(r?"richtig "+sgn(R.weekTip):"daneben")+'</span></div>';
       }).join("")+
+      [0,1].map(function(pi){ var r=ledger()[f]&&ledger()[f][pi]; if(!r) return ""; var st=cardStatus(r); return '<div><span>Karte '+pn(pi)+': '+h(CARD_DEFS[r.cd.k].name)+'</span><span class="'+st.c+'">'+h(st.t)+'</span></div>'; }).join("")+
       [0,1].map(function(pi){ return '<div><span>Punkte '+pn(pi)+' in dieser Folge</span><span class="num">'+sgn(playerFolge(pi,f))+'</span></div>'; }).join("")+
       '</div></section><div class="actions dock"><button class="btn big primary" data-act="e-done">'+(f===10?"Finale abschließen":"Folge abschließen")+'</button><button class="btn" data-act="e-relive">Etwas ändern</button></div>';
   }
@@ -953,6 +1173,10 @@ function viewRules(){
     '<div class="rl"><span>Siegertipp richtig</span><b>'+sgn(R.winnerTip)+'</b></div>'+
     '<div class="rl"><span>Fluch-Tipp richtig</span><b>'+sgn(R.curseTip)+'</b></div></div>'+
     '<p class="hint">Neue Nachrücker-Paare bekommt, wer gerade hinten liegt. Punkte und Ereignisse lassen sich im Adminmodus ändern.</p></section>';
+  var byCat=function(c){ return Object.keys(CARD_DEFS).filter(function(k){ var d=CARD_DEFS[k]; return d.cat===c && !d.green && state.rules.cards.off.indexOf(k)<0; }).map(function(k){ return CARD_DEFS[k].name; }).join(", ")||"keine"; };
+  out+='<section class="card"><h3>Zockerkarten</h3><p class="hint">'+(cardsOn()?"Zu Beginn jeder Folge darf jede*r eine Karte ziehen, muss aber nicht. Ohne Karte bleibt alles sicher.":"Gerade ausgeschaltet. Einschalten geht im Adminmodus.")+'</p><div class="rules">'+
+    '<div class="rl"><span>Grüner Stapel</span><b>−2 bis +3</b></div><div class="rl"><span>Gelber Stapel</span><b>normal</b></div><div class="rl"><span>Roter Stapel</span><b>alles ×2</b></div></div>'+
+    '<div class="sum"><div><span>Sofort: zählt gleich</span><span>'+h(byCat("sofort"))+'</span></div><div><span>Wette: am Ende der Folge</span><span>'+h(byCat("wette"))+'</span></div><div><span>Chaos: nur diese Folge</span><span>'+h(byCat("chaos"))+'</span></div><div><span>Joker: behältst du</span><span>'+h(byCat("joker"))+'</span></div></div></section>';
   return out;
 }
 function evUses(k){ var n=0; Object.keys(state.episodes).forEach(function(f){ (state.episodes[f].log||[]).forEach(function(x){ if(x.k===k) n+=x.ids.length; }); }); return n; }
@@ -1001,6 +1225,10 @@ function viewAdmin(){
     [["survive","Paar überlebt die Folge"],["quit","Paar zieht freiwillig aus"],["finale","Paar steht im Finale"],["sieg","Paar gewinnt das Sommerhaus"]].map(function(r){ return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+stepper("auto-step",r[0],state.rules.auto[r[0]])+'</div>'; }).join("")+'</div></section>';
   out+='<section class="card"><h3>Tipps</h3><div>'+
     [["weekTip","Wochentipp richtig"],["winnerTip","Siegertipp richtig"],["curseTip","Fluch-Tipp richtig"]].map(function(r){ return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+stepper("tip-step",r[0],state.rules.tips[r[0]])+'</div>'; }).join("")+'</div></section>';
+  out+='<section class="card"><h3>Zockerkarten</h3><div class="seg seg2" role="group" aria-label="Zockerkarten"><button data-act="cards-on" data-v="1" aria-pressed="'+cardsOn()+'">An</button><button data-act="cards-on" data-v="0" aria-pressed="'+(!cardsOn())+'">Aus</button></div>'+
+    (cardsOn()?'<p class="hint">Tippe eine Karte an, um sie aus dem gelben und roten Stapel zu nehmen oder wieder hineinzulegen. Der grüne Stapel bleibt immer gleich. Die Änderung gilt ab der nächsten gezogenen Karte.</p><div class="opts">'+
+      Object.keys(CARD_DEFS).filter(function(k){ return !CARD_DEFS[k].green; }).map(function(k){ var d=CARD_DEFS[k], inn=state.rules.cards.off.indexOf(k)<0; return opt("card-toggle",k,d.name,CAT_NAMES[d.cat]+(inn?" · im Stapel":" · draußen"),inn,""); }).join("")+'</div>'
+      :'<p class="hint">Ausgeschaltet. Neue Folgen starten ohne Zockerkarten.</p>')+'</section>';
   out+='<section class="card"><h3>Weitere Einstellungen</h3>';
   out+= ui.confirm==="adm-defaults" ? '<p><b>Alle Standardwerte wiederherstellen?</b> Die ursprünglichen Ereignisse und Punkte kommen zurück. Selbst angelegte Ereignisse bleiben.</p><div class="actions"><button class="btn big danger" data-act="adm-defaults-yes">Ja, wiederherstellen</button><button class="btn" data-act="cancel">Abbrechen</button></div>'
     : '<div><button class="btn" data-act="adm-defaults">Standardwerte wiederherstellen …</button></div>';
@@ -1030,6 +1258,7 @@ function viewSettings(){
 
 /* ---------- render ---------- */
 function render(){
+  CACHE=null;
   var nx=nextTv(), t=todayStr(), s="Staffel 11 · Bocholt-Barlo";
   if(nx) s+=" · "+(nx.date===t?"<strong>Heute 20:15:</strong> "+h(epName(nx.n)):"Im TV als Nächstes: <strong>"+h(epName(nx.n))+"</strong>, "+epDate(nx.n));
   document.getElementById("sub").innerHTML=s;
@@ -1161,7 +1390,7 @@ document.addEventListener("click",function(evt){
     case "s-ready": state.phase="season"; state.step="done"; ui.screen="home"; ui.key=""; commit(); goTop(); return;
 
     /* episode */
-    case "ep-start": if(!f) return; if(!e) state.episodes[f]={status:"tip0",tips:[null,null],log:[],ev:{},winner:null}; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
+    case "ep-start": if(!f) return; if(!e) state.episodes[f]={status:cardsOn()?"cards0":"tip0",withCards:cardsOn(),cards:[],tips:[null,null],log:[],ev:{},winner:null}; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
     case "ep-resume": ui.screen="episode"; ui.key=""; render(); goTop(); return;
     case "e-back":
       if(!e) return; var st=epSteps(f), k=st.indexOf(e.status);
@@ -1169,6 +1398,32 @@ document.addEventListener("click",function(evt){
     case "e-tip":
       if(!e||!ui.sel) return; var tp=e.status==="tip0"?0:1; e.tips[tp]=ui.sel;
       setEpStatus(f, tp===0?"tip1":"live"); return;
+    case "deck-sel": ui.sel=v; ui.err=""; render(); return;
+    case "card-go":
+      if(!e||(e.status!=="cards0"&&e.status!=="cards1")) return;
+      var cp=e.status==="cards0"?0:1; if(cardOf(f,cp)) return;
+      if(mustSkip(cp,f)){ e.cards.push(blankCard(cp,"skip")); setEpStatus(f,cp===0?"cards1":"tip0"); return; }
+      if(!ui.sel) return;
+      if(ui.sel==="none"){ e.cards.push(blankCard(cp,"none")); setEpStatus(f,cp===0?"cards1":"tip0"); return; }
+      var nc=drawCard(cp,f,ui.sel); if(!nc){ ui.err="Aus diesem Stapel kann gerade keine Karte gezogen werden."; render(); return; }
+      e.cards.push(nc); ui.cardAnim=true; commit(); goTop(); return;
+    case "card-target":
+      if(!e) return; var tc=cardOf(f,e.status==="cards0"?0:1); if(!tc||!CARD_DEFS[tc.k]||!CARD_DEFS[tc.k].target) return;
+      tc.target=v; commit(); return;
+    case "card-second":
+      if(!e) return; var spl=e.status==="cards0"?0:1, sc=cardOf(f,spl);
+      if(!sc||!sc.k||sc.redrawn||sc.k==="zweite"||secondLeft(spl)<1) return;
+      var nc2=drawCard(spl,f,sc.deck); if(!nc2) return; nc2.redrawn=true; nc2.replacedK=sc.k;
+      e.cards[e.cards.indexOf(sc)]=nc2; ui.cardAnim=true; commit(); goTop(); return;
+    case "card-next":
+      if(!e) return; var npl=e.status==="cards0"?0:1, ncd=cardOf(f,npl); if(!ncd) return;
+      if(ncd.k && CARD_DEFS[ncd.k].target && !ncd.target) return;
+      setEpStatus(f,npl===0?"cards1":"tip0"); return;
+    case "cards-on": if(!ui.adminOk) return; state.rules.cards.on=(v==="1"); ui.msg=""; commit(); return;
+    case "card-toggle":
+      if(!ui.adminOk||!CARD_DEFS[v]||CARD_DEFS[v].green) return;
+      var oi=state.rules.cards.off.indexOf(v); if(oi>=0) state.rules.cards.off.splice(oi,1); else state.rules.cards.off.push(v);
+      ui.msg=""; commit(); return;
     case "evsel":
       if(!e) return; ui.evSel=v; ui.cpSel=[]; ui.msg=""; ui.sheetAnim=true; render();
       if(document.querySelector){ var f1=document.querySelector(".sheet .opt"); if(f1 && f1.focus){ try{ f1.focus({preventScroll:true}); }catch(x){} } }
@@ -1279,7 +1534,7 @@ document.addEventListener("click",function(evt){
     case "adm-defaults-yes":
       if(!ui.adminOk) return;
       EVENTS.forEach(function(def){ var x=evByKey(def.k); if(x){ x.label=def.label; x.g=def.g; x.pts=def.pts; x.hidden=false; } else state.rules.events.push({k:def.k,label:def.label,g:def.g,pts:def.pts,hidden:false,custom:false}); });
-      state.rules.auto=copyObj(DEF_AUTO); state.rules.tips=copyObj(DEF_TIPS);
+      state.rules.auto=copyObj(DEF_AUTO); state.rules.tips=copyObj(DEF_TIPS); state.rules.cards={on:true,off:[]};
       ui.confirm=null; ui.edit=null; ui.msg="Standardwerte wiederhergestellt."; commit(); return;
     case "join-open": ui.joinOpen=true; ui.joinErr=""; render(); var jl=document.getElementById("joinlink"); if(jl) jl.focus(); return;
     case "join":
