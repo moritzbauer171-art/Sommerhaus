@@ -1,0 +1,17 @@
+{
+  "name": "Sommerhaus-Liga",
+  "short_name": "Sommerhaus",
+  "description": "Fantasy-Liga für zwei zur 11. Staffel „Das Sommerhaus der Stars“.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#E8F0FB",
+  "theme_color": "#E8F0FB",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

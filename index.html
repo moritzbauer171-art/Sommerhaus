@@ -3,10 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Fantasy-Liga für zwei zur 11. Staffel „Das Sommerhaus der Stars“.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Sommerhaus-Liga">
+<meta name="apple-mobile-web-app-title" content="Sommerhaus">
 <meta name="theme-color" content="#E8F0FB" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#070B16" media="(prefers-color-scheme: dark)">
 </head>
@@ -371,7 +375,16 @@ function resolveCode(){
 }
 var CODE = MODE==="sb" ? resolveCode() : null;
 var STORE_KEY = LS_KEY + (CODE ? ":"+CODE : "");
-function shareUrl(){ return location.href.split("#")[0]+"#liga="+CODE; }
+var PUBLIC_URL="https://moritzbauer171-art.github.io/Sommerhaus/";
+function shareUrl(){ var base=/\.github\.io$/.test(location.hostname) ? location.href.split("#")[0] : PUBLIC_URL; return base+"#liga="+CODE; }
+function parseCode(t){ t=String(t||"").trim(); var m=/liga=([A-Za-z0-9_-]{16,64})/.exec(t); if(m) return m[1]; return /^[A-Za-z0-9_-]{16,64}$/.test(t) ? t : null; }
+function joinCard(){
+  return '<section class="card"><h3>Liga beitreten</h3><p class="hint">Du hast von deinem Gegenüber einen Link zur Liga bekommen? Füge ihn hier ein, dann spielt ihr auf derselben Liga.</p>'+
+    '<input type="text" id="joinlink" autocomplete="off" placeholder="Link hier einfügen" aria-label="Link zur Liga">'+
+    (ui.joinErr?'<p class="err" role="alert">'+h(ui.joinErr)+'</p>':"")+
+    (ui.confirm==="join"?'<p><b>Diese Liga öffnen?</b> Deine bisherige Liga ist dann auf diesem Gerät nicht mehr offen. Über ihren Link kommst du jederzeit zurück.</p><div class="actions"><button class="btn big primary" data-act="join-yes">Ja, beitreten</button><button class="btn" data-act="cancel">Abbrechen</button></div>'
+      :'<div class="actions"><button class="btn" data-act="join"'+(ui.joinBusy?" disabled":"")+'>'+(ui.joinBusy?"Prüfe Link …":"Beitreten")+'</button></div>')+'</section>';
+}
 function loadLocal(){ try{ var t=localStorage.getItem(STORE_KEY); if(t) return normalize(JSON.parse(t)); }catch(e){} return defaults(); }
 function saveLocal(){ try{ localStorage.setItem(STORE_KEY,JSON.stringify(state)); }catch(e){} }
 
@@ -511,6 +524,11 @@ function sbPull(first){
     setSync("cloud");
   },function(){ setSync("offline"); });
 }
+function doJoin(code){
+  try{ localStorage.setItem(CODE_KEY,code); }catch(e){}
+  try{ history.replaceState(null,"","#liga="+code); }catch(e){ location.hash="liga="+code; }
+  location.reload();
+}
 function initSupabase(){
   sb.on=true; setSync("connecting"); sbPull(true);
   setInterval(function(){
@@ -570,7 +588,7 @@ function teamsBlock(withPts){
 
 /* ---------- screens: setup ---------- */
 function setupSteps(){ return state.start===1 ? ["names","start","starter","draft","tip0","tip1","ready"] : ["names","start","roster","starter","draft","tip0","tip1","ready"]; }
-function enter(key, init){ if(ui.key!==key){ ui.key=key; ui.err=""; ui.linkMsg=""; ui.msg=ui.flash||""; ui.flash=""; ui.sel=null; ui.sel2=null; ui.set=null; ui.confirm=null; if(init) init(); } }
+function enter(key, init){ if(ui.key!==key){ ui.key=key; ui.err=""; ui.linkMsg=""; ui.joinErr=""; ui.joinOpen=false; ui.joinBusy=false; ui.msg=ui.flash||""; ui.flash=""; ui.sel=null; ui.sel2=null; ui.set=null; ui.confirm=null; if(init) init(); } }
 
 function viewSetup(){
   var st=state.step, steps=setupSteps(), idx=Math.max(0,steps.indexOf(st)), n=steps.length, out="";
@@ -579,7 +597,9 @@ function viewSetup(){
     enter("s-names");
     out+=head(null)+'<h2 class="q">Wer spielt mit?</h2><p class="hint">Zwei Namen, wie sie in der Tabelle stehen sollen.</p>'+
       '<label class="f t1">Spieler*in 1<input type="text" id="n0" maxlength="20" autocomplete="off" value="'+h(state.players[0])+'" placeholder="Name"></label>'+
-      '<label class="f t2">Spieler*in 2<input type="text" id="n1" maxlength="20" autocomplete="off" value="'+h(state.players[1])+'" placeholder="Name"></label>'+msgs()+primary("s-names","Weiter");
+      '<label class="f t2">Spieler*in 2<input type="text" id="n1" maxlength="20" autocomplete="off" value="'+h(state.players[1])+'" placeholder="Name"></label>'+msgs()+
+      (MODE==="sb"?(ui.joinOpen?joinCard():'<div class="actions"><button class="btn" data-act="join-open">Ich habe einen Link bekommen</button></div>'):"")+
+      primary("s-names","Weiter");
   }
   else if(st==="start"){
     enter("s-start",function(){ var nx=nextTv(); ui.sel=state.start||(nx?nx.n:1); });
@@ -811,11 +831,12 @@ function viewSettings(){
     out+='<section class="card"><h3>Link fürs zweite Handy</h3><p class="hint">Mit diesem Link seht ihr beide dieselbe Liga, und alles, was einer einträgt, erscheint nach ein paar Sekunden auch beim anderen. Gib ihn nur deinem Gegenüber, denn wer ihn hat, kann mit eintragen.</p>'+
       '<input type="text" id="share" readonly value="'+h(shareUrl())+'" aria-label="Link zur Liga">'+
       '<div class="actions"><button class="btn big primary" data-act="copylink">Link kopieren</button></div>'+(ui.linkMsg?'<p class="okmsg" role="status">'+h(ui.linkMsg)+'</p>':"")+'</section>';
+    out+=joinCard();
   }
   out+='<section class="card"><h3>Sicherung</h3><p class="hint">Brauchst du nur, wenn du den Stand von Hand auf ein anderes Gerät holen willst.</p><div><button class="btn" data-act="export">'+(ui.showExport?"Sicherung ausblenden":"Sicherung anzeigen")+'</button></div>';
   if(ui.showExport) out+='<textarea id="exp" readonly>'+h(JSON.stringify(state))+'</textarea><div><button class="btn sm" data-act="copy">Kopieren</button></div>';
   out+='<label class="f">Sicherung einfügen<textarea id="imp" placeholder="Gesicherten Text hier einfügen"></textarea></label><div><button class="btn" data-act="import">Sicherung übernehmen</button></div>'+msgs()+'</section>';
-  out+='<section class="card"><h3>Liga neu starten</h3><p class="hint">Löscht Teams, Tipps und alle Punkte. Das lässt sich nicht rückgängig machen.</p>';
+  out+='<section class="card"><h3>Liga neu starten</h3><p class="hint">Löscht Teams, Tipps und alle Punkte'+(MODE==="sb"?", auch auf dem Handy deines Gegenübers":"")+'. Das lässt sich nicht rückgängig machen.</p>';
   out+= ui.confirm==="reset" ? '<p><b>Wirklich alles löschen?</b></p><div class="actions"><button class="btn big danger" data-act="reset-yes">Ja, alles löschen</button><button class="btn" data-act="cancel">Abbrechen</button></div>'
     : '<div><button class="btn danger" data-act="reset">Neu starten …</button></div>';
   out+='</section>';
@@ -966,6 +987,20 @@ document.addEventListener("click",function(evt){
       ui.confirm=null; ui.screen="episode"; ui.key=""; commit(); goTop(); return;
 
     /* settings */
+    case "join-open": ui.joinOpen=true; ui.joinErr=""; render(); var jl=document.getElementById("joinlink"); if(jl) jl.focus(); return;
+    case "join":
+      var jcode=parseCode((document.getElementById("joinlink")||{}).value);
+      ui.joinErr="";
+      if(!jcode){ ui.joinErr="Das ist kein Liga-Link. Kopiere den ganzen Link, so wie du ihn bekommen hast."; render(); return; }
+      if(jcode===CODE){ ui.joinErr="Das ist schon die Liga, die gerade offen ist."; render(); return; }
+      ui.joinBusy=true; ui.joinCode=jcode; render();
+      rpc("get_league",{p_code:jcode}).then(function(rows){
+        ui.joinBusy=false;
+        if(!rows || !rows[0]){ ui.joinErr="Diese Liga gibt es nicht. Prüfe, ob der Link vollständig ist."; render(); return; }
+        if(state.phase==="setup" && state.step==="names") doJoin(jcode); else { ui.confirm="join"; render(); var j2=document.getElementById("joinlink"); if(j2) j2.value=jcode; }
+      },function(){ ui.joinBusy=false; ui.joinErr="Gerade keine Verbindung. Versuch es gleich noch einmal."; render(); });
+      return;
+    case "join-yes": if(ui.joinCode) doJoin(ui.joinCode); return;
     case "copylink":
       var su=shareUrl(), sfb=function(){ ui.linkMsg="Der Link ist markiert. Jetzt kopieren."; render(); var si=document.getElementById("share"); if(si){ si.focus(); si.select(); } };
       try{ navigator.clipboard.writeText(su).then(function(){ ui.linkMsg="Link kopiert. Schick ihn deinem Gegenüber."; render(); },sfb); }catch(x){ sfb(); }

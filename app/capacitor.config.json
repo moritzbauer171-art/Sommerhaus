@@ -1,0 +1,14 @@
+{
+  "appId": "io.github.moritzbauer171art.sommerhausliga",
+  "appName": "Sommerhaus-Liga",
+  "webDir": "www",
+  "server": {
+    "url": "https://moritzbauer171-art.github.io/Sommerhaus/",
+    "androidScheme": "https",
+    "errorPath": "offline.html"
+  },
+  "android": {
+    "adjustMarginsForEdgeToEdge": "auto",
+    "backgroundColor": "#E8F0FB"
+  }
+}
