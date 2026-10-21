@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Wettspiel für 2 bis 6 Leute zu Temptation Island VIP, Staffel 7.">
+<meta name="description" content="Tempto: das Wettspiel für 2 bis 6 Leute zu Temptation Island VIP, Staffel 7.">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Temptation">
+<meta name="apple-mobile-web-app-title" content="Tempto">
 <meta name="theme-color" content="#1E0A2A" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1E0A2A" media="(prefers-color-scheme: dark)">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
-<title>Temptation-Liga</title>
+<title>Tempto</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -626,12 +626,85 @@ input[type=text]:focus,input[type=password]:focus{box-shadow:var(--hl),inset 0 0
 .cb-sub{font-size:13px;color:var(--muted)}
 .rk .pts small.cur{font-size:13px;font-weight:700;opacity:.75}
 .rkx{padding-bottom:9px}
+
+/* ---------- Tempto: sportsbook layer ---------- */
+/* wordmark + balance */
+.brand-t{font-family:var(--round);font-style:italic;font-weight:900;text-transform:none;letter-spacing:-.045em;font-size:clamp(42px,12.5vw,56px);line-height:.9;color:#FFF7FC;text-shadow:0 2px 24px rgba(255,170,230,.3);padding-right:.08em}
+.brand-t::after{content:"";display:block;height:5px;width:58%;margin-top:7px;border-radius:3px;background:var(--goldgrad);transform:skewX(-24deg);transform-origin:left}
+.brand-l{font-size:clamp(13.5px,3.9vw,16px);margin-top:4px}
+.mechip{gap:8px;padding:4px 4px 4px 12px;max-width:58vw}
+.me-n{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.me-bal{flex:0 0 auto;padding:4px 9px;border-radius:999px;background:var(--goldgrad);color:#2B1305;font:800 13px/1.2 var(--round)}
+/* app-style headings */
+.q,.bigtitle,.bigtitle2,.sheet-h h2{font-family:var(--round);font-weight:800;letter-spacing:-.025em}
+.q{font-size:clamp(26px,7.4vw,32px);line-height:1.12}
+/* market cards with quote tiles */
+.market{gap:12px}
+.mk-h{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.mk-t{display:flex;flex-direction:column;gap:3px;min-width:0}
+.mk-t h3{font-size:16.5px;line-height:1.25}
+.mk-t small{color:var(--muted);font-size:13px}
+.mk-pot{flex:0 0 auto;display:inline-flex;align-items:center;font:800 13.5px/1 var(--round);color:var(--gold);white-space:nowrap;padding:6px 10px;border-radius:999px;background:rgba(247,199,102,.10);box-shadow:inset 0 0 0 1px rgba(247,199,102,.3)}
+.mk-pot.bonus{color:var(--good);background:var(--good-tint);box-shadow:inset 0 0 0 1px rgba(134,230,176,.35)}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.tiles.many{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.tile{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:54px;padding:8px 12px;border:0;border-radius:12px;background:rgba(255,236,255,.07);box-shadow:inset 0 0 0 1px var(--hair);color:var(--ink);font:inherit;text-align:left;cursor:pointer;transition:background .15s ease,box-shadow .15s ease,transform .1s ease}
+.tile:active{transform:scale(.97)}
+.tile .tl-l{display:flex;flex-direction:column;gap:1px;min-width:0;font-weight:600;font-size:15px;line-height:1.2;overflow-wrap:anywhere}
+.tile .tl-l small{font:800 12px/1.2 var(--round);opacity:.9}
+.tile .tl-q{flex:0 0 auto;font:800 16px/1 var(--round);color:var(--gold);font-variant-numeric:tabular-nums}
+.tile.on{background:var(--goldgrad);color:#2B1305;box-shadow:0 6px 16px rgba(244,164,60,.3)}
+.tile.on .tl-q{color:#2B1305}
+.tile:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.tiles.many .tile{min-height:44px;padding:8px 10px;border-radius:10px}
+.tiles.many .tile .tl-l{font-size:14px}
+.srow .sq{font-style:normal;font:800 14px/1 var(--round);color:var(--gold);margin-left:6px}
+/* bottom bet slip bar */
+.slipbar{display:flex;align-items:center;gap:8px;padding:8px;background:var(--glass-strong);box-shadow:var(--hl),inset 0 0 0 1px var(--rim),var(--shadow);-webkit-backdrop-filter:blur(22px) saturate(1.4);backdrop-filter:blur(22px) saturate(1.4)}
+.sb-sum{flex:1 1 auto;display:flex;align-items:center;gap:10px;min-width:0;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;padding:4px 4px 4px 6px;border-radius:24px}
+.sb-sum:focus-visible{outline:2px solid var(--gold)}
+.sb-n{flex:0 0 auto;width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:var(--goldgrad);color:#2B1305;font:800 15px/1 var(--round)}
+.sb-t{display:flex;flex-direction:column;min-width:0}
+.sb-t b{font-size:15px}
+.sb-t small{font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-chev{flex:0 0 auto;width:9px;height:9px;margin:5px 4px 0 auto;border-right:2px solid var(--muted);border-top:2px solid var(--muted);transform:rotate(-45deg)}
+.sb-go{flex:0 0 auto;min-height:48px;padding:0 18px;border-radius:999px;font-weight:800}
+/* slip sheet: the paper ticket */
+.slipsheet{overflow-y:auto;overscroll-behavior:contain}
+.slipsheet .ticket{margin:12px 0 10px}
+.slipsheet .stamp{position:absolute;right:50px;top:4px}
+.xbtn.ink{flex:0 0 auto;color:var(--ink);background:rgba(43,16,55,.08);box-shadow:none}
+.sel-list{display:flex;flex-direction:column}
+.sel-list .hint{margin:12px 0!important}
+.sel{display:grid;grid-template-columns:minmax(0,1fr) auto 32px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px dotted var(--rule)}
+.sel-l{display:flex;flex-direction:column;gap:1px;min-width:0}
+.sel-l small{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sel-l b{font-size:16px;font-weight:700}
+.sel-st{display:inline-flex;align-items:center;gap:6px}
+.sel-st b.num{display:inline-block;min-width:36px;height:32px;text-align:center;font:800 17px/28px var(--round);color:var(--print);border:2px solid var(--print);border-radius:5px}
+.sel-st b.bonus{font:800 15px/1 var(--round);color:#1F7A47}
+.sel-x{width:32px;height:32px;border:0;border-radius:50%;background:none;color:var(--muted);font-size:22px;line-height:1;cursor:pointer}
+.sel-x:focus-visible{outline:2px solid var(--print)}
+.sel-step{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0 4px;font-size:14px;color:var(--muted)}
+.ticket .cb-step{background:rgba(43,16,55,.06);box-shadow:inset 0 0 0 1px var(--rule)}
+.ticket .cb-step button{color:var(--muted)}
+.ticket .cb-step button[aria-pressed="true"]{background:var(--print);color:#fff}
+.sel-after{margin:8px 0 0!important}
+.sheet .cb-step{align-self:flex-start}
+.topbar .brand{flex:1 1 auto}
+.mechip{flex:0 0 auto}
+.tile .tl-l{overflow-wrap:break-word;hyphens:auto}
+.actions.slipbar{flex-direction:row;flex-wrap:nowrap;align-items:center}
+.actions.slipbar .sb-go{width:auto}
+.tiles.many .tile{flex-direction:column;align-items:stretch;justify-content:center;gap:3px}
+.tiles.many .tile .tl-q{align-self:flex-end;font-size:14.5px}
+.tile .tl-l{hyphens:manual}
 </style>
 <div class="night-bg" aria-hidden="true"></div>
 <canvas class="night" id="palms" aria-hidden="true"></canvas>
 <canvas class="night" id="glitter" aria-hidden="true"></canvas>
 <div class="wrap">
-  <header class="top"><div class="topbar"><div class="brand"><span class="brand-t">Temptation</span><span class="brand-l">Liga · VIP Staffel 7</span></div><span class="mechip" id="me" hidden></span></div><p class="sub" id="sub">VIP · Staffel 7</p></header>
+  <header class="top"><div class="topbar"><div class="brand"><span class="brand-t">Tempto</span><span class="brand-l">Wetten auf Temptation Island VIP, Staffel 7</span></div><span class="mechip" id="me" hidden></span></div><p class="sub" id="sub">VIP · Staffel 7</p></header>
   <main id="view"></main>
   <p class="sync" id="sync"><i></i><span></span></p>
 </div>
@@ -797,8 +870,8 @@ function epQuestions(f){
   var lab=function(p){ return {id:p.id,label:p.name}; };
   var qs=[
     {id:"grenze",title:"Wer überschreitet die Grenze?",hint:"Kuss oder gemeinsame Nacht mit einem*r Verführer*in. Den Jackpot gibt es nur in diesem Pott.",opts:vs.map(lab).concat([{id:"none",label:"Niemand"}])},
-    {id:"traenen",title:"Wer weint?",opts:vs.map(lab).concat([{id:"t",label:"Eine*r der Verführer*innen"},{id:"none",label:"Niemand"}])},
-    {id:"out",title:"Wer muss die Insel verlassen?",opts:ts.map(lab).concat([{id:"v",label:"Eine vergebene Person"},{id:"none",label:"Niemand"}])},
+    {id:"traenen",title:"Wer weint?",opts:vs.map(lab).concat([{id:"t",label:"Verführer*in"},{id:"none",label:"Niemand"}])},
+    {id:"out",title:"Wer muss die Insel verlassen?",opts:ts.map(lab).concat([{id:"v",label:"Vergebene Person"},{id:"none",label:"Niemand"}])},
     {id:"kuesse",title:"Wie viele Küsse gibt es?",opts:[{id:"0",label:"Keinen"},{id:"1",label:"Einen"},{id:"2",label:"Zwei"},{id:"3",label:"Drei oder mehr"}]},
     {id:"notfall",title:"Gibt es ein Notfall-Lagerfeuer?",opts:[{id:"ja",label:"Ja"},{id:"nein",label:"Nein"}]}
   ];
@@ -1064,7 +1137,14 @@ function dGet(db,b){
   });
   ents.sort(function(x,y){ return x.at<y.at?-1:(x.at>y.at?1:0); });
   var stk={}; dRows(db).forEach(function(r){ if(dIsBet(r.key)) stk[r.player+"|"+r.key]=dStakeOf(r); });
-  return {data:d,version:db.version,entries:ents,pots:pots,stk:stk,me:{player:b.p_player,admin:!!db.players[b.p_player].admin}};
+  var tmp={bet:{},live:{},season:{}}, odds={bet:{},live:{},season:{}};
+  var put=function(kind,key,pid,o,n){ if(typeof n!=="number"||n<=0) return; var t=tmp[kind][key]=tmp[kind][key]||{who:{},o:{}}; t.who[pid]=1; t.o[o]=(t.o[o]||0)+n; };
+  dRows(db).forEach(function(r){ var sp2=r.key.split(":");
+    if(sp2[0]==="bet"||r.key==="season"){ var st2=r.data.stakes||{}; Object.keys(st2).forEach(function(q){ var m=st2[q]; if(m&&typeof m==="object") Object.keys(m).forEach(function(o){ put(r.key==="season"?"season":"bet",r.key==="season"?q:sp2[1]+":"+q,r.player,o,m[o]); }); }); }
+    if(sp2[0]==="live"){ var s3=r.data.stake||{}; Object.keys(s3).forEach(function(o){ put("live",sp2[1]+":"+sp2[2],r.player,o,s3[o]); }); }
+  });
+  Object.keys(tmp).forEach(function(kind){ Object.keys(tmp[kind]).forEach(function(key){ var t=tmp[kind][key]; if(Object.keys(t.who).length>=3) odds[kind][key]=t.o; }); });
+  return {data:d,version:db.version,entries:ents,pots:pots,stk:stk,odds:odds,me:{player:b.p_player,admin:!!db.players[b.p_player].admin}};
 }
 function demoRpc(fn,b){
   return new Promise(function(resolve,reject){
@@ -1195,6 +1275,7 @@ function pull(){
     if(JSON.stringify(ent)!==JSON.stringify(entries)){ entries=ent; changed=true; }
     var pots=res.pots||{}; if(JSON.stringify(pots)!==JSON.stringify(net.pots||{})){ net.pots=pots; changed=true; }
     var stk=res.stk||{}; if(JSON.stringify(stk)!==JSON.stringify(net.stk||{})){ net.stk=stk; changed=true; }
+    var odds=res.odds||{}; if(JSON.stringify(odds)!==JSON.stringify(net.odds||{})){ net.odds=odds; changed=true; }
     if(main && ui.adminOk && !mainBusy() && !net.mainFailed){ CACHE=null; var po=payoutDone(); if((res.data&&(res.data.v|0)<3) || !sameMap(po,main.payout)){ main.payout=po; commitMain(); changed=false; } }
     saveCache();
     if(net.mode!=="online") setNet("online");
@@ -1251,13 +1332,44 @@ function flowHead(backAct,label,idx,count){
 }
 function primary(act,label,disabled,inline){ return '<div class="actions'+(inline?"":" dock")+'"><button class="btn big primary" data-act="'+act+'"'+(disabled?" disabled":"")+'>'+h(label)+'</button></div>'; }
 function msgs(){ return (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+(ui.msg?'<p class="okmsg" role="status">'+h(ui.msg)+'</p>':""); }
-function enter(key,init){ if(ui.key!==key){ ui.key=key; ui.err=""; ui.msg=ui.flash||""; ui.flash=""; ui.sel=null; ui.set=null; ui.dset=null; ui.stips=null; ui.confirm=null; if(init) init(); } }
+function enter(key,init){ if(ui.key!==key){ ui.key=key; ui.err=""; ui.msg=ui.flash||""; ui.flash=""; ui.sel=null; ui.set=null; ui.dset=null; ui.stips=null; ui.confirm=null; ui.sheet=null; if(init) init(); } }
 function stepper(act,key,val){ return '<div class="stepper"><button data-act="'+act+'" data-v="'+h(key)+'" data-d="-1" aria-label="Weniger">−</button><b>'+sgn(val)+'</b><button data-act="'+act+'" data-v="'+h(key)+'" data-d="1" aria-label="Mehr">+</button></div>'; }
 function plainStepper(act,val,label){ return '<div class="stepper"><button data-act="'+act+'" data-d="-1" aria-label="Weniger">−</button><b>'+h(label||val)+'</b><button data-act="'+act+'" data-d="1" aria-label="Mehr">+</button></div>'; }
 function chip(pid,extra,cls){ return '<span class="chip-pc '+pcls(pid)+(cls?" "+cls:"")+'"><span class="pdot"></span>'+pname(pid)+(extra?" "+h(extra):"")+'</span>'; }
-function stakeRows(scope,qid,opts,map,left){
+function oddsFor(kind,key){ var o=net.odds&&net.odds[kind]; return (o&&o[key])||null; }
+function quoteStr(T,S){ return S>0&&T>0?quote(T,S):"–"; }
+function marketCard(scope,q,map,odds,pot,note){
+  var mine=map[q.id]||{}, n=sumStakes({x:mine});
+  return '<section class="card market'+(n?" has":"")+'"><div class="mk-h"><div class="mk-t"><h3>'+h(q.title)+'</h3>'+(note?'<small>'+note+'</small>':'')+'</div><span class="mk-pot">'+coinTxt(pot)+'</span></div>'+
+    '<div class="tiles'+(q.opts.length>4?" many":"")+'">'+q.opts.map(function(o){ var st=mine[o.id]|0;
+      return '<button class="tile'+(st?" on":"")+'" data-act="tile" data-s="'+scope+'" data-q="'+h(q.id)+'" data-v="'+h(o.id)+'" aria-pressed="'+(!!st)+'"><span class="tl-l">'+h(o.label)+(st?'<small>'+tl(st)+'</small>':'')+'</span>'+(odds?'<b class="tl-q">'+quoteStr(pot,odds[o.id]|0)+'</b>':'')+'</button>';
+    }).join("")+'</div></section>';
+}
+function selections(qs,map){ var out=[]; qs.forEach(function(q){ var m=map[q.id]||{}; q.opts.forEach(function(o){ if(m[o.id]) out.push({q:q,o:o,n:m[o.id]}); }); }); return out; }
+function stepPicker(){ return '<span class="cb-step" role="group" aria-label="Schrittweite">'+[1,5,10].map(function(n){ return '<button data-act="step-set" data-v="'+n+'" aria-pressed="'+(stepSize()===n)+'">'+n+'</button>'; }).join("")+'</span>'; }
+function slipBar(c){
+  var sel=selections(c.qs,c.map).length, sum=sumStakes(c.map);
+  return (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':'')+'<div class="actions dock slipbar"><button class="sb-sum" data-act="slip-open" data-v="'+c.scope+'" aria-haspopup="dialog"><span class="sb-n">'+sel+'</span><span class="sb-t"><b>'+h(c.title)+'</b><small>'+(sel?tl(sum)+" gesetzt, "+tl(Math.max(0,c.left))+" frei":"Tipp auf eine Antwort")+(c.extraTxt?", "+h(c.extraTxt):"")+'</small></span><span class="sb-chev" aria-hidden="true"></span></button>'+
+    '<button class="btn primary sb-go" data-act="'+c.saveAct+'"'+(c.disabled?" disabled":"")+'>'+h(c.short)+'</button></div>';
+}
+function slipSheet(c){
+  var sel=selections(c.qs,c.map), sum=sumStakes(c.map);
+  var rows=sel.map(function(x){
+    return '<div class="sel"><span class="sel-l"><small>'+h(x.q.title)+'</small><b>'+h(x.o.label)+'</b></span><span class="sel-st"><button class="sbtn" data-act="stk" data-s="'+c.scope+'" data-q="'+h(x.q.id)+'" data-v="'+h(x.o.id)+'" data-d="-1" aria-label="Weniger auf '+h(x.o.label)+'">−</button><b class="num">'+x.n+'</b><button class="sbtn" data-act="stk" data-s="'+c.scope+'" data-q="'+h(x.q.id)+'" data-v="'+h(x.o.id)+'" data-d="1" aria-label="Mehr auf '+h(x.o.label)+'"'+(c.left>0?"":" disabled")+'>+</button></span><button class="sel-x" data-act="rm-sel" data-s="'+c.scope+'" data-q="'+h(x.q.id)+'" data-v="'+h(x.o.id)+'" aria-label="'+h(x.o.label)+' entfernen">×</button></div>';
+  }).join("");
+  var html='<div class="sheet-wrap'+(ui.slipAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="slip-t"><button class="sheet-bg" data-act="slip-close" aria-label="Schließen" tabindex="-1"></button><div class="sheet slipsheet">'+
+    '<div class="ticket"><div class="tk-head"><div><span class="tk-title" id="slip-t">'+h(c.title)+'</span><span class="tk-sub">'+h(c.sub)+'</span></div>'+(c.stampOn?stamp("Abgegeben"):'')+'<button class="xbtn ink" data-act="slip-close" aria-label="Schließen">×</button></div>'+
+    '<div class="sel-list">'+(rows||'<p class="hint">Noch keine Tipps. Tipp auf eine Antwort, dann landet sie hier.</p>')+(c.extra||'')+'</div>'+
+    '<div class="sel-step"><span>Schritt</span>'+stepPicker()+'</div>'+
+    '<div class="rc-total"><span>Einsatz '+tl(sum)+(c.max?' von max. '+tl(c.max):'')+'</span><span>Frei <b>'+tl(Math.max(0,c.left))+'</b></span></div>'+
+    (c.after!=null?'<p class="hint sel-after">Danach bleiben dir '+tl(Math.max(0,c.after))+' auf dem Konto.</p>':'')+
+    '<div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+h(c.no)+'</span></div></div>'+
+    '<div class="actions"><button class="btn big primary" data-act="'+c.saveAct+'"'+(c.disabled?" disabled":"")+'>'+h(c.label)+'</button></div></div></div>';
+  ui.slipAnim=false; return html;
+}
+function stakeRows(scope,qid,opts,map,left,odds,pot){
   return '<div class="stakes">'+opts.map(function(o){ var n=(map&&map[qid]&&map[qid][o.id])|0;
-    return '<div class="srow'+(n?" on":"")+'"><span class="sl">'+h(o.label)+'</span><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="-1" aria-label="Weniger auf '+h(o.label)+'"'+(n?"":" disabled")+'>−</button><b class="num">'+n+'</b><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="1" aria-label="Mehr auf '+h(o.label)+'"'+(left>0?"":" disabled")+'>+</button></div>';
+    return '<div class="srow'+(n?" on":"")+'"><span class="sl">'+h(o.label)+(odds?' <em class="sq">'+quoteStr(pot,odds[o.id]|0)+'</em>':'')+'</span><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="-1" aria-label="Weniger auf '+h(o.label)+'"'+(n?"":" disabled")+'>−</button><b class="num">'+n+'</b><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(qid)+'" data-v="'+h(o.id)+'" data-d="1" aria-label="Mehr auf '+h(o.label)+'"'+(left>0?"":" disabled")+'>+</button></div>';
   }).join("")+'</div>';
 }
 function coinBar(left,B,sub){
@@ -1300,7 +1412,7 @@ function requestRender(){ if(inputFocused()){ ui.deferred=true; return; } render
 /* ================= screens: no league ================= */
 function viewWelcome(){
   enter("welcome");
-  return '<section class="welcome"><h2 class="bigtitle2">Willkommen</h2><p class="hint">Wettspiel für 2 bis 6 Leute zu „Temptation Island VIP“, Staffel 7. Jede*r wettet auf dem eigenen Handy, wer richtig liegt, räumt den Pott ab.</p></section>'+
+  return '<section class="welcome"><h2 class="bigtitle2">Willkommen bei Tempto</h2><p class="hint">Das Wettspiel für 2 bis 6 Leute zu „Temptation Island VIP“, Staffel 7. Jede*r wettet auf dem eigenen Handy, wer richtig liegt, räumt den Pott ab.</p></section>'+
     '<section class="card"><h3>Neue Liga</h3><p class="hint">Du richtest die Liga ein, öffnest die Folgen, löst die Wetten auf und schickst den anderen den Link.</p><div class="actions"><button class="btn big primary" data-act="go-create">Neue Liga erstellen</button></div></section>'+
     '<section class="card"><h3>Liga beitreten</h3><p class="hint">Du hast einen Link bekommen? Füge ihn hier ein.</p><input type="text" id="joinlink" autocomplete="off" placeholder="Link hier einfügen" aria-label="Link zur Liga">'+msgs()+'<div class="actions"><button class="btn" data-act="join-link">Beitreten</button></div></section>'+
     '<section class="card"><h3>Erst mal ausprobieren</h3><p class="hint">Spiel eine Demo mit drei ausgedachten Mitspieler*innen, ganz ohne Anmeldung.</p><div class="actions"><button class="btn" data-act="go" data-v="demo">Demo ausprobieren</button></div></section>';
@@ -1378,12 +1490,9 @@ function seasonTipsCard(){
   var B=seasonBudget(), left=B-sumStakes(ui.stips), pots=(net.pots&&net.pots.season)||{};
   var done=players().filter(function(pid){ var se=E[pid]&&E[pid].season; return !!se && (se.hidden || sumStakes(se.stakes)>0); });
   var dirty=JSON.stringify(ui.stips)!==JSON.stringify(my), has=sumStakes(my)>0;
-  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel. Jede Frage hat ihren eigenen Pott, ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p></section>'+coinBar(left,B,"Höchstens "+tl(main.rules.bets.season)+" für Langzeitwetten. Das Geld geht von deinen "+tl(main.rules.bets.start)+" ab.");
-  out+='<div class="ticket"><div class="tk-head"><div><span class="tk-title">Langzeitschein</span><span class="tk-sub">Temptation Island VIP, Staffel 7</span></div>'+(has&&!dirty?stamp("Abgegeben"):"")+'</div>';
-  seasonQuestions().forEach(function(q){
-    out+='<div class="tk-q open"><div class="tk-qh static"><span class="qt"><b>'+h(q.title)+'</b><small>'+coinTxt(pots[q.id]|0)+' im Pott</small></span></div><div class="tk-body">'+stakeRows("season",q.id,q.opts,ui.stips,left)+'</div></div>';
-  });
-  out+='<div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(null)+'</span></div></div>';
+  var sq=seasonQuestions();
+  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel, bis zu '+tl(main.rules.bets.season)+' von deinen '+tl(main.rules.bets.start)+'. Ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p></section>';
+  sq.forEach(function(q){ out+=marketCard("season",q,ui.stips,oddsFor("season",q.id),pots[q.id]|0,""); });
   out+='<section class="card"><span class="label">Schon gesetzt</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",done.indexOf(pid)>=0?"":"no"); }).join("")+'</div></section>';
   if(isAdmin()){
     if(!ui.dset) ui.dset={start:main.start||tvNext()};
@@ -1391,7 +1500,11 @@ function seasonTipsCard(){
     out+='<section class="card"><h3>Saison starten</h3><div class="num-in"><span>Ihr spielt ab</span>'+plainStepper("set-start",ui.dset.start,epName(ui.dset.start)+" · "+epDate(ui.dset.start))+'</div><p class="hint">'+(done.length<np?"Noch nicht alle haben gesetzt. Wer bis zum Start nicht setzt, ist bei den Langzeitwetten nicht dabei.":"Alle haben gesetzt.")+' Danach kann niemand mehr einsteigen, und die Langzeitwetten sind geschlossen.</p>'+
       (np<2?'<p class="hint">Mindestens 2 Mitspieler*innen nötig.</p>':(ui.confirm==="season-start"?'<div class="actions"><button class="btn big primary" data-act="season-start-yes">Ja, Saison starten</button><button class="btn" data-act="cancel">Abbrechen</button></div>':'<div class="actions"><button class="btn" data-act="season-start">Saison mit '+np+' Leuten starten …</button></div>'))+'</section>';
   } else out+='<p class="hint">Sobald alle dabei sind, startet der Admin die Saison.</p>';
-  out+=primary("season-save",dirty?(left<0?"Zu viel gesetzt":(sumStakes(ui.stips)?"Langzeitschein abgeben":"Erst T$ setzen")):(has?"Langzeitschein abgegeben ✓":"Erst T$ setzen"),!dirty||!sumStakes(ui.stips)||left<0);
+  var cfg={scope:"season",title:"Langzeitschein",sub:"Temptation Island VIP, Staffel 7",qs:sq,map:ui.stips,left:left,max:main.rules.bets.season,after:cash(ME)+entryStake(ME,"season",E[ME]&&E[ME].season)-sumStakes(ui.stips),no:ticketNo(null),saveAct:"season-save",
+    stampOn:has&&!dirty,disabled:!dirty||!sumStakes(ui.stips)||left<0,short:left<0?"Zu viel":(dirty?"Abgeben":(has?"Abgegeben ✓":"Abgeben")),
+    label:left<0?"Zu viel gesetzt":(dirty?(sumStakes(ui.stips)?"Langzeitschein abgeben":"Erst einen Tipp setzen"):(has?"Langzeitschein abgegeben ✓":"Erst einen Tipp setzen"))};
+  out+=slipBar(cfg);
+  if(ui.sheet==="season") out+=slipSheet(cfg);
   return out;
 }
 function episodeCard(){
@@ -1484,25 +1597,26 @@ function viewBetslip(){
   var f=curEp(), e=f&&ep(f);
   if(!e||e.status!=="open"){ ui.screen="home"; return viewHome(); }
   var mine=(E[ME]&&E[ME].bets[f])||{};
-  enter("slip-"+f,function(){ ui.slip=JSON.parse(JSON.stringify(mine.stakes||{})); ui.surv=mine.surv||null; ui.openQ="grenze"; });
+  enter("slip-"+f,function(){ ui.slip=JSON.parse(JSON.stringify(mine.stakes||{})); ui.surv=mine.surv||null; });
   var B=slipBudget(f), left=B-sumStakes(ui.slip), pots=(net.pots&&net.pots.bet)||{}, savedS=entryStake(ME,"bet:"+f,mine), after=cash(ME)+savedS-sumStakes(ui.slip);
-  var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.surv||null)!==(mine.surv||null), had=!!(mine.stakes||mine.surv);
-  var out=flowHead("home",epName(f))+'<h2 class="q">Dein Wettschein</h2><p class="hint">Setz deine Temptationdollar. Wer richtig liegt, teilt sich den Pott der Frage. Die Einsätze der anderen siehst du erst nach dem Start.</p>'+
-    (cash(ME)+savedS<=0?'<p class="okmsg">Du bist pleite. Die Überlebenswette kostet nichts und bringt dir Bonus-T$.</p>':'')+
-    coinBar(left,B,"Pro Folge höchstens "+tl(main.rules.bets.ep)+". Danach bleiben dir "+tl(Math.max(0,after))+".");
-  out+='<div class="ticket"><div class="tk-head"><div><span class="tk-title">Wettschein</span><span class="tk-sub">'+epName(f)+', '+epDate(f)+'</span></div>'+(had&&!dirty?stamp("Abgegeben"):"")+'</div>';
-  epQuestions(f).forEach(function(q){
-    var open=ui.openQ===q.id, myQ=sumStakes({x:ui.slip[q.id]||{}}), bank=q.id==="grenze"?jackpotFor(f):0, pot=(pots[f+":"+q.id]|0)+bank;
-    out+='<div class="tk-q'+(open?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="'+h(q.id)+'" aria-expanded="'+open+'"><span class="qt"><b>'+h(q.title)+'</b><small>'+coinTxt(pot)+' im Pott'+(bank?', davon '+tl(bank)+' Jackpot':'')+(q.custom?', Frage vom Admin':'')+'</small></span><span class="qmine'+(myQ?" on":"")+'">'+(myQ?myQ+" gesetzt":"setzen")+'</span></button>'+
-      (open?(q.hint?'<p class="hint">'+h(q.hint)+'</p>':'')+'<div class="tk-body">'+stakeRows("slip",q.id,q.opts,ui.slip,left)+'</div>':'')+'</div>';
+  var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.surv||null)!==(mine.surv||null), had=!!(mine.stakes||mine.surv), qs=epQuestions(f);
+  var out=flowHead("home",epName(f))+'<h2 class="q">Wetten auf '+epName(f)+'</h2><p class="hint">Tipp auf eine Antwort, um sie auf deinen Wettschein zu legen. Die Quote zeigt, was ein T$ bringt, wenn die Antwort stimmt. Sie erscheint, sobald drei Leute auf eine Frage gesetzt haben.</p>'+
+    (cash(ME)+savedS<=0?'<p class="okmsg">Du bist pleite. Die Überlebenswette kostet nichts und bringt dir Bonus-T$.</p>':'');
+  qs.forEach(function(q){
+    var bank=q.id==="grenze"?jackpotFor(f):0, pot=(pots[f+":"+q.id]|0)+bank;
+    var note=[q.hint?h(q.hint.split(".")[0]):"",bank?"inkl. "+tl(bank)+" Jackpot":"",q.custom?"Frage vom Admin":""].filter(function(x){ return x; }).join(", ");
+    out+=marketCard("slip",q,ui.slip,oddsFor("bet",f+":"+q.id),pot,note);
   });
   var sv=survLedger()[ME]||{streak:0,used:[]}, used=sv.used.filter(function(id){ return id!==mine.surv; });
-  var pool=islandAt(f).filter(function(p){ return p.kind==="t" && used.indexOf(p.id)<0; }), next=main.rules.bets.surv*(sv.streak+1);
-  var so=ui.openQ==="surv", sp=ui.surv&&personById(ui.surv);
-  out+='<div class="tk-q tk-surv'+(so?" open":"")+'"><button class="tk-qh" data-act="q-open" data-v="surv" aria-expanded="'+so+'"><span class="qt"><b>Überlebenswette</b><small>Kostenlos. Richtig: '+sgn(next)+' T$ Bonus (Serie '+(sv.streak+1)+')</small></span><span class="qmine'+(sp?" on":"")+'">'+(sp?h(sp.name):"wählen")+'</span></button>'+
-    (so?'<p class="hint">Wer übersteht diese Folge? Jede Person kannst du nur einmal pro Staffel wählen.</p><div class="opts two">'+pool.map(function(p){ return opt("surv-sel",p.id,p.name,p.sub.replace(/^Verführer(in)? · /,""),ui.surv===p.id,""); }).join("")+'</div>':'')+'</div>';
-  out+='<div class="tk-foot"><span class="barcode" aria-hidden="true"></span><span class="tk-no">'+ticketNo(f)+'</span></div></div>';
-  out+=msgs()+primary("slip-save",left<0?"Zu viel gesetzt":(dirty?(had?"Änderungen abgeben":"Wettschein abgeben"):(had?"Wettschein abgegeben ✓":"Erst T$ setzen")),!dirty||left<0);
+  var pool=islandAt(f).filter(function(p){ return p.kind==="t" && used.indexOf(p.id)<0; }), next=main.rules.bets.surv*(sv.streak+1), sp=ui.surv&&personById(ui.surv);
+  out+='<section class="card market surv'+(sp?" has":"")+'"><div class="mk-h"><div class="mk-t"><h3>Überlebenswette</h3><small>Kostenlos. Wer übersteht die Folge? Jede Person nur einmal pro Staffel.</small></div><span class="mk-pot bonus">'+sgn(next)+' T$</span></div><div class="tiles many">'+
+    pool.map(function(p){ var on=ui.surv===p.id; return '<button class="tile'+(on?" on":"")+'" data-act="surv-sel" data-v="'+h(p.id)+'" aria-pressed="'+on+'"><span class="tl-l">'+h(p.name)+'</span></button>'; }).join("")+'</div></section>';
+  var cfg={scope:"slip",title:"Wettschein",sub:epName(f)+", "+epDate(f),qs:qs,map:ui.slip,left:left,max:main.rules.bets.ep,after:after,no:ticketNo(f),saveAct:"slip-save",
+    stampOn:had&&!dirty,disabled:!dirty||left<0,extraTxt:sp?"Überleben: "+sp.name:"",
+    extra:sp?'<div class="sel"><span class="sel-l"><small>Überlebenswette, kostenlos</small><b>'+h(sp.name)+'</b></span><span class="sel-st"><b class="bonus">'+sgn(next)+' T$</b></span><button class="sel-x" data-act="surv-sel" data-v="'+h(sp.id)+'" aria-label="Überlebenswette entfernen">×</button></div>':'',
+    short:left<0?"Zu viel":(dirty?"Abgeben":(had?"Abgegeben ✓":"Abgeben")),label:left<0?"Zu viel gesetzt":(dirty?(had?"Änderungen abgeben":"Wettschein abgeben"):(had?"Wettschein abgegeben ✓":"Erst einen Tipp setzen"))};
+  out+=slipBar(cfg);
+  if(ui.sheet==="slip") out+=slipSheet(cfg);
   return out;
 }
 function liveSheet(){
@@ -1515,7 +1629,7 @@ function liveSheet(){
   var put=sumStakes(ui.liveStake), left=liveLeft(ME,f)-put, pot=((net.pots&&net.pots.live)||{})[f+":"+l.id]|0;
   var html='<div class="sheet-wrap'+(ui.liveAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="live-t"><button class="sheet-bg" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht" tabindex="-1"></button><div class="sheet"><span class="grab" aria-hidden="true"></span>'+
     '<div class="sheet-h"><div><span class="livehead"><span class="livebadge"><i></i>Live</span>'+coinTxt(pot)+' im Pott</span><h2 id="live-t">'+h(l.q)+'</h2></div><button class="xbtn" data-act="live-skip" data-v="'+h(l.id)+'" aria-label="Diesmal nicht">×</button></div>'+
-    '<p class="hint">Du kannst noch '+tl(left)+' setzen. Schnell sein: Der Admin schließt die Wette gleich.</p>'+stakeRows("live",l.id,l.opts,liveMap(l.id),left)+
+    '<p class="hint">Du kannst noch '+tl(left)+' setzen. Schnell sein: Der Admin schließt die Wette gleich.</p>'+stepPicker()+stakeRows("live",l.id,l.opts,liveMap(l.id),left,oddsFor("live",f+":"+l.id),pot)+
     '<div class="actions"><button class="btn big primary" data-act="live-bet" data-v="'+h(l.id)+'"'+(put?"":" disabled")+'>'+(put?tl(put)+" setzen":"Erst T$ setzen")+'</button></div></div></div>';
   ui.liveAnim=false; return html;
 }
@@ -1715,7 +1829,7 @@ function renderHead(){
   var n=tvNext(), sub="Im TV als Nächstes: <strong>"+epName(n)+"</strong>, "+epDate(n)+" auf RTL+";
   document.getElementById("sub").innerHTML=sub;
   var me=document.getElementById("me");
-  if(main && ME && joined().indexOf(ME)>=0){ me.hidden=false; me.className="mechip "+pcls(ME); me.innerHTML='<span class="pdot"></span>'+pname(ME); }
+  if(main && ME && joined().indexOf(ME)>=0){ me.hidden=false; me.className="mechip "+pcls(ME); me.innerHTML='<span class="pdot"></span><span class="me-n">'+pname(ME)+'</span><b class="me-bal num">'+tl(cash(ME))+'</b>'; }
   else { me.hidden=true; me.innerHTML=""; }
 }
 function render(){
@@ -1750,6 +1864,7 @@ function val(id){ var el=document.getElementById(id); return el?String(el.value|
 function syncEdName(){ var p=document.getElementById("pe-name"); if(p) ui.pName=p.value; }
 function go(screen){ ui.screen=screen; ui.key=""; render(); goTop(); }
 function epStatus(f,s){ ep(f).status=s; ui.key=""; commitMain(); goTop(); }
+document.addEventListener("keydown",function(evt){ if(evt.key==="Escape" && ui.sheet){ ui.sheet=null; render(); } });
 document.addEventListener("focusout",function(){ setTimeout(function(){ if(ui.deferred && !inputFocused()) render(); },0); });
 document.addEventListener("click",function(evt){
   var b=evt.target.closest("[data-act]"); if(!b||b.disabled) return;
@@ -1877,6 +1992,20 @@ document.addEventListener("click",function(evt){
     case "go-slip": go("slip"); return;
     case "q-open": ui.openQ=ui.openQ===v?null:v; render(); return;
     case "step-set": ui.step=[1,5,10].indexOf(+v)>=0?+v:5; render(); return;
+    case "tile":
+      var ts=b.getAttribute("data-s"), tq=b.getAttribute("data-q"), tmap=ts==="slip"?ui.slip:(ts==="season"?ui.stips:null); if(!tmap) return;
+      var tB=ts==="slip"?slipBudget(f):seasonBudget(), tleft=tB-sumStakes(tmap); ui.err="";
+      tmap[tq]=tmap[tq]||{};
+      if(tmap[tq][v]) delete tmap[tq][v];
+      else if(tleft<=0) ui.err="Kein Guthaben mehr frei. Nimm einen anderen Tipp zurück oder verringere ihn im Wettschein.";
+      else tmap[tq][v]=Math.min(stepSize(),tleft);
+      if(!Object.keys(tmap[tq]).length) delete tmap[tq];
+      render(); return;
+    case "rm-sel":
+      var rs=b.getAttribute("data-s"), rq=b.getAttribute("data-q"), rmap=rs==="slip"?ui.slip:(rs==="season"?ui.stips:null); if(!rmap||!rmap[rq]) return;
+      delete rmap[rq][v]; if(!Object.keys(rmap[rq]).length) delete rmap[rq]; ui.err=""; render(); return;
+    case "slip-open": ui.sheet=v; ui.slipAnim=true; ui.err=""; render(); return;
+    case "slip-close": ui.sheet=null; render(); return;
     case "stk":
       var sc=b.getAttribute("data-s"), q=b.getAttribute("data-q"), dd=+b.getAttribute("data-d"), stp=stepSize();
       if(sc==="live"){

@@ -1,4 +1,4 @@
-# Sommerhaus-Liga & Temptation-Liga
+# Sommerhaus-Liga & Tempto
 
 Fantasy-Liga für zwei Personen zur 11. Staffel von „Das Sommerhaus der Stars“ (RTL, 2026).
 
@@ -21,12 +21,13 @@ Fantasy-Liga für zwei Personen zur 11. Staffel von „Das Sommerhaus der Stars�
 
 Settings → Pages → „Deploy from a branch“ → Branch `main`, Ordner `/ (root)` → Save.
 
-## Temptation-Liga (VIP, Staffel 7)
+## Tempto: Wettspiel zu Temptation Island VIP, Staffel 7
 
 **Spielen:** https://moritzbauer171-art.github.io/Sommerhaus/temptation/
 
 - Reines Wettspiel für 2 bis 6 Leute, jede*r auf dem eigenen Handy. Wer die Liga erstellt, ist Admin. Alle starten mit 100 Temptationdollar (T$); Einsätze gehen vom Konto ab, Gewinne kommen drauf. Wer nach dem Finale am meisten hat, gewinnt.
 - Jede*r bekommt beim Beitreten einen persönlichen Anmeldecode (z. B. `ABCD-EFGH`). Der Server prüft ihn bei jedem Zugriff; nur der Admin darf die Liga ändern und kann verlorene Codes neu ausstellen.
+- Oberfläche wie eine Wett-App: Antworten als Quoten-Kacheln, Wettschein-Leiste unten, Kontostand im Kopf. Quoten (Pott ÷ Einsatz auf die Antwort) zeigt der Server erst, wenn mindestens drei Leute auf eine Frage gesetzt haben, damit niemand einzelne Einsätze zurückrechnen kann.
 - Wettbüro mit Pott-Prinzip: Alle Einsätze einer Frage landen in einem Pott, die Richtigen teilen ihn sich im Verhältnis ihrer Einsätze, in ganzen T$ mit exakter Restverteilung (größter Rest zuerst). Pötte ohne Gewinner wandern als Jackpot in den Grenz-Pott der nächsten Folge.
   - Wettschein pro Folge (zusammen mit Live-Wetten höchstens 25 T$): Grenze, Tränen, Abreise, Anzahl Küsse, Notfall-Lagerfeuer und eigene Fragen des Admins.
   - Überlebenswette: jede Folge eine*n Verführer*in wählen, die oder der bleibt. Kostenlos, der Bonus steigt mit der Serie (+5, +10 … T$), jede Person nur einmal pro Staffel. Wer pleite ist, kann damit wieder Geld holen.
