@@ -7,13 +7,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Temptation">
-<meta name="theme-color" content="#FBE9F0" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#120A16" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#1E0A2A" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1E0A2A" media="(prefers-color-scheme: dark)">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 <title>Temptation-Liga</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..800;1,6..96,400..800&display=swap">
 <style>
 /* Layout: one guided column (max 640px) floating over a fixed sunset wallpaper. Every surface is a translucent Liquid-Glass layer: sticky glass capsule for navigation on top, floating glass dock with the single primary action at the bottom. */
 :root{
@@ -412,10 +415,66 @@ body:has(.sheet-wrap){overflow:hidden}
 .champ.tie{color:var(--ink)}
 .rk .crown svg,.fx-crown svg{width:100%;height:100%;display:block}
 span.fx-crown{display:block}
+
+/* ---------- Theme: tropical night (deliberately single dark look): plum night sky, palm silhouettes, gold glitter, Didone serif ---------- */
+:root:root:root{
+  --bg:#170920; --ink:#F8EFFA; --muted:#C9B4D4; --hair:rgba(255,220,255,.14);
+  --glass:rgba(62,24,84,.48); --glass-strong:rgba(68,27,92,.82); --glass-soft:rgba(255,232,255,.08);
+  --rim:rgba(255,205,240,.14); --rim-hi:rgba(255,222,170,.5);
+  --shadow:0 16px 40px rgba(5,0,12,.55), 0 1px 3px rgba(0,0,0,.35);
+  --hl:inset 0 1px 0 rgba(255,236,255,.16), inset 0 -1px 1px rgba(255,255,255,.03);
+  --accent:#F4A43C; --on-accent:#2B1305; --accent-glow:rgba(244,164,60,.38);
+  --exit:#FF8A98; --exit-fill:#E3455C; --exit-tint:rgba(255,92,114,.22); --good:#86E6B0; --good-tint:rgba(134,230,176,.16);
+  --gold:#F7C766; --violet:#D2B0FF; --teal:#6FE6D8;
+  --c0:#7DB8FF; --c1:#FFB45C; --c2:#FF85C0; --c3:#5FE3D3; --c4:#C3A4FF; --c5:#7FE49C;
+  --goldgrad:linear-gradient(135deg,#FFDD94 0%,#F6AA46 55%,#E3812A 100%);
+  --serif:"Bodoni Moda","Didot","Bodoni 72","Playfair Display",Georgia,serif;
+  color-scheme:dark;
+}
+body{background:#170920}
+.night-bg{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(120vmax 90vmax at 85% -15%,#5A2178 0%,rgba(90,33,120,0) 55%),radial-gradient(100vmax 80vmax at -20% 115%,#3E1256 0%,rgba(62,18,86,0) 60%),linear-gradient(180deg,#260B34 0%,#1A0925 55%,#12061A 100%)}
+.night{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.wrap{z-index:1}
+
+/* brand */
+.brand{display:flex;flex-direction:column;gap:4px;min-width:0}
+.brand-t{font-family:var(--serif);font-weight:500;font-size:clamp(31px,9.6vw,46px);letter-spacing:.08em;text-transform:uppercase;color:#FBF3FC;line-height:.95;text-shadow:0 2px 22px rgba(255,170,230,.28)}
+.brand-l{font-family:var(--serif);font-style:italic;font-weight:600;font-size:clamp(16px,4.6vw,20px);letter-spacing:.02em;background:var(--goldgrad);-webkit-background-clip:text;background-clip:text;color:transparent;align-self:flex-start}
+.top .sub{margin-top:10px}
+
+/* display type */
+.q,.bigtitle,.bigtitle2,.pcard h3,.fx-card b,.champ b,.sheet-h h2{font-family:var(--serif);font-weight:600;letter-spacing:0}
+.q{font-size:clamp(28px,7.8vw,35px);line-height:1.1}
+.bigtitle{font-size:32px}
+.card h3,.card h2{letter-spacing:-.01em}
+.label{color:#E6C894}
+
+/* gold accents */
+.btn.primary{background:var(--goldgrad);color:#2B1305;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),0 10px 26px rgba(244,164,60,.32)}
+.btn.primary:disabled{background:var(--glass-soft);background-image:none;color:var(--muted);box-shadow:var(--hl),inset 0 0 0 1px var(--hair)}
+.dots i.on{background:var(--gold)}
+.back{color:var(--gold)}
+.evbtn[aria-pressed="true"],.chip.on{background:var(--goldgrad);color:#2B1305;box-shadow:0 6px 16px rgba(244,164,60,.3)}
+.opt[aria-pressed="true"]:not(.pc){background:linear-gradient(rgba(247,199,102,.12),rgba(247,199,102,.12)),var(--glass);box-shadow:var(--hl),inset 0 0 0 2px var(--gold),var(--shadow)}
+.opt[aria-pressed="true"]:not(.pc) .tick{background:var(--gold);color:#2B1305}
+.rk.lead{background:linear-gradient(90deg,rgba(247,199,102,.10),rgba(247,199,102,0));border-radius:14px}
+.ep.done i{background:var(--gold)}
+.sync.cloud i{background:var(--gold)}
+input[type=text]:focus,input[type=password]:focus{box-shadow:var(--hl),inset 0 0 0 2px var(--gold)}
+.fx-kicker{color:#E6C894}
+
+/* login codes */
+.codecard{align-items:stretch}
+.bigcode{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:clamp(30px,9vw,40px);font-weight:700;letter-spacing:.14em;text-align:center;padding:14px 0;border-radius:18px;background:rgba(0,0,0,.18);box-shadow:inset 0 0 0 1px var(--hair);background-clip:padding-box;color:var(--gold)}
+.codein{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;letter-spacing:.14em;text-transform:uppercase}
+.codeinline{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;color:var(--gold);letter-spacing:.06em}
 </style>
-<div class="wall" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+<div class="night-bg" aria-hidden="true"></div>
+<canvas class="night" id="palms" aria-hidden="true"></canvas>
+<canvas class="night" id="glitter" aria-hidden="true"></canvas>
 <div class="wrap">
-  <header class="top"><div class="topbar"><div><h1>Temptation-Liga</h1><p class="sub" id="sub">VIP · Staffel 7</p></div><span class="mechip" id="me" hidden></span></div></header>
+  <header class="top"><div class="topbar"><div class="brand"><span class="brand-t">Temptation</span><span class="brand-l">Liga · VIP Staffel 7</span></div><span class="mechip" id="me" hidden></span></div><p class="sub" id="sub">VIP · Staffel 7</p></header>
   <main id="view"></main>
   <p class="sync" id="sync"><i></i><span></span></p>
 </div>
@@ -506,7 +565,6 @@ function rnd(){ try{ var a=new Uint32Array(1); crypto.getRandomValues(a); return
 function makeCode(n){ var a="ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789", out=""; for(var i=0;i<(n||22);i++) out+=a[Math.floor(rnd()*a.length)]; return out; }
 function rid(){ return Date.now().toString(36)+makeCode(5); }
 function slug(s){ return String(s).toLowerCase().replace(/ä/g,"ae").replace(/ö/g,"oe").replace(/ü/g,"ue").replace(/ß/g,"ss").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,""); }
-function pinHash(pin){ var x="temptation-liga:"+pin, hs=2166136261; for(var i=0;i<x.length;i++){ hs^=x.charCodeAt(i); hs=Math.imul(hs,16777619)>>>0; } return ("0000000"+hs.toString(16)).slice(-8); }
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ if(v==null) localStorage.removeItem(k); else localStorage.setItem(k,v); }catch(e){} }
 function epDateObj(n){ var p=FIRST_EP.split("-"), d=new Date(+p[0],+p[1]-1,+p[2]); d.setDate(d.getDate()+7*(n-1)); return d; }
@@ -570,18 +628,25 @@ function validEntry(r){ return r && typeof r.player==="string" && typeof r.key==
 
 /* ================= state ================= */
 var CODE=codeFromHash()||lsGet(LS+":code");
-var ME=null, main=null, entries=[], version=0, E={}, PL=[], JOINED=[];
+var net={mode:"connecting",mainTimer:null,mainWriting:false,mainAgain:false,mainFailed:false,pend:{},pulling:false,loaded:false,notFound:false,info:null};
+var ME=null, SECRET=null, main=null, entries=[], version=0, E={}, PL=[], JOINED=[];
 var ui={screen:"home",key:"",flash:"",sel:null,sel2:null,sel3:null,set:null,msg:"",err:"",confirm:null,evSel:null,cpSel:[],sheetAnim:false,cardAnim:false,adminOk:false,edit:null,edName:"",edPts:1,edG:"Drama",
   pinChange:false,pedit:null,pName:"",pStatus:"in",pOut:1,pTeam:"",tabKind:"v",lastLead:undefined,adminPick:false,busy:false,deferred:false,showExport:false};
 function setCode(c){
   CODE=c; lsSet(LS+":code",c);
   if(codeFromHash()!==c){ try{ history.replaceState(null,"","#liga="+c); }catch(e){ try{ location.hash="liga="+c; }catch(x){} } }
-  ME=lsGet(LS+":me:"+c);
-  main=null; entries=[]; version=0;
+  ME=lsGet(LS+":me:"+c); SECRET=lsGet(LS+":secret:"+c);
+  if(!ME||!SECRET){ ME=null; SECRET=null; }
+  main=null; entries=[]; version=0; net.info=null;
   var cached=lsGet(LS+":cache:"+c);
   if(cached){ try{ var o=JSON.parse(cached); var m=normalizeMain(o.data); if(m){ main=m; entries=(o.entries||[]).filter(validEntry); version=o.version|0; } }catch(e){} }
-  ui.adminOk=false;
+  ui.adminOk=lsGet(LS+":isadmin:"+c)==="1" && !!SECRET;
 }
+function setMe(player,secret,admin){
+  ME=player; SECRET=secret; lsSet(LS+":me:"+CODE,player); lsSet(LS+":secret:"+CODE,secret);
+  ui.adminOk=!!admin; lsSet(LS+":isadmin:"+CODE,admin?"1":null);
+}
+function clearMe(){ ME=null; SECRET=null; ui.adminOk=false; ["me","secret","isadmin","cache"].forEach(function(k){ lsSet(LS+":"+k+":"+CODE,null); }); main=null; entries=[]; version=0; }
 function saveCache(){ if(CODE&&main) lsSet(LS+":cache:"+CODE,JSON.stringify({data:main,entries:entries,version:version})); }
 function shareUrl(){ var base=/\.github\.io$/.test(location.hostname) ? location.href.split("#")[0] : PUBLIC_URL; return base+"#liga="+CODE; }
 if(CODE) setCode(CODE);
@@ -607,6 +672,7 @@ function rebuild(){
   PL=(main&&main.order.length)?main.order.filter(function(id){ return JOINED.indexOf(id)>=0; }):JOINED.slice();
 }
 function normCard(c,p){
+  if(c && c.hidden) return {p:p,hidden:true,deck:null,k:null,target:null,redrawn:false};
   if(!c || ["g","y","r","none","skip"].indexOf(c.deck)<0) return null;
   if(c.deck!=="none" && c.deck!=="skip" && !CARD_DEFS[c.k]) return null;
   return {p:p,deck:c.deck,k:CARD_DEFS[c.k]?c.k:null,amount:typeof c.amount==="number"?c.amount:null,prevF:c.prevF>=1?c.prevF|0:null,coin:(c.coin==="win"||c.coin==="lose")?c.coin:null,
@@ -816,10 +882,11 @@ function cardStatus(r){
 }
 
 /* ================= network ================= */
-var net={mode:"connecting",mainTimer:null,mainWriting:false,mainAgain:false,mainFailed:false,pend:{},pulling:false,loaded:false,notFound:false};
 function rpc(fn,body){
   return fetch(SB_URL+"/rest/v1/rpc/"+fn,{method:"POST",headers:{"Content-Type":"application/json","apikey":SB_KEY,"Authorization":"Bearer "+SB_KEY},body:JSON.stringify(body)})
-    .then(function(r){ if(!r.ok) throw new Error("HTTP "+r.status); return r.text(); }).then(function(t){ return t?JSON.parse(t):null; });
+    .then(function(r){ return r.text().then(function(t){
+      if(!r.ok){ var msg="HTTP "+r.status; try{ msg=JSON.parse(t).message||msg; }catch(e){} var err=new Error(msg); err.server=r.status<500; throw err; }
+      return t?JSON.parse(t):null; }); });
 }
 function setNet(m){ net.mode=m; renderSync(); }
 function mainBusy(){ return net.mainWriting||net.mainTimer!==null||net.mainAgain; }
@@ -828,13 +895,24 @@ function upsertLocal(player,key,data){
   entries=entries.map(function(r){ if(r.player===player&&r.key===key){ found=true; return {player:player,key:key,data:data,at:r.at}; } return r; });
   if(!found) entries.push({player:player,key:key,data:data,at:new Date().toISOString()});
 }
+function pullInfo(){
+  var code=CODE;
+  rpc("tl_info",{p_code:code}).then(function(res){
+    if(code!==CODE) return; net.loaded=true;
+    if(!res){ net.notFound=true; net.info=null; } else { net.notFound=false; net.info=res; }
+    if(net.mode!=="online") setNet("online"); requestRender();
+  },function(){ setNet("offline"); });
+}
 function pull(){
   if(!CODE||net.pulling) return;
+  if(!ME||!SECRET){ pullInfo(); return; }
   net.pulling=true;
   var code=CODE;
-  rpc("get_league_full",{p_code:code}).then(function(res){
+  rpc("tl_get",{p_code:code,p_player:ME,p_secret:SECRET}).then(function(res){
     net.pulling=false; if(code!==CODE) return;
     net.loaded=true;
+    if(res && res.auth===false){ clearMe(); ui.whoMsg="Dein Anmeldecode gilt nicht mehr. Frag den Admin nach einem neuen Code."; ui.key=""; render(); pullInfo(); return; }
+    if(res && res.me){ var adm=!!res.me.admin; if(adm!==ui.adminOk){ ui.adminOk=adm; lsSet(LS+":isadmin:"+CODE,adm?"1":null); } }
     var d=res&&normalizeMain(res.data);
     if(!d){ net.notFound=true; main=null; requestRender(); return; }
     net.notFound=false;
@@ -853,22 +931,24 @@ function pull(){
     if(net.mode!=="online") setNet("online");
     flushPend();
     if(net.mainFailed && !mainBusy()) flushMain();
-    if(!ui.adminOk && main && main.admin.pin && lsGet(LS+":admin:"+CODE)===main.admin.pin){ ui.adminOk=true; changed=true; }
     if(changed){ CACHE=null; requestRender(); }
   },function(){ net.pulling=false; setNet("offline"); });
 }
 function saveEntry(player,key,data,failMsg){
   upsertLocal(player,key,data);
-  var pk=player+"|"+key; net.pend[pk]={player:player,key:key,data:data,fail:failMsg};
+  var pk=player+"|"+key; net.pend[pk]={player:player,key:key,data:data,fail:failMsg,as:player!==ME?player:null};
   CACHE=null; saveCache(); render(); sendEntry(pk);
 }
 function sendEntry(pk){
   var it=net.pend[pk]; if(!it||it.sending) return; it.sending=true;
-  rpc("save_entry",{p_code:CODE,p_player:it.player,p_key:it.key,p_data:it.data}).then(function(ok){
+  rpc("tl_save_entry",{p_code:CODE,p_player:ME,p_secret:SECRET,p_key:it.key,p_data:it.data,p_as:it.as}).then(function(ok){
     if(net.pend[pk]===it) delete net.pend[pk];
     if(ok!==true){ ui.flashErr=it.fail||"Das ging leider nicht mehr. Der Stand wurde aktualisiert."; net.pulling=false; pull(); requestRender(); }
     else if(net.mode!=="online") setNet("online");
-  },function(){ it.sending=false; setNet("offline"); });
+  },function(err){
+    if(err&&err.server){ if(net.pend[pk]===it) delete net.pend[pk]; ui.flashErr=it.fail||"Das ging leider nicht. Der Stand wurde aktualisiert."; net.pulling=false; pull(); requestRender(); return; }
+    it.sending=false; setNet("offline");
+  });
 }
 function flushPend(){ Object.keys(net.pend).forEach(sendEntry); }
 function commitMain(){
@@ -879,8 +959,8 @@ function flushMain(){
   clearTimeout(net.mainTimer); net.mainTimer=null;
   if(net.mainWriting){ net.mainAgain=true; return; }
   net.mainWriting=true;
-  rpc("save_league",{p_code:CODE,p_data:main}).then(function(v){ net.mainFailed=false; if(+v) version=+v; if(net.mode!=="online") setNet("online"); done(); },
-    function(){ net.mainFailed=true; setNet("offline"); done(); });
+  rpc("tl_save_league",{p_code:CODE,p_player:ME,p_secret:SECRET,p_data:main}).then(function(v){ net.mainFailed=false; if(+v) version=+v; if(net.mode!=="online") setNet("online"); done(); },
+    function(err){ if(err&&err.server){ net.mainFailed=false; ui.flashErr="Speichern abgelehnt: Nur der Admin darf die Liga ändern."; net.pulling=false; pull(); done(); return; } net.mainFailed=true; setNet("offline"); done(); });
   function done(){ net.mainWriting=false; if(net.mainAgain){ net.mainAgain=false; flushMain(); } }
 }
 function renderSync(){
@@ -921,29 +1001,37 @@ function viewWelcome(){
 }
 function viewCreate(){
   enter("create");
-  return flowHead("go-welcome","Neue Liga")+'<h2 class="q">Neue Liga erstellen</h2><p class="hint">Du bist dann Admin: Du startest den Draft, öffnest die Folgen und trägst die Punkte ein. Die PIN schützt den Adminmodus.</p>'+
-    '<section class="card"><label class="f">Dein Name<input type="text" id="cname" maxlength="16" autocomplete="off" placeholder="Name"></label>'+
-    '<label class="f">Admin-PIN (4 Ziffern)<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin1" maxlength="4" autocomplete="new-password"></label>'+
-    '<label class="f">PIN wiederholen<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin2" maxlength="4" autocomplete="new-password"></label>'+msgs()+'</section>'+
+  return flowHead("go-welcome","Neue Liga")+'<h2 class="q">Neue Liga erstellen</h2><p class="hint">Du bist dann Admin: Du startest den Draft, öffnest die Folgen und trägst die Punkte ein. Danach bekommst du deinen persönlichen Anmeldecode.</p>'+
+    '<section class="card"><label class="f">Dein Name<input type="text" id="cname" maxlength="16" autocomplete="off" placeholder="Name"></label>'+msgs()+'</section>'+
     primary("create",ui.busy?"Liga wird erstellt …":"Liga erstellen",ui.busy);
 }
+function viewRemoved(){ return '<section class="card"><h3>Du bist nicht mehr in dieser Liga</h3><p class="hint">Der Admin hat dich entfernt. Frag ihn, wenn das ein Versehen war.</p><div class="actions"><button class="btn" data-act="logout-yes">Abmelden</button></div></section>'; }
 function viewLoading(){ return '<section class="card"><p class="hint">Liga wird geladen …</p></section>'; }
 function viewNotFound(){
   return '<section class="card"><h3>Diese Liga gibt es nicht</h3><p class="hint">Prüfe, ob der Link vollständig ist, oder starte neu.</p><div class="actions"><button class="btn" data-act="leave-league">Zur Startseite</button></div></section>';
 }
 function viewWho(){
   enter("who");
-  var pl=joined(), out='<h2 class="q">Wer bist du?</h2>';
-  if(ui.flashErr){ out+='<p class="err" role="alert">'+h(ui.flashErr)+'</p>'; ui.flashErr=""; }
-  if(pl.length) out+='<p class="hint">Tippe auf deinen Namen, wenn du schon mitspielst, zum Beispiel auf einem anderen Gerät.</p><div class="opts">'+pl.map(function(pid){ return opt("claim",pid,prof(pid).name,"Das bin ich",false,"pc "+pcls(pid)); }).join("")+'</div>';
-  if(main.phase==="join" && pl.length<MAX_PLAYERS){
-    out+='<section class="card"><h3>Neu dabei</h3><label class="f">Dein Name<input type="text" id="jname" maxlength="16" autocomplete="off" placeholder="Name"></label>'+msgs()+'<div class="actions"><button class="btn big primary" data-act="join-new">Mitspielen</button></div></section>';
-  } else if(main.phase!=="join") out+='<p class="hint">Die Anmeldung ist geschlossen, weil der Draft schon begonnen hat.</p>';
+  var inf=net.info, out='<h2 class="q">Willkommen in der Liga</h2>';
+  if(ui.whoMsg) out+='<p class="err" role="alert">'+h(ui.whoMsg)+'</p>';
+  out+='<section class="card"><h3>Ich spiele schon mit</h3><p class="hint">Gib deinen Anmeldecode ein, zum Beispiel auf einem neuen Handy.</p><label class="f">Anmeldecode<input type="text" id="lcode" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD-EFGH" class="codein"></label>'+
+    (ui.err&&ui.errAt==="login"?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+'<div class="actions"><button class="btn big primary" data-act="login"'+(ui.busy?" disabled":"")+'>Einloggen</button></div></section>';
+  if(!inf) out+='<p class="hint">Liga wird geladen …</p>';
+  else if(inf.phase==="join" && inf.players<MAX_PLAYERS){
+    out+='<section class="card"><h3>Neu dabei</h3><p class="hint">'+inf.players+' von '+MAX_PLAYERS+' Plätzen sind schon vergeben.</p><label class="f">Dein Name<input type="text" id="jname" maxlength="16" autocomplete="off" placeholder="Name"></label>'+
+      (ui.err&&ui.errAt==="join"?'<p class="err" role="alert">'+h(ui.err)+'</p>':"")+'<div class="actions"><button class="btn big" data-act="join-new"'+(ui.busy?" disabled":"")+'>Mitspielen</button></div></section>';
+  } else if(inf.phase!=="join") out+='<p class="hint">Neue Anmeldungen sind geschlossen, weil der Draft schon begonnen hat.</p>';
   else out+='<p class="hint">Die Liga ist mit '+MAX_PLAYERS+' Leuten voll.</p>';
   out+='<div class="actions"><button class="btn" data-act="leave-league">Andere Liga öffnen</button></div>';
   return out;
 }
-
+function viewCode(){
+  enter("code");
+  return '<h2 class="q">Dein Anmeldecode</h2><section class="card codecard"><span class="label">Nur für dich</span><div class="bigcode num" id="mycode">'+h(ui.newCode||SECRET||"")+'</div>'+
+    '<div class="actions"><button class="btn" data-act="copycode">Code kopieren</button></div>'+(ui.msg?'<p class="okmsg" role="status">'+h(ui.msg)+'</p>':"")+
+    '<p class="hint">Damit kommst du auf jedem Handy wieder in die Liga, auch wenn du den Browser leerst. Notier ihn dir oder mach einen Screenshot. Gib ihn niemandem weiter: Wer ihn hat, spielt in deinem Namen.</p></section>'+
+    primary("code-done","Verstanden, weiter");
+}
 /* ================= home ================= */
 function rankingCard(){
   var rk=ranking(), top=rk.length?total(rk[0]):0, lead=rk.length>1&&total(rk[0])>total(rk[1]);
@@ -963,7 +1051,7 @@ function viewHome(){
     (main.phase!=="join"?'<button class="link" data-act="go" data-v="table"><span>Teams &amp; Punkte pro Folge</span><span>›</span></button>':"")+
     '<button class="link" data-act="go" data-v="rules"><span>So gibt’s Punkte</span><span>›</span></button>'+
     '<button class="link" data-act="go" data-v="share"><span>Link &amp; Mitspieler*innen</span><span>›</span></button>'+
-    '<button class="link" data-act="go" data-v="admin"><span>Adminmodus</span><span>›</span></button></section>';
+    (isAdmin()?'<button class="link" data-act="go" data-v="admin"><span>Adminmodus</span><span>›</span></button>':"")+'</section>';
   return out;
 }
 function phaseCard(){
@@ -1025,7 +1113,7 @@ function seasonTipsCard(){
   var my=(E[ME]&&E[ME].season&&E[ME].season.couples)||{}, cur=ui.stips||copyObj(my);
   if(!ui.stips) ui.stips=cur;
   var locked=main.phase!=="draft"&&main.phase!=="seasontips";
-  var done=players().filter(function(pid){ return E[pid]&&E[pid].season&&E[pid].season.couples&&Object.keys(E[pid].season.couples).length===main.couples.length; });
+  var done=players().filter(function(pid){ var se=E[pid]&&E[pid].season; return !!se && (se.hidden || (se.couples&&Object.keys(se.couples).length===main.couples.length)); });
   var out='<section class="card"><h3>Saisontipps</h3><p class="hint">Verlassen die Paare die Insel gemeinsam oder getrennt? Jeder richtige Tipp bringt nach dem Finale '+sgn(main.rules.tips.couple)+'. Die Tipps der anderen siehst du erst nach dem Finale.</p>';
   main.couples.forEach(function(c){
     out+='<div class="exrow"><div class="nm"><b>'+h(c.name)+'</b></div><div class="seg seg2" role="group" aria-label="'+h(c.name)+'">'+
@@ -1270,7 +1358,9 @@ function viewShare(){
   var out=flowHead("home","Teilen")+'<h2 class="q">Link &amp; Mitspieler*innen</h2>';
   out+='<section class="card"><h3>Link zur Liga</h3><p class="hint">Schick ihn allen, die mitspielen. Wer den Link hat, kommt in die Liga.</p><input type="text" id="share" readonly value="'+h(shareUrl())+'" aria-label="Link zur Liga"><div class="actions"><button class="btn big primary" data-act="copylink">Link kopieren</button></div>'+(ui.msg?'<p class="okmsg" role="status">'+h(ui.msg)+'</p>':"")+'</section>';
   out+='<section class="card"><h3>Dabei</h3><div class="donelist">'+joined().map(function(pid){ return chip(pid,pid===ME?"(du)":""); }).join("")+'</div></section>';
-  out+='<section class="card"><h3>Dieses Gerät</h3><p class="hint">Du bist hier als '+pname(ME)+' angemeldet.</p><div class="actions"><button class="btn" data-act="logout">Als jemand anderes spielen</button><button class="btn" data-act="leave-league">Andere Liga öffnen</button></div></section>';
+  out+='<section class="card"><h3>Dein Anmeldecode</h3><p class="hint">Damit kommst du auf einem anderen Handy wieder rein.</p>'+(ui.showMyCode?'<div class="bigcode num">'+h(SECRET)+'</div><div class="actions"><button class="btn" data-act="copycode">Code kopieren</button></div>':'<div class="actions"><button class="btn" data-act="show-code">Code anzeigen</button></div>')+'</section>';
+  out+='<section class="card"><h3>Dieses Gerät</h3><p class="hint">Du bist hier als '+pname(ME)+' angemeldet.</p>'+
+    (ui.confirm==="logout"?'<p><b>Abmelden?</b> Ohne deinen Anmeldecode kommst du nicht wieder rein.</p><div class="actions"><button class="btn big danger" data-act="logout-yes">Ja, abmelden</button><button class="btn" data-act="cancel">Abbrechen</button></div>':'<div class="actions"><button class="btn" data-act="logout">Auf diesem Gerät abmelden</button></div>')+'</section>';
   return out;
 }
 function evUses(k){ var n=0; epNums().forEach(function(f){ ep(f).log.forEach(function(x){ if(x.k===k) n+=x.ids.length; }); }); return n; }
@@ -1300,9 +1390,7 @@ function personEditor(p){
 function viewAdmin(){
   enter("admin",function(){ ui.edit=null; ui.pedit=null; ui.pinChange=false; });
   var out=flowHead("home","Adminmodus")+'<h2 class="q">Adminmodus</h2>';
-  if(!ui.adminOk){
-    return out+'<p class="hint">Gib die Admin-PIN ein.</p><section class="card"><label class="f">PIN<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin" maxlength="4" autocomplete="current-password"></label>'+msgs()+'</section>'+primary("pin-check","Entsperren");
-  }
+  if(!ui.adminOk) return out+'<section class="card"><p class="hint">Nur der Admin der Liga kann hier etwas ändern.</p></section>';
   out+='<p class="hint">Änderungen gelten sofort für alle, auch rückwirkend.</p>';
   if(ui.msg) out+='<p class="okmsg toast" role="status">'+h(ui.msg)+'</p>';
   ["v","t"].forEach(function(kind){
@@ -1323,6 +1411,11 @@ function viewAdmin(){
       return '<div class="admrow st2"><span class="nm">'+r[2]+'</span>'+stepper("rule-step",r[0]+"."+r[1],main.rules[r[0]][r[1]])+'</div>'; }).join("")+'</div></section>';
   out+='<section class="card"><h3>Zockerkarten</h3><div class="seg seg2" role="group" aria-label="Zockerkarten"><button data-act="cards-on" data-v="1" aria-pressed="'+cardsOn()+'">An</button><button data-act="cards-on" data-v="0" aria-pressed="'+(!cardsOn())+'">Aus</button></div>'+
     (cardsOn()?'<p class="hint">Tippe eine Karte an, um sie aus dem gelben und roten Stapel zu nehmen oder wieder hineinzulegen.</p><div class="opts">'+Object.keys(CARD_DEFS).filter(function(k){ return !CARD_DEFS[k].green; }).map(function(k){ var d=CARD_DEFS[k], inn=main.rules.cards.off.indexOf(k)<0; return opt("card-toggle",k,d.name,CAT_NAMES[d.cat]+(inn?" · im Stapel":" · draußen"),inn,""); }).join("")+'</div>':"")+'</section>';
+  out+='<section class="card"><h3>Anmeldecodes</h3><p class="hint">Hat jemand seinen Code verloren? Erstelle einen neuen und gib ihn persönlich weiter. Der alte Code gilt dann nicht mehr.</p><div>'+joined().map(function(pid){
+    var shown=ui.resetShown&&ui.resetShown.pid===pid;
+    return '<div class="admrow"><span class="nm">'+pname(pid)+(pid===ME?" (du)":"")+'</span>'+(shown?'<b class="num codeinline">'+h(ui.resetShown.code)+'</b>':'<span></span>')+
+      (ui.confirm==="reset-"+pid?'<button class="btn sm danger" data-act="reset-yes" data-v="'+h(pid)+'">Wirklich?</button>':'<button class="btn sm" data-act="reset-ask" data-v="'+h(pid)+'">Neuer Code</button>')+'</div>';
+  }).join("")+'</div></section>';
   if(main.phase==="join" && joined().length){
     out+='<section class="card"><h3>Mitspieler*innen</h3><p class="hint">Vor dem Draft kannst du jemanden wieder entfernen.</p><div>'+joined().map(function(pid){
       return '<div class="admrow"><span class="nm">'+pname(pid)+'</span><span></span>'+(pid===ME?'<span class="hint">du</span>':(ui.confirm==="rm-"+pid?'<button class="btn sm danger" data-act="rm-yes" data-v="'+h(pid)+'">Wirklich?</button>':'<button class="btn sm" data-act="rm-ask" data-v="'+h(pid)+'">Entfernen</button>'))+'</div>';
@@ -1331,8 +1424,7 @@ function viewAdmin(){
   var ld=lastDone(), canFix=ld && curEp()==null;
   out+='<section class="card"><h3>Weitere Einstellungen</h3>'+
     (canFix?(ui.confirm==="fix"?'<p><b>'+epName(ld)+' noch einmal öffnen?</b> Du gehst die Auswertung erneut durch, alle Eingaben bleiben.</p><div class="actions"><button class="btn big primary" data-act="fix-yes">Ja, öffnen</button><button class="btn" data-act="cancel">Abbrechen</button></div>':'<div><button class="btn" data-act="fix-ask">'+epName(ld)+' korrigieren …</button></div>'):"")+
-    (ui.pinChange?'<label class="f">Neue PIN (4 Ziffern)<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin1" maxlength="4" autocomplete="new-password"></label><label class="f">PIN wiederholen<input type="password" inputmode="numeric" pattern="[0-9]*" id="pin2" maxlength="4" autocomplete="new-password"></label>'+(ui.err?'<p class="err">'+h(ui.err)+'</p>':"")+'<div class="actions"><button class="btn big primary" data-act="pin-set">Neue PIN speichern</button><button class="btn" data-act="pin-change-cancel">Abbrechen</button></div>':'<div><button class="btn" data-act="pin-change">Admin-PIN ändern</button></div>')+
-    '<div><button class="btn" data-act="adm-lock">Adminmodus auf diesem Gerät sperren</button></div></section>';
+    '</section>';
   return out;
 }
 
@@ -1373,8 +1465,7 @@ function confetti(cv,ld){
   requestAnimationFrame(step);
 }
 function renderHead(){
-  var sub="VIP · Staffel 7", n=tvNext();
-  sub+=" · Im TV als Nächstes: <strong>"+epName(n)+"</strong>, "+epDate(n);
+  var n=tvNext(), sub="Im TV als Nächstes: <strong>"+epName(n)+"</strong>, "+epDate(n)+" auf RTL+";
   document.getElementById("sub").innerHTML=sub;
   var me=document.getElementById("me");
   if(main && ME && joined().indexOf(ME)>=0){ me.hidden=false; me.className="mechip "+pcls(ME); me.innerHTML='<span class="pdot"></span>'+pname(ME); }
@@ -1385,8 +1476,11 @@ function render(){
   renderHead();
   var html;
   if(!CODE) html=ui.screen==="create"?viewCreate():viewWelcome();
-  else if(!main) html=net.notFound?viewNotFound():viewLoading();
-  else if(!ME || joined().indexOf(ME)<0) html=viewWho();
+  else if(net.notFound) html=viewNotFound();
+  else if(ui.screen==="code" && (ui.newCode||SECRET)) html=viewCode();
+  else if(!ME || !SECRET) html=viewWho();
+  else if(!main) html=viewLoading();
+  else if(joined().indexOf(ME)<0) html=viewRemoved();
   else {
     leadCheck();
     if(ui.screen==="table") html=viewTable();
@@ -1428,31 +1522,55 @@ document.addEventListener("click",function(evt){
       if(!jc){ ui.err="Das ist kein Liga-Link. Kopiere den ganzen Link, so wie du ihn bekommen hast."; render(); return; }
       setCode(jc); ui.screen="home"; ui.key=""; render(); pull(); return;
     case "create":
-      var nm=val("cname"), p1=val("pin1"), p2=val("pin2");
-      ui.err="";
+      var nm=val("cname"); ui.err="";
       if(!nm){ ui.err="Bitte deinen Namen eintragen."; render(); return; }
-      if(!/^[0-9]{4}$/.test(p1)){ ui.err="Die PIN muss aus genau 4 Ziffern bestehen."; render(); return; }
-      if(p1!==p2){ ui.err="Die beiden PINs stimmen nicht überein."; render(); return; }
       ui.busy=true; render();
-      var code=makeCode(22), me="p"+makeCode(14), m=defaultMain(); m.admin.pin=pinHash(p1); m.updated=Date.now();
-      rpc("save_league",{p_code:code,p_data:m}).then(function(vv){
-        return rpc("save_entry",{p_code:code,p_player:me,p_key:"profile",p_data:{name:nm,joined:Date.now()}}).then(function(){ return vv; });
-      }).then(function(vv){
-        ui.busy=false; setCode(code); main=m; version=+vv||1; ME=me; lsSet(LS+":me:"+code,me); lsSet(LS+":admin:"+code,m.admin.pin); ui.adminOk=true;
+      var code=makeCode(22), me="p"+makeCode(14), m=defaultMain(); m.updated=Date.now();
+      rpc("tl_create",{p_code:code,p_data:m,p_player:me,p_name:nm}).then(function(sec){
+        ui.busy=false; setCode(code); setMe(me,sec,true); main=m; version=1;
         entries=[{player:me,key:"profile",data:{name:nm,joined:Date.now()},at:new Date().toISOString()}];
-        saveCache(); ui.screen="home"; ui.key=""; ui.flash="Deine Liga ist bereit. Schick den anderen jetzt den Link."; render(); goTop(); pull();
+        saveCache(); ui.newCode=sec; ui.screen="code"; ui.key=""; render(); goTop(); pull();
       },function(){ ui.busy=false; ui.err="Gerade keine Verbindung. Versuch es gleich noch einmal."; render(); });
       return;
-    case "leave-league": lsSet(LS+":code",null); CODE=null; main=null; ME=null; entries=[]; try{ history.replaceState(null,"",location.pathname); }catch(x){} ui.screen="home"; ui.key=""; render(); return;
-    case "claim": ME=v; lsSet(LS+":me:"+CODE,v); ui.key=""; ui.screen="home"; render(); return;
-    case "logout": lsSet(LS+":me:"+CODE,null); ME=null; ui.key=""; render(); return;
+    case "leave-league": lsSet(LS+":code",null); CODE=null; main=null; ME=null; SECRET=null; entries=[]; try{ history.replaceState(null,"",location.pathname); }catch(x){} ui.screen="home"; ui.key=""; render(); return;
+    case "login":
+      var lc=val("lcode"); ui.err=""; ui.errAt="login";
+      if(lc.replace(/[^A-Za-z0-9]/g,"").length!==8){ ui.err="Der Code hat 8 Zeichen, zum Beispiel ABCD-EFGH."; render(); return; }
+      ui.busy=true; render();
+      rpc("tl_login",{p_code:CODE,p_secret:lc}).then(function(res){
+        ui.busy=false;
+        if(!res||!res.player){ ui.err="Dieser Code passt zu niemandem in dieser Liga."; render(); return; }
+        ui.whoMsg=""; setMe(res.player,lc.toUpperCase(),res.admin); ui.key=""; ui.screen="home"; ui.flash="Willkommen zurück!"; render(); pull();
+      },function(){ ui.busy=false; ui.err="Gerade keine Verbindung. Versuch es gleich noch einmal."; render(); });
+      return;
     case "join-new":
-      var jn=val("jname"); ui.err="";
+      var jn=val("jname"); ui.err=""; ui.errAt="join";
       if(!jn){ ui.err="Bitte deinen Namen eintragen."; render(); return; }
-      if(joined().some(function(pid){ return prof(pid).name.toLowerCase()===jn.toLowerCase(); })){ ui.err="Diesen Namen gibt es schon. Nimm einen anderen oder tippe oben auf deinen Namen."; render(); return; }
-      if(joined().length>=MAX_PLAYERS){ ui.err="Die Liga ist schon voll."; render(); return; }
-      ME="p"+makeCode(14); lsSet(LS+":me:"+CODE,ME); ui.flash="Willkommen in der Liga!";
-      saveEntry(ME,"profile",{name:jn,joined:Date.now()},"Die Anmeldung ist leider schon geschlossen.");
+      ui.busy=true; render();
+      var nid="p"+makeCode(14);
+      rpc("tl_join",{p_code:CODE,p_player:nid,p_name:jn}).then(function(sec){
+        ui.busy=false; ui.whoMsg=""; setMe(nid,sec,false); ui.newCode=sec; ui.screen="code"; ui.key=""; render(); pull();
+      },function(err){
+        ui.busy=false; var m2=(err&&err.message)||"";
+        ui.err=/name taken/.test(m2)?"Diesen Namen gibt es schon. Nimm einen anderen.":(/full/.test(m2)?"Die Liga ist schon voll.":(/closed/.test(m2)?"Die Anmeldung ist geschlossen, weil der Draft schon begonnen hat.":"Gerade keine Verbindung. Versuch es gleich noch einmal."));
+        render(); pullInfo();
+      });
+      return;
+    case "code-done": ui.newCode=null; ui.screen="home"; ui.key=""; ui.flash=ui.adminOk?"Deine Liga ist bereit. Schick den anderen jetzt den Link.":"Willkommen in der Liga!"; render(); goTop(); return;
+    case "copycode":
+      var cc=ui.newCode||SECRET, fb2=function(){ ui.msg="Bitte den Code abschreiben oder einen Screenshot machen."; render(); };
+      try{ navigator.clipboard.writeText(cc).then(function(){ ui.msg="Code kopiert."; render(); },fb2); }catch(x){ fb2(); }
+      return;
+    case "show-code": ui.showMyCode=true; render(); return;
+    case "logout": ui.confirm="logout"; render(); return;
+    case "logout-yes": clearMe(); ui.confirm=null; ui.key=""; ui.screen="home"; render(); pullInfo(); return;
+    case "reset-ask": ui.confirm="reset-"+v; render(); return;
+    case "reset-yes":
+      if(!isAdmin()) return; ui.confirm=null;
+      rpc("tl_reset_code",{p_code:CODE,p_player:ME,p_secret:SECRET,p_target:v}).then(function(sec){
+        if(v===ME){ SECRET=sec; lsSet(LS+":secret:"+CODE,sec); }
+        ui.resetShown={pid:v,code:sec}; ui.msg="Neuer Code für "+(prof(v)||{}).name+": "+sec+". Der alte gilt nicht mehr."; render();
+      },function(){ ui.msg=""; ui.err="Das hat nicht geklappt. Versuch es noch einmal."; render(); });
       return;
     case "copylink":
       var su=shareUrl(), fb=function(){ ui.msg="Der Link ist markiert. Jetzt kopieren."; render(); var si=document.getElementById("share"); if(si){ si.focus(); si.select(); } };
@@ -1553,17 +1671,6 @@ document.addEventListener("click",function(evt){
       saveEntry(ME,"card:"+f,nc2,"Zu spät: Die Folge läuft schon."); goTop(); return;
 
     /* admin */
-    case "pin-check":
-      if(pinHash(val("pin"))!==main.admin.pin){ ui.err="Falsche PIN. Versuch es noch einmal."; render(); return; }
-      ui.err=""; ui.adminOk=true; lsSet(LS+":admin:"+CODE,main.admin.pin); render(); goTop(); return;
-    case "adm-lock": ui.adminOk=false; lsSet(LS+":admin:"+CODE,null); go("home"); return;
-    case "pin-change": ui.pinChange=true; ui.err=""; render(); return;
-    case "pin-change-cancel": ui.pinChange=false; ui.err=""; render(); return;
-    case "pin-set":
-      if(!isAdmin()) return; var q1=val("pin1"), q2=val("pin2"); ui.err="";
-      if(!/^[0-9]{4}$/.test(q1)){ ui.err="Die PIN muss aus genau 4 Ziffern bestehen."; render(); return; }
-      if(q1!==q2){ ui.err="Die beiden PINs stimmen nicht überein."; render(); return; }
-      main.admin.pin=pinHash(q1); lsSet(LS+":admin:"+CODE,main.admin.pin); ui.pinChange=false; ui.msg="Neue PIN gespeichert."; commitMain(); return;
     case "pe-open":
       if(!isAdmin()) return; var po=personById(v); if(!po) return;
       ui.pedit=v; ui.pName=po.name; ui.pStatus=po.outIn!=null?"out":"in"; ui.pOut=po.outIn||Math.max(1,(curEp()||nextToOpen())-1); ui.pTeam=ownerOf(v)||""; ui.err=""; ui.msg=""; render(); return;
@@ -1618,17 +1725,88 @@ document.addEventListener("click",function(evt){
 });
 
 /* ================= boot ================= */
-if(CODE && main && main.admin.pin && lsGet(LS+":admin:"+CODE)===main.admin.pin) ui.adminOk=true;
 render();
 if(CODE) pull();
 setInterval(function(){
   if(!CODE) return;
   if(document.visibilityState && document.visibilityState!=="visible") return;
   pull();
-  if(main && !ui.adminOk && main.admin.pin && lsGet(LS+":admin:"+CODE)===main.admin.pin){ ui.adminOk=true; requestRender(); }
 },4000);
 document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="visible") pull(); });
 window.addEventListener("hashchange",function(){ var c=codeFromHash(); if(c && c!==CODE){ setCode(c); render(); pull(); } });
+})();
+
+</script>
+<script>
+(function(){
+"use strict";
+/* tropical night: palm silhouettes (drawn once) + twinkling gold glitter */
+var pc=document.getElementById("palms"), gc=document.getElementById("glitter");
+if(!pc||!gc||!pc.getContext) return;
+var px=pc.getContext("2d"), gx=gc.getContext("2d"), W=0, H=0, dpr=1, stars=[], reduce=false, last=0, raf=0, seed=7;
+try{ reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
+function rand(){ seed=(seed*16807)%2147483647; return seed/2147483647; }
+function R(a,b){ return a+rand()*(b-a); }
+function frond(x,y,ang,len,bend,fill){
+  var n=34, st=len/n, th=ang, p={x:x,y:y}, pts=[p];
+  for(var i=1;i<=n;i++){ th+=bend/n; p={x:p.x+Math.cos(th)*st,y:p.y+Math.sin(th)*st,th:th}; pts.push(p); }
+  px.fillStyle=fill; px.strokeStyle=fill; px.lineWidth=Math.max(2,len*0.012); px.lineCap="round";
+  px.beginPath(); px.moveTo(x,y); pts.forEach(function(q){ px.lineTo(q.x,q.y); }); px.stroke();
+  for(var j=3;j<=n;j++){
+    var t=j/n, q=pts[j], L=len*0.36*Math.pow(Math.sin(Math.PI*Math.min(1,t*1.05)),0.7)*(1-0.3*t);
+    [-1,1].forEach(function(s){
+      var phi=q.th+s*(1.05-0.35*t)+0.18, w=Math.max(1.2,len*0.011*(1-t*0.6));
+      var tx=q.x+Math.cos(phi)*L, ty=q.y+Math.sin(phi)*L+L*0.18;
+      var cx=q.x+Math.cos(phi-s*0.12)*L*0.55, cy=q.y+Math.sin(phi-s*0.12)*L*0.55;
+      var nx=Math.cos(q.th)*w, ny=Math.sin(q.th)*w;
+      px.beginPath(); px.moveTo(q.x-nx,q.y-ny); px.quadraticCurveTo(cx-nx,cy-ny,tx,ty); px.quadraticCurveTo(cx+nx,cy+ny,q.x+nx,q.y+ny); px.closePath(); px.fill();
+    });
+  }
+}
+function drawPalms(){
+  px.setTransform(dpr,0,0,dpr,0,0); px.clearRect(0,0,W,H); seed=7;
+  var M=Math.max(W,H);
+  var layers=[{fill:"rgba(118,52,150,.42)",scale:1.15,blur:3},{fill:"rgba(14,3,24,.72)",scale:0.95,blur:0}];
+  layers.forEach(function(Ly){
+    try{ px.filter=Ly.blur?"blur("+Ly.blur+"px)":"none"; }catch(e){}
+    var s=Ly.scale;
+    for(var i=0;i<5;i++) frond(-0.06*W,-0.04*H,R(0.15,1.35),M*R(0.42,0.62)*s,R(0.5,0.9),Ly.fill);
+    for(var k=0;k<5;k++) frond(1.07*W,R(0.25,0.45)*H,Math.PI+R(-0.75,0.45),M*R(0.4,0.6)*s,R(-0.9,-0.5),Ly.fill);
+    for(var m=0;m<3;m++) frond(-0.04*W,1.04*H,R(-1.1,-0.35),M*R(0.35,0.5)*s,R(0.4,0.8),Ly.fill);
+  });
+  try{ px.filter="none"; }catch(e){}
+}
+function makeStars(){
+  stars=[]; seed=99;
+  var n=Math.round(Math.min(140,W*H/9000));
+  for(var i=0;i<n;i++) stars.push({x:R(0,W),y:R(0,H),r:R(0.5,1.8),sp:R(0.6,1.8),ph:R(0,6.3),c:rand()<0.6?"255,214,140":(rand()<0.5?"255,255,255":"255,170,220"),glint:i<9});
+}
+function drawGlitter(t){
+  gx.setTransform(dpr,0,0,dpr,0,0); gx.clearRect(0,0,W,H);
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i], a=reduce?0.75:0.35+0.65*Math.max(0,Math.sin(t*0.001*s.sp+s.ph));
+    gx.fillStyle="rgba("+s.c+","+a.toFixed(3)+")";
+    gx.beginPath(); gx.arc(s.x,s.y,s.r,0,6.283); gx.fill();
+    if(s.glint){
+      var L=s.r*6*a; gx.strokeStyle="rgba("+s.c+","+(a*0.8).toFixed(3)+")"; gx.lineWidth=0.8;
+      gx.beginPath(); gx.moveTo(s.x-L,s.y); gx.lineTo(s.x+L,s.y); gx.moveTo(s.x,s.y-L); gx.lineTo(s.x,s.y+L); gx.stroke();
+    }
+  }
+}
+function size(){
+  dpr=Math.min(2,window.devicePixelRatio||1); W=window.innerWidth; H=window.innerHeight;
+  [pc,gc].forEach(function(c){ c.width=Math.round(W*dpr); c.height=Math.round(H*dpr); });
+  drawPalms(); makeStars(); drawGlitter(performance.now());
+}
+function loop(t){
+  raf=requestAnimationFrame(loop);
+  if(document.hidden || t-last<50) return;
+  last=t; drawGlitter(t);
+}
+var rt=null;
+window.addEventListener("resize",function(){ clearTimeout(rt); rt=setTimeout(size,150); });
+size();
+if(!reduce && window.requestAnimationFrame) raf=requestAnimationFrame(loop);
 })();
 
 </script>

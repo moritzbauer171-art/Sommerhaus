@@ -25,8 +25,9 @@ Settings → Pages → „Deploy from a branch“ → Branch `main`, Ordner `/ (
 
 **Spielen:** https://moritzbauer171-art.github.io/Sommerhaus/temptation/
 
-- Für 2 bis 6 Leute, jede*r auf dem eigenen Handy. Wer die Liga erstellt, ist Admin (mit PIN).
+- Für 2 bis 6 Leute, jede*r auf dem eigenen Handy. Wer die Liga erstellt, ist Admin.
+- Jede*r bekommt beim Beitreten einen persönlichen Anmeldecode (z. B. `ABCD-EFGH`). Der Server prüft ihn bei jedem Zugriff; nur der Admin darf die Liga ändern und kann verlorene Codes neu ausstellen.
 - Personen-Draft: jede*r wählt eine vergebene Person und mehrere Verführer*innen.
 - Saisontipps (welche Paare gehen gemeinsam), pro Folge drei Tipps und eine freiwillige Zockerkarte.
 - Der Admin öffnet jede Folge, schließt die Tipps, trägt die Ereignisse ein und wertet aus.
-- Gespeichert in Supabase: die Liga als ein Dokument, Tipps, Picks und Karten pro Person (Tabelle `league_entries`). Nach Tippschluss nimmt der Server keine Tipps mehr an.
+- Gespeichert in Supabase: die Liga als ein Dokument, Tipps, Picks und Karten pro Person (`league_entries`), Codes nur als Hash (`league_players`). Zugriff ausschließlich über die `tl_*`-Funktionen. Fremde Tipps und Karten liefert der Server erst nach Tippschluss aus, Saisontipps erst nach dem Finale.
