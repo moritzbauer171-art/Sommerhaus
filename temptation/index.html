@@ -704,6 +704,40 @@ input[type=text]:focus,input[type=password]:focus{box-shadow:var(--hl),inset 0 0
 .tiles.ask .tile{min-height:64px;font-size:16.5px}
 .tiles.ask .tile .tl-l{font-size:16px}
 .tiles.many.ask .tile{min-height:52px}
+
+/* direct stakes in the market card */
+.steprow{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-radius:16px;background:var(--glass-strong);box-shadow:var(--hl),inset 0 0 0 1px var(--rim);position:sticky;top:calc(env(safe-area-inset-top,0px) + 64px);z-index:5;-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px)}
+.steprow>span:first-child{font-size:15px}
+.steprow b{color:var(--gold);font:800 18px/1 var(--round)}
+.sr-r{display:inline-flex;align-items:center;gap:8px}
+.sr-r small{color:var(--muted);font-size:12.5px}
+.mk-stake{display:grid;grid-template-columns:minmax(0,1fr) auto 32px;gap:8px;align-items:center;padding:8px 6px 8px 12px;border-radius:12px;background:rgba(247,199,102,.10);box-shadow:inset 0 0 0 1px rgba(247,199,102,.35)}
+.mk-stake .ms-l{font-weight:700;font-size:15px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-ctl{display:inline-flex;align-items:center;gap:6px}
+.ms-ctl b{min-width:58px;text-align:center;font:800 16px/1 var(--round);color:var(--gold)}
+.ms-ctl .sbtn{width:38px;height:38px}
+.mk-stake .sel-x{color:var(--muted)}
+/* stamp animation */
+.fx-slip{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:24px 16px;background:rgba(10,2,18,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);animation:fxFade .25s ease both}
+.fx-slip.out{animation:fxFadeOut .35s ease both}
+.fx-slip-in{display:flex;flex-direction:column;align-items:center;gap:16px;width:100%;max-width:340px;border:0;background:none;padding:0;cursor:pointer;font:inherit;color:inherit}
+.fx-slip .ticket{display:block;width:100%;text-align:left;margin:0;animation:ticketUp .38s cubic-bezier(.2,.9,.25,1.05) both, ticketHit .32s ease .42s}
+.fx-slip .tk-head{display:flex}
+.fx-slip .tk-head>span{display:flex;flex-direction:column;gap:3px}
+.fx-lines{display:flex;flex-direction:column;padding:6px 0}
+.fx-line{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-bottom:1px dotted var(--rule);font-size:15px}
+.fx-line b{font-family:var(--round);font-weight:800;color:var(--print);white-space:nowrap}
+.fx-slip .rc-total b{color:var(--ink);font:800 18px/1 var(--round)}
+.fx-slip .tk-foot{display:flex;margin-top:12px}
+.fx-stamp{position:absolute;left:50%;top:50%;font:900 30px/1 var(--round);letter-spacing:.14em;text-transform:uppercase;color:var(--print);padding:12px 18px 10px;border-radius:10px;
+  box-shadow:inset 0 0 0 4px var(--print),inset 0 0 0 8px var(--paper),inset 0 0 0 10px var(--print);transform:translate(-50%,-50%) rotate(-14deg);opacity:.9;mix-blend-mode:multiply;animation:stampSlam .42s cubic-bezier(.2,.9,.3,1.35) .3s both}
+.fx-luck{font:800 18px/1 var(--round);color:var(--gold);animation:fxFade .3s ease .75s both}
+@keyframes ticketUp{from{transform:translateY(40px) scale(.96);opacity:0}to{transform:none;opacity:1}}
+@keyframes ticketHit{0%{transform:none}35%{transform:translateY(3px) scale(.985)}70%{transform:translateY(-1px)}100%{transform:none}}
+@keyframes stampSlam{0%{transform:translate(-50%,-50%) rotate(-14deg) scale(2.6);opacity:0}60%{transform:translate(-50%,-50%) rotate(-14deg) scale(.9);opacity:.95}100%{transform:translate(-50%,-50%) rotate(-14deg) scale(1);opacity:.9}}
+@keyframes fxFade{from{opacity:0}to{opacity:1}}
+@keyframes fxFadeOut{from{opacity:1}to{opacity:0}}
+@media (prefers-reduced-motion: reduce){ .fx-slip,.fx-slip .ticket,.fx-stamp,.fx-luck{animation:none} }
 </style>
 <div class="night-bg" aria-hidden="true"></div>
 <canvas class="night" id="palms" aria-hidden="true"></canvas>
@@ -1314,10 +1348,10 @@ function sendEntry(pk){
   var it=net.pend[pk]; if(!it||it.sending) return; it.sending=true;
   rpc("tl_save_entry",{p_code:CODE,p_player:ME,p_secret:SECRET,p_key:it.key,p_data:it.data,p_as:it.as}).then(function(ok){
     if(net.pend[pk]===it) delete net.pend[pk];
-    if(ok!==true){ ui.flashErr=it.fail||"Das ging leider nicht mehr. Der Stand wurde aktualisiert."; net.pulling=false; pull(); requestRender(); }
+    if(ok!==true){ clearStampFx(); ui.flashErr=it.fail||"Das ging leider nicht mehr. Der Stand wurde aktualisiert."; net.pulling=false; pull(); requestRender(); }
     else if(net.mode!=="online") setNet("online");
   },function(err){
-    if(err&&err.server){ if(net.pend[pk]===it) delete net.pend[pk]; ui.flashErr=it.fail||"Das ging leider nicht. Der Stand wurde aktualisiert."; net.pulling=false; pull(); requestRender(); return; }
+    if(err&&err.server){ clearStampFx(); if(net.pend[pk]===it) delete net.pend[pk]; ui.flashErr=it.fail||"Das ging leider nicht. Der Stand wurde aktualisiert."; net.pulling=false; pull(); requestRender(); return; }
     it.sending=false; setNet("offline");
   });
 }
@@ -1364,8 +1398,26 @@ function marketCard(scope,q,map,odds,pot,note){
   return '<section class="card market'+(n?" has":"")+'"><div class="mk-h"><div class="mk-t"><h3>'+h(q.title)+'</h3>'+(note?'<small>'+note+'</small>':'')+'</div><span class="mk-pot">'+coinTxt(pot)+'</span></div>'+
     '<div class="tiles'+(q.opts.length>4?" many":"")+'">'+q.opts.map(function(o){ var st=mine[o.id]|0;
       return '<button class="tile'+(st?" on":"")+'" data-act="tile" data-s="'+scope+'" data-q="'+h(q.id)+'" data-v="'+h(o.id)+'" aria-pressed="'+(!!st)+'"><span class="tl-l">'+h(o.label)+(st?'<small>'+tl(st)+'</small>':'')+'</span>'+(odds?'<b class="tl-q">'+quoteStr(pot,odds[o.id]|0)+'</b>':'')+'</button>';
-    }).join("")+'</div></section>';
+    }).join("")+'</div>'+
+    q.opts.filter(function(o){ return mine[o.id]; }).map(function(o){ var st=mine[o.id]|0;
+      return '<div class="mk-stake"><span class="ms-l">'+h(o.label)+'</span><span class="ms-ctl"><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(q.id)+'" data-v="'+h(o.id)+'" data-d="-1" aria-label="Weniger auf '+h(o.label)+'">−</button><b class="num">'+tl(st)+'</b><button class="sbtn" data-act="stk" data-s="'+scope+'" data-q="'+h(q.id)+'" data-v="'+h(o.id)+'" data-d="1" aria-label="Mehr auf '+h(o.label)+'"'+(ui.leftNow>0?"":" disabled")+'>+</button></span><button class="sel-x" data-act="rm-sel" data-s="'+scope+'" data-q="'+h(q.id)+'" data-v="'+h(o.id)+'" aria-label="'+h(o.label)+' entfernen">×</button></div>';
+    }).join("")+'</section>';
 }
+function showStampFx(title,sub,lines,total){
+  var host=document.getElementById("fx"); if(!host||typeof document.createElement!=="function") return;
+  clearTimeout(fxTimer);
+  var reduce=false; try{ reduce=window.matchMedia("(prefers-reduced-motion: reduce)").matches; }catch(e){}
+  host.innerHTML='<div class="fx-slip'+(reduce?" calm":"")+'" role="status" aria-live="polite"><button class="fx-slip-in" data-act="fx-close" aria-label="Wettschein abgegeben. Schließen">'+
+    '<span class="ticket"><span class="tk-head"><span><span class="tk-title">'+h(title)+'</span><span class="tk-sub">'+h(sub)+'</span></span></span>'+
+    '<span class="fx-lines">'+(lines.length?lines.map(function(x){ return '<span class="fx-line"><span>'+h(x[0])+'</span><b>'+h(x[1])+'</b></span>'; }).join(""):'<span class="fx-line"><span>Keine Einsätze</span><b></b></span>')+'</span>'+
+    '<span class="rc-total"><span>Einsatz</span><b>'+tl(total)+'</b></span><span class="tk-foot"><span class="barcode" aria-hidden="true"></span></span>'+
+    '<span class="fx-stamp" aria-hidden="true">Abgegeben</span></span><span class="fx-luck">Viel Glück!</span></button></div>';
+  host.style.pointerEvents="auto";
+  setTimeout(function(){ try{ if(navigator.vibrate) navigator.vibrate([10,30,60]); }catch(e){} },reduce?0:420);
+  fxTimer=setTimeout(function(){ var w=host.querySelector(".fx-slip"); if(w) w.className+=" out"; fxTimer=setTimeout(function(){ host.innerHTML=""; host.style.pointerEvents=""; },380); },reduce?1800:2600);
+}
+function clearStampFx(){ var host=document.getElementById("fx"); if(host && host.querySelector && host.querySelector(".fx-slip")){ clearTimeout(fxTimer); host.innerHTML=""; host.style.pointerEvents=""; } }
+function stepRow(left){ return '<div class="steprow"><span><b class="num">'+tl(Math.max(0,left))+'</b> frei</span><span class="sr-r"><small>Schritt</small>'+stepPicker()+'</span></div>'; }
 function selections(qs,map){ var out=[]; qs.forEach(function(q){ var m=map[q.id]||{}; q.opts.forEach(function(o){ if(m[o.id]) out.push({q:q,o:o,n:m[o.id]}); }); }); return out; }
 function stepPicker(){ return '<span class="cb-step" role="group" aria-label="Schrittweite">'+[1,5,10].map(function(n){ return '<button data-act="step-set" data-v="'+n+'" aria-pressed="'+(stepSize()===n)+'">'+n+'</button>'; }).join("")+'</span>'; }
 function slipBar(c){
@@ -1511,8 +1563,8 @@ function seasonTipsCard(){
   var B=seasonBudget(), left=B-sumStakes(ui.stips), pots=(net.pots&&net.pots.season)||{};
   var done=players().filter(function(pid){ var se=E[pid]&&E[pid].season; return !!se && (se.hidden || sumStakes(se.stakes)>0); });
   var dirty=JSON.stringify(ui.stips)!==JSON.stringify(my), has=sumStakes(my)>0;
-  var sq=seasonQuestions();
-  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel, bis zu '+tl(main.rules.bets.season)+' von deinen '+tl(main.rules.bets.start)+'. Ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p></section>';
+  var sq=seasonQuestions(); ui.leftNow=left;
+  var out='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Einmal für die ganze Staffel, bis zu '+tl(main.rules.bets.season)+' von deinen '+tl(main.rules.bets.start)+'. Ausgezahlt wird nach dem Finale. Was die anderen gesetzt haben, siehst du erst dann.</p></section>'+stepRow(left);
   sq.forEach(function(q){ out+=marketCard("season",q,ui.stips,oddsFor("season",q.id),pots[q.id]|0,""); });
   out+='<section class="card"><span class="label">Schon gesetzt</span><div class="donelist">'+players().map(function(pid){ return chip(pid,"",done.indexOf(pid)>=0?"":"no"); }).join("")+'</div></section>';
   if(isAdmin()){
@@ -1622,8 +1674,9 @@ function viewBetslip(){
   enter("slip-"+f,function(){ ui.slip=JSON.parse(JSON.stringify(mine.stakes||{})); ui.treu=mine.treu||null; });
   var B=slipBudget(f), left=B-sumStakes(ui.slip), pots=(net.pots&&net.pots.bet)||{}, savedS=entryStake(ME,"bet:"+f,mine), after=cash(ME)+savedS-sumStakes(ui.slip);
   var dirty=JSON.stringify(ui.slip)!==JSON.stringify(mine.stakes||{}) || (ui.treu||null)!==(mine.treu||null), had=!!(mine.stakes||mine.treu), qs=epQuestions(f);
-  var out=flowHead("home",epName(f))+'<h2 class="q">Wetten auf '+epName(f)+'</h2><p class="hint">Zwei Fragen pro Folge, beide drehen sich um die Vergebenen. Tipp auf eine Antwort, um sie auf deinen Wettschein zu legen. Die Quote zeigt, was ein T$ bringt, wenn die Antwort stimmt. Sie erscheint, sobald drei Leute auf eine Frage gesetzt haben.</p>'+
-    (cash(ME)+savedS<=0?'<p class="okmsg">Du bist pleite. Der Treue-Tipp kostet nichts und bringt dir Bonus-T$.</p>':'');
+  ui.leftNow=left;
+  var out=flowHead("home",epName(f))+'<h2 class="q">Wetten auf '+epName(f)+'</h2><p class="hint">Zwei Fragen pro Folge, beide drehen sich um die Vergebenen. Tipp auf eine Antwort und stell darunter deinen Einsatz ein. Die Quote zeigt, was ein T$ bringt, wenn die Antwort stimmt. Sie erscheint, sobald drei Leute auf eine Frage gesetzt haben.</p>'+
+    (cash(ME)+savedS<=0?'<p class="okmsg">Du bist pleite. Der Treue-Tipp kostet nichts und bringt dir Bonus-T$.</p>':'')+stepRow(left);
   qs.forEach(function(q){
     var bank=q.jackpot?jackpotFor(f):0, pot=(pots[f+":"+q.id]|0)+bank;
     var note=[q.hint?h(q.hint):"",bank?"inkl. "+tl(bank)+" Jackpot":"",q.custom?"Frage vom Admin":""].filter(function(x){ return x; }).join(". ");
@@ -1896,7 +1949,7 @@ document.addEventListener("click",function(evt){
   var act=b.getAttribute("data-act"), v=b.getAttribute("data-v"), cid=b.getAttribute("data-c");
   var f=main?curEp():null, e=f?ep(f):null;
   switch(act){
-    case "fx-close": clearTimeout(fxTimer); var host=document.getElementById("fx"); if(host) host.innerHTML=""; return;
+    case "fx-close": clearTimeout(fxTimer); var host=document.getElementById("fx"); if(host){ host.innerHTML=""; host.style.pointerEvents=""; } return;
     case "home": go("home"); return;
     case "go": go(v); return;
     case "go-board": go("board"); return;
@@ -2056,10 +2109,14 @@ document.addEventListener("click",function(evt){
     case "treu-sel": ui.treu=ui.treu===v?null:v; render(); return;
     case "slip-save":
       if(!e||e.status!=="open") return;
-      ui.msg="Wettschein abgegeben."; ui.stampAnim=true;
+      ui.msg="Wettschein abgegeben."; ui.stampAnim=true; ui.sheet=null;
+      var fl=selections(epQuestions(f),ui.slip||{}).map(function(x){ return [x.o.label,tl(x.n)]; }), tpx=ui.treu&&personById(ui.treu);
+      if(tpx) fl.push(["Treue-Tipp: "+tpx.name,"gratis"]);
+      showStampFx("Wettschein",epName(f),fl,sumStakes(ui.slip||{}));
       saveEntry(ME,"bet:"+f,{stakes:JSON.parse(JSON.stringify(ui.slip||{})),treu:ui.treu||null},"Zu spät: Die Wetten für diese Folge sind schon geschlossen."); return;
     case "season-save":
-      if(!ui.stips||!sumStakes(ui.stips)) return; ui.stampAnim=true;
+      if(!ui.stips||!sumStakes(ui.stips)) return; ui.stampAnim=true; ui.sheet=null;
+      showStampFx("Langzeitschein","Temptation Island VIP, Staffel 7",selections(seasonQuestions(),ui.stips).map(function(x){ return [x.q.title.replace(/: gemeinsam oder getrennt\?$/,"")+": "+x.o.label,tl(x.n)]; }),sumStakes(ui.stips));
       saveEntry(ME,"season",{stakes:JSON.parse(JSON.stringify(ui.stips))},"Die Langzeitwetten sind schon geschlossen."); return;
     case "live-skip": ui.liveSeen=ui.liveSeen||[]; ui.liveSeen.push(f+":"+v); ui.liveFor=null; render(); return;
     case "live-reopen": ui.liveSeen=(ui.liveSeen||[]).filter(function(x){ return x!==f+":"+v; }); ui.liveFor=null; render(); return;
