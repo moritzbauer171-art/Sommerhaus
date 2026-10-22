@@ -766,6 +766,21 @@ body.txmode .ticket .txe{outline-color:rgba(181,21,95,.6)}
 .market.preview .tile{cursor:default}
 .tb-r{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex:0 0 auto}
 .tb-r .txbtn{margin:0}
+
+/* text mode: make taps register on iOS (needs a pointer cursor on tapped elements) */
+body.txmode #view *,body.txmode .top *{cursor:pointer}
+
+/* blitz bets */
+.blitzbadge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:6px;background:linear-gradient(135deg,#FFE15A,#FF9F1C);color:#2B1305;font:900 12px/1 var(--round);letter-spacing:.04em;text-transform:uppercase;box-shadow:0 0 14px rgba(255,200,60,.45)}
+.bz-clock{font:800 18px/1 var(--round);color:#FFE15A;font-variant-numeric:tabular-nums;min-width:3.2em}
+.blitzsheet.hot{box-shadow:var(--hl),inset 0 0 0 2px rgba(255,225,90,.65),0 0 40px rgba(255,180,40,.25),var(--shadow)}
+.blitzsheet.hot .blitzbadge{animation:bzPulse 1s ease-in-out infinite}
+@keyframes bzPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.blitzcard .mk-h{align-items:center}
+.livebet.todo .lt b{color:#FFE15A}
+.seg.bz-dur{grid-template-columns:repeat(4,minmax(0,1fr))}
+.blitzsheet .sheet-list{display:flex;flex-direction:column;gap:10px}
+@media (prefers-reduced-motion: reduce){ .blitzsheet.hot .blitzbadge{animation:none} }
 </style>
 <div class="night-bg" aria-hidden="true"></div>
 <canvas class="night" id="palms" aria-hidden="true"></canvas>
@@ -796,8 +811,10 @@ var COUPLES=[
 ];
 var TEMPTERS=[["Veysel",33,"m"],["Lukasz",31,"m"],["Bless",26,"m"],["Timo",24,"m"],["Emanuel",24,"m"],["Jerry",31,"m"],["Simon",25,"m"],["Samuel",26,"m"],["Chris",29,"m"],["Frederik",29,"m"],["Sergej",27,"m"],["David",27,"m"],
   ["Chayenne",22,"w"],["Jasmin",22,"w"],["Deniz",24,"w"],["Mara",22,"w"],["Saskia-Alina",29,"w"],["Jana",26,"w"],["Bella",25,"w"],["Selina",20,"w"],["Nina",21,"w"],["Angelina",28,"w"],["Saskia H.",27,"w"]];
-var DEF_BETS={start:100,ep:25,season:30,treu:5};
-var BET_LIM={start:[10,1000,10],ep:[1,500,5],season:[0,500,5],treu:[0,50,1]};
+var DEF_BETS={start:100,ep:25,season:30,treu:5,blitz:10};
+var BLITZ_PRESETS=["Gibt es in den nächsten 10 Minuten einen Kuss?","Fließen gleich Tränen?","Kommt heute noch ein Lagerfeuer?","Wird gleich jemand eifersüchtig?"];
+var BLITZ_DUR=[30,60,120,300];
+var BET_LIM={start:[10,1000,10],ep:[1,500,5],season:[0,500,5],treu:[0,50,1],blitz:[1,100,1]};
 var LIVE_PRESETS=["Gibt es in den nächsten 10 Minuten einen Kuss?","Fließen beim nächsten Lagerfeuer Tränen?","Gibt es heute noch eine gemeinsame Nacht?","Verlässt jemand wütend das Lagerfeuer?"];
 var EP_STATES=["open","live","review","done"];
 var CROWN_SVG='<svg viewBox="-4 -2 72 52" aria-hidden="true"><path d="M6 40 L2 12 L18 24 L32 4 L46 24 L62 12 L58 40 Z" fill="currentColor"/><rect x="6" y="41" width="52" height="6" rx="2" fill="currentColor"/><circle cx="2" cy="12" r="3.5" fill="currentColor"/><circle cx="32" cy="4" r="3.5" fill="currentColor"/><circle cx="62" cy="12" r="3.5" fill="currentColor"/></svg>';
@@ -872,7 +889,7 @@ function defaultMain(){
     [c[2],c[3]].forEach(function(p){ persons.push({id:p[0],name:p[1],full:p[2],kind:"v",sub:"Vergeben · "+c[1],couple:c[0],inFrom:1,outIn:null,outType:null,custom:false}); });
   });
   TEMPTERS.forEach(function(t){ persons.push({id:"t-"+slug(t[0]),name:t[0],full:t[0],kind:"t",sub:(t[2]==="m"?"Verführer · ":"Verführerin · ")+t[1],couple:null,inFrom:1,outIn:null,outType:null,custom:false}); });
-  return {v:5,app:APP,phase:"join",start:null,order:[],persons:persons,couples:couples,episodes:{},rules:defaultRules(),markets:defaultMarkets(),sqs:null,texts:{},payout:{},sres:{},removed:[],updated:0};
+  return {v:5,app:APP,phase:"join",start:null,order:[],persons:persons,couples:couples,episodes:{},rules:defaultRules(),markets:defaultMarkets(),sqs:null,texts:{},blitz:[],payout:{},sres:{},removed:[],updated:0};
 }
 function normalizeMain(raw){
   if(!raw || raw.app!==APP || !Array.isArray(raw.persons)) return null;
@@ -904,6 +921,10 @@ function normalizeMain(raw){
   d.couples.forEach(function(c){ if(c.final && !d.sres["paar:"+c.id]) d.sres["paar:"+c.id]=[c.final]; });
   if(Array.isArray(raw.markets)) d.markets=raw.markets.map(normMarket).filter(function(m){ return m; }).slice(0,30);
   d.sqs=normSnap(raw.sqs);
+  if(Array.isArray(raw.blitz)) d.blitz=raw.blitz.filter(function(b){ return b&&b.id&&Array.isArray(b.opts); }).slice(-200).map(function(b){
+    return {id:String(b.id).replace(/[^0-9]/g,"").slice(0,4)||"0",q:String(b.q||"").slice(0,100),opts:b.opts.filter(function(o){ return o&&o.id; }).slice(0,14).map(function(o){ return {id:String(o.id).slice(0,30),label:String(o.label||"").slice(0,40)}; }),
+      until:typeof b.until==="number"&&isFinite(b.until)?b.until:null,at:typeof b.at==="number"?b.at:0,state:["open","closed","done"].indexOf(b.state)>=0?b.state:"closed",win:Array.isArray(b.win)&&b.win.length?b.win.map(String):null};
+  });
   if(raw.texts && typeof raw.texts==="object") Object.keys(raw.texts).slice(0,600).forEach(function(k){ var x=raw.texts[k]; if(typeof x==="string" && k.length<=400) d.texts[k]=x.slice(0,400); });
   if(raw.rules && typeof raw.rules.treuOn==="boolean") d.rules.treuOn=raw.rules.treuOn;
   if(raw.payout && typeof raw.payout==="object") Object.keys(raw.payout).forEach(function(k){ var x=raw.payout[k]; if(typeof x==="number"&&isFinite(x)) d.payout[k]=Math.round(x); });
@@ -942,12 +963,13 @@ function cache(){ if(!CACHE){ CACHE={}; rebuild(); } return CACHE; }
 function rebuild(){
   E={};
   entries.forEach(function(r){
-    var e=E[r.player]||(E[r.player]={id:r.player,profile:null,season:null,bets:{},live:{}});
+    var e=E[r.player]||(E[r.player]={id:r.player,profile:null,season:null,bets:{},live:{},blitz:{}});
     var k=r.key;
     if(k==="profile") e.profile=r.data;
     else if(k==="season") e.season=r.data;
     else if(/^bet:\d+$/.test(k)) e.bets[+k.slice(4)]=r.data;
     else if(/^live:\d+:\d+$/.test(k)) e.live[k.slice(5)]=r.data;
+    else if(/^blitz:\d+$/.test(k)) e.blitz[k.slice(6)]=r.data;
   });
   var removed=main?main.removed:[];
   JOINED=Object.keys(E).filter(function(id){ return E[id].profile && E[id].profile.name && removed.indexOf(id)<0; });
@@ -1092,19 +1114,37 @@ function seasonLedger(){
 function entryStake(pid,key,data){
   if(pid!==ME && net.stk && net.stk[pid+"|"+key]!=null) return net.stk[pid+"|"+key]|0;
   if(!data||data.hidden) return 0;
-  return /^live:/.test(key)?sumStakes(data.stake):sumStakes(data.stakes);
+  return /^(live|blitz):/.test(key)?sumStakes(data.stake):sumStakes(data.stakes);
 }
+function srvNow(){ return Date.now()+(net.skew||0); }
+function blitzOpen(b){ return b.state==="open" && (b.until==null || srvNow()<b.until); }
+function blitzById(id){ return (main.blitz||[]).filter(function(b){ return b.id===id; })[0]||null; }
+function blitzLedger(){
+  var C=cache(); if(C.bz) return C.bz;
+  var out={pay:{},q:{}};
+  (main.blitz||[]).forEach(function(b){
+    var st={}; players().forEach(function(pid){ var x=E[pid]&&E[pid].blitz[b.id]; if(x&&x.stake) st[pid]=x.stake; });
+    if(b.state!=="done"){ out.q[b.id]={open:true}; return; }
+    var r=potSettle(st,b.win||[],0);
+    if(!r.SW){ r.refund=true; r.pay={}; Object.keys(st).forEach(function(pid){ var n=sumStakes({x:st[pid]}); if(n) r.pay[pid]=n; }); r.roll=0; }
+    out.q[b.id]=r;
+    Object.keys(r.pay).forEach(function(pid){ out.pay[pid]=(out.pay[pid]||0)+r.pay[pid]; });
+  });
+  C.bz=out; return out;
+}
+function blitzLeft(id){ var mine=E[ME]&&E[ME].blitz[id], saved=mine&&mine.stake?sumStakes(mine.stake):0; return Math.max(0,Math.min(main.rules.bets.blitz,cash(ME)+saved)); }
 function money(){
   var C=cache(); if(C.money) return C.money;
-  var M={}, SL=seasonLedger(), start=main.rules.bets.start, blank=function(){ return {staked:0,inPlay:0,ep:{},season:0,paid:0}; };
+  var M={}, SL=seasonLedger(), start=main.rules.bets.start, blank=function(){ return {staked:0,inPlay:0,ep:{},season:0,blitz:0,paid:0}; };
   joined().forEach(function(pid){ M[pid]=blank(); });
   entries.forEach(function(r){
     var m=M[r.player], k=r.key, st; if(!m) return;
     if(k==="season"){ st=entryStake(r.player,k,r.data); m.season+=st; m.staked+=st; if(!SL.done) m.inPlay+=st; }
     else if(/^(bet:\d+|live:\d+:\d+)$/.test(k)){ var f=+k.split(":")[1]; st=entryStake(r.player,k,r.data); m.staked+=st; m.ep[f]=(m.ep[f]||0)+st; if(!closed(f)) m.inPlay+=st; }
+    else if(/^blitz:\d+$/.test(k)){ var bz=blitzById(k.slice(6)); st=entryStake(r.player,k,r.data); m.staked+=st; m.blitz+=st; if(!bz||bz.state!=="done") m.inPlay+=st; }
   });
   Object.keys(M).forEach(function(pid){
-    var m=M[pid], p=seasonPts(pid);
+    var m=M[pid], p=seasonPts(pid)+(blitzLedger().pay[pid]||0);
     epNums().forEach(function(f){ if(f>=(main.start||1) && closed(f)) p+=betPts(pid,f)+treuPts(pid,f); });
     m.paid=p; m.cash=start+p-m.staked; m.wealth=m.cash+m.inPlay;
   });
@@ -1119,7 +1159,7 @@ function liveLeft(pid,f){ return Math.max(0,Math.min(main.rules.bets.ep-epStake(
 function seasonBudget(){ var saved=entryStake(ME,"season",E[ME]&&E[ME].season); return Math.max(0,Math.min(main.rules.bets.season,cash(ME)+saved)); }
 function payoutDone(){
   var out={};
-  joined().forEach(function(pid){ var p=main.phase==="done"?seasonPts(pid):0;
+  joined().forEach(function(pid){ var p=(main.phase==="done"?seasonPts(pid):0)+(blitzLedger().pay[pid]||0);
     epNums().forEach(function(f){ if(f>=(main.start||1) && ep(f).status==="done") p+=betPts(pid,f)+treuPts(pid,f); });
     if(p) out[pid]=p; });
   return out;
@@ -1144,8 +1184,9 @@ function dPut(db,pid,key,data){ db.seq=(db.seq||0)+1; db.entries[pid+"|"+key]={p
 function dEnt(db,pid,key){ var r=db.entries[pid+"|"+key]; return r?r.data:null; }
 function dRows(db){ return Object.keys(db.entries).map(function(k){ return db.entries[k]; }); }
 function dBud(d,k,def){ var v=(d.v|0)>=3&&d.rules&&d.rules.bets&&d.rules.bets[k]; return typeof v==="number"?v:def; }
-function dStakeOf(r){ return Math.max(0,dTotal(/^live:/.test(r.key)?r.data.stake:r.data.stakes)); }
-function dIsBet(k){ return k==="season"||/^(bet:\d+|live:\d+:\d+)$/.test(k); }
+function dStakeOf(r){ return Math.max(0,dTotal(/^(live|blitz):/.test(r.key)?r.data.stake:r.data.stakes)); }
+function dIsBet(k){ return k==="season"||/^(bet:\d+|live:\d+:\d+|blitz:\d+)$/.test(k); }
+function dBlitzOpen(d,id,grace){ return (d.blitz||[]).some(function(b){ return b.id===id && b.state==="open" && (typeof b.until!=="number" || Date.now()<=b.until+(grace||0)); }); }
 function dCash(db,pid,exceptKey){ var d=db.data, u=0; dRows(db).forEach(function(r){ if(r.player===pid && dIsBet(r.key) && r.key!==exceptKey) u+=dStakeOf(r); }); return dBud(d,"start",100)+((d.payout&&d.payout[pid])|0)-u; }
 function dEpUsed(db,pid,f,exceptKey){ var u=0; dRows(db).forEach(function(r){ if(r.player===pid && r.key!==exceptKey && (r.key==="bet:"+f || r.key.indexOf("live:"+f+":")===0)) u+=dStakeOf(r); }); return u; }
 function dTotal(m){
@@ -1199,6 +1240,14 @@ function dBots(db){
   var now=Date.now(); if(now<(db.nextBot||0)) return;
   var d=db.data, bots=DEMO_BOTS.map(function(b){ return b[0]; }).filter(function(b){ return db.players[b] && (d.removed||[]).indexOf(b)<0; });
   var acted=false, act=function(){ acted=true; db.nextBot=now+600+Math.floor(rnd()*900); dSave(); };
+  var ob=(d.blitz||[]).filter(function(b){ return b.state==="open" && (typeof b.until!=="number"||Date.now()<b.until-1500); });
+  for(var bi=0;bi<ob.length;bi++){
+    db.skip=db.skip||{};
+    var bb=bots.filter(function(b){ return !dEnt(db,b,"blitz:"+ob[bi].id) && !db.skip["bz"+ob[bi].id+":"+b]; })[0];
+    if(bb){ var bav=Math.max(0,Math.min(dBud(d,"blitz",10),dCash(db,bb,"blitz:"+ob[bi].id)));
+      if(bav>0 && rnd()<0.8){ var bst={}; bst[dPick(ob[bi].opts).id]=1+Math.floor(rnd()*Math.min(5,bav)); dPut(db,bb,"blitz:"+ob[bi].id,{stake:bst}); } else db.skip["bz"+ob[bi].id+":"+bb]=1;
+      act(); return; }
+  }
   if(d.phase==="join"){
     var bs=bots.filter(function(b){ return !dEnt(db,b,"season"); })[0];
     if(bs){ dBotSeason(db,bs); act(); } return;
@@ -1223,7 +1272,7 @@ function dBots(db){
 function dSaveEntry(db,b){
   var d=db.data, k=b.p_key, data=b.p_data, tgt=b.p_player;
   if(!data||typeof data!=="object") throw dErr("invalid data");
-  if(!/^(season|pick:\d{1,3}|bet:\d{1,2}|live:\d{1,2}:\d{1,2})$/.test(k||"")) throw dErr("invalid key");
+  if(!/^(season|pick:\d{1,3}|bet:\d{1,2}|live:\d{1,2}:\d{1,2}|blitz:\d{1,4})$/.test(k||"")) throw dErr("invalid key");
   if(!dAuth(db,b.p_player,b.p_secret)) throw dErr("auth");
   if(b.p_as && b.p_as!==b.p_player){ if(!db.players[b.p_player].admin || k.indexOf("pick:")!==0 || !db.players[b.p_as]) return false; tgt=b.p_as; }
   if((d.removed||[]).indexOf(tgt)>=0) return false;
@@ -1231,9 +1280,10 @@ function dSaveEntry(db,b){
   if(sp[0]==="bet"){ if(!d.episodes[f]||d.episodes[f].status!=="open") return false; tot=dTotal(data.stakes); }
   else if(sp[0]==="live"){ if(!dLiveOpen(d,f,sp[2])) return false; tot=dTotal(data.stake); }
   else if(k==="season"){ if(d.phase!=="join") return false; tot=dTotal(data.stakes); if(tot>dBud(d,"season",30)) return false; }
+  else if(sp[0]==="blitz"){ if(!dBlitzOpen(d,sp[1],3000)) return false; tot=dTotal(data.stake); if(tot>dBud(d,"blitz",10)) return false; }
   if(dIsBet(k)){
     if(tot<0) return false;
-    if(tot>0 && k!=="season" && tot+dEpUsed(db,tgt,f,k)>dBud(d,"ep",25)) return false;
+    if(tot>0 && (sp[0]==="bet"||sp[0]==="live") && tot+dEpUsed(db,tgt,f,k)>dBud(d,"ep",25)) return false;
     if(tot>0 && tot>dCash(db,tgt,k)) return false;
   }
   else return false;
@@ -1242,29 +1292,32 @@ function dSaveEntry(db,b){
 function dGet(db,b){
   var d=db.data; if(!dAuth(db,b.p_player,b.p_secret)) return {auth:false};
   dBots(db);
-  var reveal=d.phase==="done" || (d.couples||[]).some(function(c){ return c.final; }) || Object.keys(d.episodes||{}).some(function(k){ var x=d.episodes[k]; return x&&x.finale&&(x.status==="review"||x.status==="done"); }), ents=[], pots={bet:{},live:{},season:{}};
+  var reveal=d.phase==="done" || (d.couples||[]).some(function(c){ return c.final; }) || Object.keys(d.episodes||{}).some(function(k){ var x=d.episodes[k]; return x&&x.finale&&(x.status==="review"||x.status==="done"); }), ents=[], pots={bet:{},live:{},blitz:{},season:{}};
   var add=function(bk,key,n){ if(typeof n==="number") pots[bk][key]=(pots[bk][key]||0)+n; };
   dRows(db).forEach(function(r){
     var k=r.key, sp=k.split(":"), hide=false;
     if(r.player!==b.p_player){
       if(sp[0]==="bet") hide=!d.episodes[sp[1]]||d.episodes[sp[1]].status==="open";
       else if(sp[0]==="live") hide=dLiveOpen(d,sp[1],sp[2]);
+      else if(sp[0]==="blitz") hide=dBlitzOpen(d,sp[1],3000);
       else if(k==="season") hide=!reveal;
     }
     ents.push({player:r.player,key:k,at:r.at,data:hide?{hidden:true}:r.data});
     if(sp[0]==="bet"||k==="season"){ var st=r.data.stakes; if(st&&typeof st==="object") Object.keys(st).forEach(function(q){ var m=st[q]; if(m&&typeof m==="object") Object.keys(m).forEach(function(o){ add(k==="season"?"season":"bet",k==="season"?q:sp[1]+":"+q,m[o]); }); }); }
     if(sp[0]==="live"){ var s2=r.data.stake; if(s2&&typeof s2==="object") Object.keys(s2).forEach(function(o){ add("live",sp[1]+":"+sp[2],s2[o]); }); }
+    if(sp[0]==="blitz"){ var sb=r.data.stake; if(sb&&typeof sb==="object") Object.keys(sb).forEach(function(o){ add("blitz",sp[1],sb[o]); }); }
   });
   ents.sort(function(x,y){ return x.at<y.at?-1:(x.at>y.at?1:0); });
   var stk={}; dRows(db).forEach(function(r){ if(dIsBet(r.key)) stk[r.player+"|"+r.key]=dStakeOf(r); });
-  var tmp={bet:{},live:{},season:{}}, odds={bet:{},live:{},season:{}};
+  var tmp={bet:{},live:{},blitz:{},season:{}}, odds={bet:{},live:{},blitz:{},season:{}};
   var put=function(kind,key,pid,o,n){ if(typeof n!=="number"||n<=0) return; var t=tmp[kind][key]=tmp[kind][key]||{who:{},o:{}}; t.who[pid]=1; t.o[o]=(t.o[o]||0)+n; };
   dRows(db).forEach(function(r){ var sp2=r.key.split(":");
     if(sp2[0]==="bet"||r.key==="season"){ var st2=r.data.stakes||{}; Object.keys(st2).forEach(function(q){ var m=st2[q]; if(m&&typeof m==="object") Object.keys(m).forEach(function(o){ put(r.key==="season"?"season":"bet",r.key==="season"?q:sp2[1]+":"+q,r.player,o,m[o]); }); }); }
     if(sp2[0]==="live"){ var s3=r.data.stake||{}; Object.keys(s3).forEach(function(o){ put("live",sp2[1]+":"+sp2[2],r.player,o,s3[o]); }); }
+    if(sp2[0]==="blitz"){ var s4=r.data.stake||{}; Object.keys(s4).forEach(function(o){ put("blitz",sp2[1],r.player,o,s4[o]); }); }
   });
   Object.keys(tmp).forEach(function(kind){ Object.keys(tmp[kind]).forEach(function(key){ var t=tmp[kind][key]; if(Object.keys(t.who).length>=3) odds[kind][key]=t.o; }); });
-  return {data:d,version:db.version,entries:ents,pots:pots,stk:stk,odds:odds,me:{player:b.p_player,admin:!!db.players[b.p_player].admin}};
+  return {data:d,version:db.version,entries:ents,pots:pots,stk:stk,odds:odds,now:Date.now(),me:{player:b.p_player,admin:!!db.players[b.p_player].admin}};
 }
 function demoRpc(fn,b){
   return new Promise(function(resolve,reject){
@@ -1395,6 +1448,7 @@ function pull(){
     var pots=res.pots||{}; if(JSON.stringify(pots)!==JSON.stringify(net.pots||{})){ net.pots=pots; changed=true; }
     var stk=res.stk||{}; if(JSON.stringify(stk)!==JSON.stringify(net.stk||{})){ net.stk=stk; changed=true; }
     var odds=res.odds||{}; if(JSON.stringify(odds)!==JSON.stringify(net.odds||{})){ net.odds=odds; changed=true; }
+    if(typeof res.now==="number") net.skew=res.now-Date.now();
     if(main && ui.adminOk && !mainBusy() && !net.mainFailed){ CACHE=null; var po=payoutDone(); if((res.data&&(res.data.v|0)<3) || !sameMap(po,main.payout)){ main.payout=po; commitMain(); changed=false; } }
     saveCache();
     if(net.mode!=="online") setNet("online");
@@ -1604,6 +1658,7 @@ function viewHome(){
   if(ui.msg) out+='<p class="okmsg" role="status">'+h(ui.msg)+'</p>';
   if(main.phase!=="join") out+=rankingCard();
   out+=phaseCard();
+  out+=blitzCard();
   out+='<section class="card linkrow">'+
     (main.phase!=="join"?'<button class="link" data-act="go" data-v="table"><span>Konto &amp; Bilanz pro Folge</span><span>›</span></button>':"")+
     '<button class="link" data-act="go" data-v="rules"><span>So funktioniert’s</span><span>›</span></button>'+
@@ -1757,6 +1812,58 @@ function viewBetslip(){
   if(ui.sheet==="slip") out+=slipSheet(cfg);
   return out;
 }
+function fmtLeft(ms){ var s2=Math.max(0,Math.ceil(ms/1000)); return Math.floor(s2/60)+":"+("0"+(s2%60)).slice(-2); }
+function blitzOpts(type,lines){
+  var f=curEp()||nextToOpen();
+  if(type==="couples") return couplesAt(f).map(function(c){ return {id:c.id,label:c.name}; }).concat([{id:"none",label:"Bei keinem"}]);
+  if(type==="people") return vergebeneAt(f).map(function(p){ return {id:p.id,label:p.name}; }).concat([{id:"none",label:"Niemand"}]);
+  if(type==="custom"){ var seen={}, out=[]; String(lines||"").split(/\n|,/).map(function(x){ return x.trim(); }).filter(function(x){ return x; }).forEach(function(l){ if(seen[l.toLowerCase()]||out.length>=8) return; seen[l.toLowerCase()]=1; out.push({id:"o"+out.length,label:l.slice(0,40)}); }); return out; }
+  return [{id:"ja",label:"Ja"},{id:"nein",label:"Nein"}];
+}
+function blitzForm(){
+  var d=ui.bform;
+  return '<div class="sheet-wrap anim" role="dialog" aria-modal="true" aria-labelledby="bz-t" data-notx><button class="sheet-bg" data-act="bz-form-close" aria-label="Schließen" tabindex="-1"></button><div class="sheet blitzsheet"><span class="grab" aria-hidden="true"></span>'+
+    '<div class="sheet-h"><div><span class="livehead"><span class="blitzbadge">⚡ Blitz</span></span><h2 id="bz-t">Blitzwette rausschicken</h2></div><button class="xbtn" data-act="bz-form-close" aria-label="Schließen">×</button></div>'+
+    '<div class="sheet-list"><span class="sublabel">Schnell gewählt</span><div class="chips">'+BLITZ_PRESETS.map(function(t,i){ return '<button class="chip'+(d.q===t?" on":"")+'" data-act="bz-preset" data-v="'+i+'">'+h(t)+'</button>'; }).join("")+'</div>'+
+    '<label class="f">Frage<input type="text" id="bz-q" maxlength="100" autocomplete="off" value="'+h(d.q)+'" placeholder="Was passiert gleich?"></label>'+
+    '<span class="sublabel">Antworten</span><div class="chips">'+[["yesno","Ja / Nein"],["couples","Paare"],["people","Vergebene"],["custom","Eigene"]].map(function(t){ return '<button class="chip'+(d.type===t[0]?" on":"")+'" data-act="bz-type" data-v="'+t[0]+'">'+t[1]+'</button>'; }).join("")+'</div>'+
+    (d.type==="custom"?'<label class="f">Eine Antwort pro Zeile<textarea id="bz-o" rows="3">'+h(d.lines||"")+'</textarea></label>':'')+
+    '<span class="sublabel">Zeit zum Setzen</span><div class="seg bz-dur" role="group" aria-label="Zeit">'+BLITZ_DUR.map(function(sec){ return '<button data-act="bz-dur" data-v="'+sec+'" aria-pressed="'+(d.dur===sec)+'">'+(sec<60?sec+" s":(sec/60)+" Min")+'</button>'; }).join("")+'</div>'+
+    '<p class="hint">Jede*r kann bis zu '+tl(main.rules.bets.blitz)+' setzen. Liegt niemand richtig, bekommen alle ihren Einsatz zurück.</p>'+
+    (ui.err?'<p class="err" role="alert">'+h(ui.err)+'</p>':'')+'</div>'+
+    '<div class="actions"><button class="btn big primary" data-act="bz-send">⚡ Blitzwette rausschicken</button></div></div></div>';
+}
+function blitzSheet(){
+  if(!main||main.phase==="done"||!ME) return "";
+  ui.blitzSeen=ui.blitzSeen||[];
+  var b=(main.blitz||[]).filter(function(x){ return blitzOpen(x) && !(E[ME]&&E[ME].blitz[x.id]) && ui.blitzSeen.indexOf(x.id)<0; })[0];
+  if(!b||blitzLeft(b.id)<=0) return "";
+  if(ui.blitzFor!==b.id){ ui.blitzFor=b.id; ui.blitzStake={}; ui.blitzAnim=true; try{ if(navigator.vibrate) navigator.vibrate([60,40,60,40,120]); }catch(x){} }
+  var put=sumStakes(ui.blitzStake), left=blitzLeft(b.id)-put, pot=((net.pots&&net.pots.blitz)||{})[b.id]|0, m={}; m[b.id]=ui.blitzStake;
+  var html='<div class="sheet-wrap'+(ui.blitzAnim?" anim":"")+'" role="dialog" aria-modal="true" aria-labelledby="bzs-t"><button class="sheet-bg" data-act="bz-skip" data-v="'+h(b.id)+'" aria-label="Diesmal nicht" tabindex="-1"></button><div class="sheet blitzsheet hot"><span class="grab" aria-hidden="true"></span>'+
+    '<div class="sheet-h"><div><span class="livehead"><span class="blitzbadge">⚡ Blitz</span><b class="bz-clock num" data-until="'+(b.until||"")+'">'+(b.until?fmtLeft(b.until-srvNow()):"offen")+'</b>'+coinTxt(pot)+' im Pott</span><h2 id="bzs-t">'+h(b.q)+'</h2></div><button class="xbtn" data-act="bz-skip" data-v="'+h(b.id)+'" aria-label="Diesmal nicht">×</button></div>'+
+    '<p class="hint">Du kannst bis zu '+tl(Math.max(0,left))+' setzen. Wenn die Zeit abläuft, ist Schluss.</p>'+stepPicker()+stakeRows("blitz",b.id,b.opts,m,left,oddsFor("blitz",b.id),pot)+
+    '<div class="actions"><button class="btn big primary" data-act="bz-bet" data-v="'+h(b.id)+'"'+(put?"":" disabled")+'>'+(put?tl(put)+" setzen":"Erst T$ setzen")+'</button></div></div></div>';
+  ui.blitzAnim=false; return html;
+}
+function blitzCard(){
+  if(!main) return "";
+  var list=(main.blitz||[]).slice().reverse(), pots=(net.pots&&net.pots.blitz)||{}, L=blitzLedger();
+  var open=list.filter(blitzOpen), toResolve=list.filter(function(b){ return b.state!=="done" && !blitzOpen(b); }), recent=list.filter(function(b){ return b.state==="done"; }).slice(0,3);
+  if(!isAdmin() && !open.length && !recent.length) return "";
+  var out='<section class="card blitzcard"><div class="mk-h"><h3>⚡ Blitzwetten</h3>'+(isAdmin()&&main.phase!=="done"?'<button class="btn sm primary" data-act="bz-form">Blitzwette rausschicken</button>':'')+'</div>';
+  open.forEach(function(b){ var mine=E[ME]&&E[ME].blitz[b.id], put=mine&&mine.stake?sumStakes(mine.stake):0;
+    out+='<div class="livebet"><div class="lt"><span class="livehead"><span class="blitzbadge">⚡ läuft</span><b class="bz-clock num" data-until="'+(b.until||"")+'">'+(b.until?fmtLeft(b.until-srvNow()):"")+'</b></span><b>'+h(b.q)+'</b><small>Pott '+(pots[b.id]|0)+(put?" · du hast "+tl(put)+" gesetzt":"")+'</small></div>'+
+      '<div class="chips">'+(!put&&!isAdmin()?'<button class="btn sm" data-act="bz-reopen" data-v="'+h(b.id)+'">Jetzt setzen</button>':'')+(isAdmin()?(!put?'<button class="btn sm" data-act="bz-reopen" data-v="'+h(b.id)+'">Selbst setzen</button>':'')+'<button class="btn sm" data-act="bz-close" data-v="'+h(b.id)+'">Jetzt schließen</button>':'')+'</div></div>'; });
+  if(isAdmin()) toResolve.forEach(function(b){ var pot=pots[b.id]|0;
+    out+='<div class="livebet todo"><div class="lt"><b>'+h(b.q)+'</b><small>'+(pot?"Zeit ist um. Was ist richtig? Pott "+pot:"Zeit ist um. Niemand hat gesetzt.")+'</small></div>'+
+      (pot?'<div class="chips">'+b.opts.map(function(o){ return '<button class="chip" data-act="bz-win" data-c="'+h(b.id)+'" data-v="'+h(o.id)+'">'+h(o.label)+'</button>'; }).join("")+'</div>':'<div><button class="btn sm" data-act="bz-drop" data-v="'+h(b.id)+'">Erledigt</button></div>')+'</div>'; });
+  else if(toResolve.length) out+='<p class="hint">'+toResolve.length+' Blitzwette'+(toResolve.length>1?"n warten":" wartet")+' auf die Auflösung.</p>';
+  recent.forEach(function(b){ var r=L.q[b.id]||{}, mine=E[ME]&&E[ME].blitz[b.id], put=mine&&mine.stake?sumStakes(mine.stake):0, got=(r.pay||{})[ME]||0;
+    var w=b.opts.filter(function(o){ return (b.win||[]).indexOf(o.id)>=0; }).map(function(o){ return o.label; }).join(", ")||"–";
+    out+='<div class="res-q"><span><b>'+h(b.q)+'</b><small>Richtig: '+h(w)+(r.refund&&r.T?" · niemand lag richtig, Einsatz zurück":(r.T?" · Pott "+r.T:""))+'</small></span><span class="'+(put?(got>put?"ok":(got===put?"":"bad")):"")+'">'+(put?(got-put>=0?"+":"")+(got-put)+" T$":"")+'</span></div>'; });
+  return out+'</section>';
+}
 function liveSheet(){
   if(!main||main.phase!=="season") return "";
   var f=curEp(), e=f&&ep(f); if(!e||e.status!=="live") return "";
@@ -1874,6 +1981,7 @@ function viewTable(){
     '<tr><td>Start</td>'+pl.map(function(){ return '<td class="r">'+st+'</td>'; }).join("")+'</tr>'+
     ns.map(function(n){ var c=closed(n); return '<tr><td>'+epName(n)+(c?"":' <span class="d">läuft</span>')+'</td>'+pl.map(function(pid){ return '<td class="r">'+(c?sgn(epNet(pid,n)):"–")+'</td>'; }).join("")+'</tr>'; }).join("")+
     '<tr><td>Langzeit'+(SL.done?"":' <span class="d">offen</span>')+'</td>'+pl.map(function(pid){ return '<td class="r">'+(SL.done?sgn(seasonPts(pid)-mon(pid).season):"–")+'</td>'; }).join("")+'</tr>'+
+    ((main.blitz||[]).some(function(b){ return b.state==="done"; })?'<tr><td>Blitzwetten</td>'+pl.map(function(pid){ var paid=blitzLedger().pay[pid]||0, st=0; (main.blitz||[]).forEach(function(b){ var x=E[pid]&&E[pid].blitz[b.id]; if(b.state==="done"&&x&&x.stake) st+=sumStakes(x.stake); }); return '<td class="r">'+sgn(paid-st)+'</td>'; }).join("")+'</tr>':"")+
     '<tr class="total"><td>Konto</td>'+pl.map(function(pid){ return '<td class="r">'+total(pid)+'</td>'; }).join("")+'</tr></tbody></table></div><p class="hint">Offene Einsätze zählen schon zum Konto, bis die Folge aufgelöst ist.</p></section>';
   out+='<section class="card"><h3>Treue-Tipps</h3><div class="sum">'+pl.map(function(pid){ var sv=SV[pid]||{hits:0,tries:0}; return '<div><span>'+pname(pid)+'</span><span>'+(sv.tries?sv.hits+" von "+sv.tries+" richtig":"noch keiner")+'</span></div>'; }).join("")+'</div></section>';
   if(lastDone()) out+=resolutionCard(lastDone());
@@ -1887,6 +1995,7 @@ function viewRules(){
   out+='<section class="card"><h3>Wettschein</h3><p class="hint">Vor jeder Folge setzt du auf diese Fragen, pro Folge höchstens '+tl(BT.ep)+' (Live-Wetten zählen mit):</p><div class="sum">'+epm.map(function(m){ return '<div><span>'+h(m.perCouple?"Pro Paar: "+m.q:m.q)+'</span><span>'+h(mkSummary(m))+'</span></div>'; }).join("")+'</div><p class="hint">Dazu kommen Fragen, die der Admin für einzelne Folgen stellt.'+(jm?' Den Jackpot gibt es bei „'+h(jm.q)+'“.':'')+'</p></section>';
   out+='<section class="card"><h3>Der Pott</h3><p class="hint">Alle Einsätze einer Frage landen in einem Pott. Wer richtig liegt, teilt ihn sich im Verhältnis der Einsätze. Beispiel: Lena setzt 10 T$ auf „Kuss“, Tom 5 T$ auf „Kuss“, Mia 15 T$ auf „Nur Flirten“. Es gibt einen Kuss, im Pott liegen 30 T$: Lena bekommt 20 T$, Tom 10 T$.</p><p class="hint">Ausgezahlt wird in ganzen T$. Reste gehen an die, die am nächsten am nächsten Dollar dran sind, so wird immer genau der ganze Pott ausgezahlt. Liegt niemand richtig, wandert der Pott als Jackpot zu „Wie weit geht es heute?“ in der nächsten Folge. Aufgelöst wird nach der Folge nur, worauf auch jemand gesetzt hat.</p></section>';
   if(main.rules.treuOn) out+='<section class="card"><h3>Treue-Tipp</h3><p class="hint">Kostet nichts. Jede Folge tippst du auf eine*n Vergebene*n, die oder der nicht weiter als Flirten geht. Richtig: '+sgn(BT.treu)+' T$. Nicht zweimal hintereinander dieselbe Person. Wer pleite ist, kann damit wieder Geld holen.</p></section>';
+  out+='<section class="card"><h3>⚡ Blitzwetten</h3><p class="hint">Schickt der Admin jederzeit raus, mit Countdown. Du kannst bis zu '+tl(BT.blitz)+' setzen, bis die Zeit abläuft. Liegt niemand richtig, bekommen alle ihren Einsatz zurück.</p></section>';
   out+='<section class="card"><h3>Live-Wetten</h3><p class="hint">Startet der Admin während der Folge. Sie erscheinen sofort auf allen Handys und zählen zum Höchsteinsatz der Folge.</p></section>';
   out+='<section class="card"><h3>Langzeitwetten</h3><p class="hint">Vor dem Saisonstart setzt du bis zu '+tl(BT.season)+'. Hier geht es um alles, was nur selten passiert. Ausgezahlt wird nach dem Finale.</p><div class="sum">'+main.markets.filter(function(m){ return m.on&&m.scope==="season"; }).map(function(m){ return '<div><span>'+h(m.perCouple?"Pro Paar: "+m.q:m.q)+'</span><span>'+h(mkSummary(m))+'</span></div>'; }).join("")+'</div></section>';
   return out;
@@ -1975,7 +2084,7 @@ function viewAdmin(){
   }).join("")+'</div></section>';
   out+=builderCard()+textsCard();
   out+='<section class="card"><h3>Wettbüro</h3><div>'+
-    [["start","Startguthaben"],["ep","Höchsteinsatz pro Folge"],["season","Höchsteinsatz Langzeitwetten"],["treu","Bonus Treue-Tipp"]].map(function(r){
+    [["start","Startguthaben"],["ep","Höchsteinsatz pro Folge"],["season","Höchsteinsatz Langzeitwetten"],["treu","Bonus Treue-Tipp"],["blitz","Höchsteinsatz Blitzwette"]].map(function(r){
       return '<div class="admrow st2"><span class="nm">'+r[1]+'</span>'+plainStepper("bet-step",main.rules.bets[r[0]],tl(main.rules.bets[r[0]])).replace(/data-act="bet-step"/g,'data-act="bet-step" data-v="'+r[0]+'"')+'</div>'; }).join("")+
     '<p class="hint">Das Startguthaben gilt für alle, auch rückwirkend. Höchsteinsätze gelten ab dem nächsten Wettschein.</p></div></section>';
   out+='<section class="card"><h3>Anmeldecodes</h3><p class="hint">Hat jemand seinen Code verloren? Erstelle einen neuen und gib ihn persönlich weiter. Der alte Code gilt dann nicht mehr.</p><div>'+joined().map(function(pid){
@@ -2103,7 +2212,8 @@ function render(){
     else if(ui.screen==="board") html=viewBoard();
     else html=viewHome();
   }
-  if(main && ME && SECRET && main.phase==="season" && ["home","board","table","rules","share"].indexOf(ui.screen)>=0) html+=liveSheet();
+  if(main && ME && SECRET && ["home","board","table","rules","share","slip"].indexOf(ui.screen)>=0 && !ui.sheet && !ui.txEdit){ var bzs=blitzSheet(); html+=bzs||(main.phase==="season"&&ui.screen!=="slip"?liveSheet():""); }
+  if(main && ui.bform && isAdmin()) html+=blitzForm();
   if(isDemo() && ui.screen!=="demo") html=demoBar()+html;
   if(!isAdmin()){ ui.textMode=false; ui.txEdit=null; }
   if(ui.textMode) html='<div class="txbar" data-notx><span>Textmodus: Tippe auf einen Text, um ihn zu ändern.</span><button class="btn sm" data-act="tx-done">Fertig</button></div>'+html;
@@ -2117,6 +2227,7 @@ function render(){
 /* ================= actions ================= */
 function val(id){ var el=document.getElementById(id); return el?String(el.value||"").trim():""; }
 function syncEdName(){ var p=document.getElementById("pe-name"); if(p) ui.pName=p.value; }
+function syncBz(){ if(!ui.bform) return; var a=document.getElementById("bz-q"), c=document.getElementById("bz-o"); if(a) ui.bform.q=a.value; if(c) ui.bform.lines=c.value; }
 function syncMk(){ if(!ui.mk) return; var a=document.getElementById("mk-q"), b=document.getElementById("mk-h"), c=document.getElementById("mk-o"); if(a) ui.mk.q=a.value; if(b) ui.mk.hint=b.value; if(c) ui.mk.optsText=c.value; }
 function go(screen){ ui.screen=screen; ui.key=""; render(); goTop(); }
 function epStatus(f,s){ ep(f).status=s; ui.key=""; commitMain(); goTop(); }
@@ -2313,6 +2424,29 @@ document.addEventListener("click",function(evt){
     /* betting office */
     case "go-slip": go("slip"); return;
     case "q-open": ui.openQ=ui.openQ===v?null:v; render(); return;
+    case "bz-form": if(!isAdmin()) return; ui.bform={q:"",type:"yesno",lines:"",dur:60}; ui.err=""; render(); return;
+    case "bz-form-close": ui.bform=null; ui.err=""; render(); return;
+    case "bz-preset": if(!ui.bform) return; syncBz(); ui.bform.q=BLITZ_PRESETS[+v]||""; render(); return;
+    case "bz-type": if(!ui.bform) return; syncBz(); ui.bform.type=v; render(); return;
+    case "bz-dur": if(!ui.bform) return; syncBz(); ui.bform.dur=+v||60; render(); return;
+    case "bz-send":
+      if(!isAdmin()||!ui.bform) return; syncBz(); ui.err="";
+      var bf=ui.bform, bq=String(bf.q||"").trim(), bo=blitzOpts(bf.type,bf.lines);
+      if(bq.length<3){ ui.err="Bitte eine Frage eintragen."; render(); return; }
+      if(bo.length<2){ ui.err="Bitte mindestens zwei verschiedene Antworten eintragen."; render(); return; }
+      var bid=String((main.blitz||[]).reduce(function(mx,x){ return Math.max(mx,+x.id||0); },0)+1);
+      main.blitz=main.blitz||[]; main.blitz.push({id:bid,q:bq.slice(0,100),opts:bo,until:srvNow()+bf.dur*1000,at:srvNow(),state:"open",win:null});
+      ui.blitzSeen=(ui.blitzSeen||[]).concat([bid]); ui.bform=null; ui.msg="Blitzwette läuft. Sie erscheint jetzt auf allen Handys."; commitMain(); return;
+    case "bz-skip": ui.blitzSeen=(ui.blitzSeen||[]).concat([v]); ui.blitzFor=null; render(); return;
+    case "bz-reopen": ui.blitzSeen=(ui.blitzSeen||[]).filter(function(x){ return x!==v; }); ui.blitzFor=null; render(); return;
+    case "bz-bet":
+      var bb=blitzById(v); if(!bb||!blitzOpen(bb)||!ui.blitzStake||!sumStakes(ui.blitzStake)) return;
+      var bst=JSON.parse(JSON.stringify(ui.blitzStake)); ui.blitzFor=null; ui.blitzStake={};
+      showStampFx("Blitzwette",bb.q,bb.opts.filter(function(o){ return bst[o.id]; }).map(function(o){ return [o.label,tl(bst[o.id])]; }),sumStakes(bst));
+      saveEntry(ME,"blitz:"+v,{stake:bst},"Zu spät: Die Blitzwette ist schon vorbei."); return;
+    case "bz-close": if(!isAdmin()) return; (main.blitz||[]).forEach(function(b){ if(b.id===v&&b.state==="open"){ b.state="closed"; b.until=Math.min(b.until||srvNow(),srvNow()); } }); commitMain(); return;
+    case "bz-win": if(!isAdmin()) return; (main.blitz||[]).forEach(function(b){ if(b.id===cid&&!blitzOpen(b)){ b.state="done"; b.win=[v]; } }); ui.msg="Blitzwette aufgelöst."; commitMain(); return;
+    case "bz-drop": if(!isAdmin()) return; (main.blitz||[]).forEach(function(b){ if(b.id===v&&!blitzOpen(b)){ b.state="done"; b.win=null; } }); commitMain(); return;
     case "step-set": ui.step=[1,5,10].indexOf(+v)>=0?+v:5; render(); return;
     case "tile":
       var ts=b.getAttribute("data-s"), tq=b.getAttribute("data-q"), tmap=ts==="slip"?ui.slip:(ts==="season"?ui.stips:null); if(!tmap) return;
@@ -2330,6 +2464,11 @@ document.addEventListener("click",function(evt){
     case "slip-close": ui.sheet=null; render(); return;
     case "stk":
       var sc=b.getAttribute("data-s"), q=b.getAttribute("data-q"), dd=+b.getAttribute("data-d"), stp=stepSize();
+      if(sc==="blitz"){
+        if(!ui.blitzStake) ui.blitzStake={};
+        var bleft=blitzLeft(q)-sumStakes(ui.blitzStake), bcur=ui.blitzStake[v]|0, bnv=dd>0?bcur+Math.min(stp,Math.max(0,bleft)):Math.max(0,bcur-stp);
+        if(bnv<=0) delete ui.blitzStake[v]; else ui.blitzStake[v]=bnv; render(); return;
+      }
       if(sc==="live"){
         if(!ui.liveStake) ui.liveStake={};
         var lleft=liveLeft(ME,f)-sumStakes(ui.liveStake), lcur=ui.liveStake[v]|0, lnv=dd>0?lcur+Math.min(stp,Math.max(0,lleft)):Math.max(0,lcur-stp);
@@ -2401,13 +2540,23 @@ document.addEventListener("click",function(evt){
   }
 });
 
+/* ================= blitz countdown ================= */
+var bzOpenSig="";
+setInterval(function(){
+  if(!main||typeof document.querySelectorAll!=="function") return;
+  var els=document.querySelectorAll("[data-until]");
+  for(var i=0;i<els.length;i++){ var u=+els[i].getAttribute("data-until"); if(u) els[i].textContent=fmtLeft(u-srvNow()); }
+  var sig=(main.blitz||[]).filter(blitzOpen).map(function(b){ return b.id; }).join(",");
+  if(sig!==bzOpenSig){ bzOpenSig=sig; if(!inputFocused()) render(); }
+},250);
+
 /* ================= boot ================= */
 render();
 if(CODE) pull();
 setInterval(function(){
   if(!CODE) return;
   if(document.visibilityState && document.visibilityState!=="visible") return;
-  if(Date.now()-(net.lastPull||0)<(isDemo()?1400:4000)) return;
+  if(Date.now()-(net.lastPull||0)<(isDemo()?1400:((main&&(main.blitz||[]).some(blitzOpen))?1500:4000))) return;
   pull();
 },500);
 document.addEventListener("visibilitychange",function(){ if(document.visibilityState==="visible") pull(); });
